@@ -1,0 +1,42 @@
+# Project Principles
+
+<!--
+Read by every LeanSpec skill on every invocation. Constrains plans, guides
+execution, and gives /lean:verify concrete things to check against.
+
+Keep principles concrete and testable. "Write clean code" is useless.
+"All public functions must have JSDoc comments" is useful.
+
+Principles are sticky — they apply to every feature, not just one.
+Feature-specific decisions belong in the feature's own spec.md Discussion section.
+
+Replace the examples below with your project's actual conventions.
+-->
+
+## Code Style
+
+- <e.g., Use TypeScript strict mode — no `any`, no implicit `any`>
+- <e.g., Prefer composition over inheritance>
+- <e.g., All async functions return Result-typed values, not thrown exceptions>
+
+## Architecture
+
+- <e.g., Business logic lives in `core/`; framework code in `adapters/`>
+- <e.g., No circular imports between feature modules>
+- <e.g., All external I/O goes through a single `clients/` boundary>
+
+## Testing
+
+- <e.g., Every public function has a unit test>
+- <e.g., Integration tests hit a real database, never a mock>
+- <e.g., Tests are colocated with source as `*.test.ts`>
+
+## Documentation
+
+- <e.g., Every new module has a `README.md` with a 3-sentence purpose + usage example>
+- <e.g., Public APIs have JSDoc with at least one `@example` block>
+
+## Security
+
+- <e.g., No secrets in code or config. All secrets via environment variables>
+- <e.g., All user input validated at the HTTP boundary using Zod schemas>
