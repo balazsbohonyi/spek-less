@@ -336,4 +336,4 @@ Post-v1.0.0 candidates (explicitly deferred until real usage demands them):
 
 ## License
 
-MIT (placeholder — update before publishing).
+MIT License. See [LICENSE](./LICENSE) for details.
