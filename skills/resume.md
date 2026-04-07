@@ -1,21 +1,21 @@
 ---
-name: lean:resume
-description: Pick up where you left off — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Read-only. Use when returning after a break or context reset. More focused than /lean:status — oriented toward "what do I do now?" rather than "give me an overview."
+name: spek:resume
+description: Pick up where you left off — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Read-only. Use when returning after a break or context reset. More focused than /spek:status — oriented toward "what do I do now?" rather than "give me an overview."
 ---
 
-# /lean:resume — Pick up where you left off
+# /spek:resume — Pick up where you left off
 
 You are helping the user resume work after a break, a context reset, or switching back from another task. This skill is a lightweight, action-oriented read of the current feature state — it tells the user exactly where they are and what to do next, without requiring them to remember the workflow.
 
-This is NOT `/lean:status`. Status gives a broad overview of all features. Resume is narrower: it focuses on the single current feature and frames everything around "what should I do next?"
+This is NOT `/spek:status`. Status gives a broad overview of all features. Resume is narrower: it focuses on the single current feature and frames everything around "what should I do next?"
 
 ## Inputs
 
-- Optional feature argument (e.g. `/lean:resume 003`). Resolve via current-feature discovery if omitted.
+- Optional feature argument (e.g. `/spek:resume 003`). Resolve via current-feature discovery if omitted.
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/lean-spec-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **All `.specs/NNN_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
 3. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`) and `### Tasks` checkbox lines only.
 4. **`<feature>/execution.md`** (if exists) — last ~10 lines only.
@@ -46,21 +46,21 @@ Status: executing  (2 / 4 tasks done)
 Last log entry:
   ## 2026-04-05 09:40 — Task 2 complete
 
-Next: /lean:execute to continue from task 3.
+Next: /spek:execute to continue from task 3.
 ```
 
 4. Suggest the right next command based on `status`:
 
 | Status | Suggested next step |
 |---|---|
-| `created` | `/lean:discuss` to explore the feature |
-| `discussing` | `/lean:discuss` to continue, or `/lean:plan` if direction is clear |
-| `planning` | `/lean:execute` to start implementation |
-| `executing` | `/lean:execute` to continue (picks up from first unchecked task) |
-| `verifying` | `/lean:commit` if Verification is clean, `/lean:execute` to fix issues |
-| `done` | Feature is complete — `/lean:new` to start another |
+| `created` | `/spek:discuss` to explore the feature |
+| `discussing` | `/spek:discuss` to continue, or `/spek:plan` if direction is clear |
+| `planning` | `/spek:execute` to start implementation |
+| `executing` | `/spek:execute` to continue (picks up from first unchecked task) |
+| `verifying` | `/spek:commit` if Verification is clean, `/spek:execute` to fix issues |
+| `done` | Feature is complete — `/spek:new` to start another |
 
-5. If no features exist yet, tell the user to run `/lean:kickoff` (greenfield) or `/lean:new` (new feature) to get started.
+5. If no features exist yet, tell the user to run `/spek:kickoff` (greenfield) or `/spek:new` (new feature) to get started.
 
 ## Writes
 

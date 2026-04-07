@@ -48,6 +48,6 @@ Tests: renders all three options, onChange fires setTheme with the selected valu
 `bun test theme` — 8 pass, 0 fail.
 
 ## 2026-04-05 10:07 — Task 4 complete
-Marked task 4 checkbox in Plan. All tasks done. Ready for /lean:verify.
+Marked task 4 checkbox in Plan. All tasks done. Ready for /spek:verify.
 
 ## 2026-04-05 10:09 — Committed e4f5a67: 001: Add dark mode toggle — tasks 2–4

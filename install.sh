@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 #
-# LeanSpec installer
+# SpekLess installer
 #
-# Interactive installer for LeanSpec — a lightweight spec-first development
+# Interactive installer for SpekLess — a lightweight spec-first development
 # framework for Claude Code. Run this script inside any project (new or existing).
 #
 # What it does:
 #   1. Asks a handful of configuration questions
-#   2. Writes .specs/config.yaml (per-project) and optionally ~/.claude/lean-spec-config.yaml (global)
+#   2. Writes .specs/config.yaml (per-project) and optionally ~/.claude/spek-config.yaml (global)
 #   3. Copies skills into .claude/skills/<namespace>/ or ~/.claude/skills/<namespace>/ or both
 #   4. Optionally creates .specs/principles.md from the template
 #   5. Copies templates to .specs/templates/ for runtime access by skills
-#   6. Writes a LeanSpec section to CLAUDE.md (creates it if missing)
+#   6. Writes a SpekLess section to CLAUDE.md (creates it if missing)
 #
 # Idempotent: re-running preserves existing features, config, and principles.
 # Only patches what's missing.
 #
 # Usage:
 #   cd /path/to/your/project
-#   /path/to/leanspec/install.sh
-#   /path/to/leanspec/install.sh --defaults   # non-interactive, accept all defaults
+#   /path/to/spek-less/install.sh
+#   /path/to/spek-less/install.sh --defaults   # non-interactive, accept all defaults
 
 set -euo pipefail
 
@@ -32,7 +32,7 @@ case "${1:-}" in
 esac
 
 # ---------------------------------------------------------------------------
-# Locate the LeanSpec source directory (where this script lives)
+# Locate the SpekLess source directory (where this script lives)
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SKILLS_SRC="$SCRIPT_DIR/skills"
@@ -115,8 +115,8 @@ escape_sed() {
 # ---------------------------------------------------------------------------
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "This directory is not a git repository."
-    echo "LeanSpec uses git for: starting_sha tracking, /lean:verify diffs,"
-    echo "and /lean:commit integration."
+    echo "SpekLess uses git for: starting_sha tracking, /spek:verify diffs,"
+    echo "and /spek:commit integration."
     echo
     INIT_GIT=$(ask_yn "Initialize git here?" "y")
     if [ "$INIT_GIT" = "true" ]; then
@@ -131,11 +131,11 @@ fi
 # ---------------------------------------------------------------------------
 # Welcome
 # ---------------------------------------------------------------------------
-banner "LeanSpec installer"
+banner "SpekLess installer"
 echo "Installing into: $PROJECT_ROOT"
 echo
 echo "This installer is idempotent — re-running on a project that already has"
-echo "LeanSpec installed will preserve your features and config, only patching"
+echo "SpekLess installed will preserve your features and config, only patching"
 echo "anything missing."
 echo
 if [ "$USE_DEFAULTS" = "true" ]; then
@@ -153,9 +153,9 @@ if [ -f ".specs/config.yaml" ]; then
     echo "Will preserve existing features and principles. You can accept current"
     echo "values by pressing Enter at each prompt."
     echo
-elif [ -f "$HOME/.claude/lean-spec-config.yaml" ]; then
-    EXISTING_CONFIG="$HOME/.claude/lean-spec-config.yaml"
-    echo "Detected existing global config at $HOME/.claude/lean-spec-config.yaml"
+elif [ -f "$HOME/.claude/spek-config.yaml" ]; then
+    EXISTING_CONFIG="$HOME/.claude/spek-config.yaml"
+    echo "Detected existing global config at $HOME/.claude/spek-config.yaml"
     echo "Defaults will be loaded from the global config."
     echo
 fi
@@ -173,7 +173,7 @@ get_yaml_value() {
 }
 
 DEFAULT_NAMESPACE="$(get_yaml_value "$EXISTING_CONFIG" namespace)"
-DEFAULT_NAMESPACE="${DEFAULT_NAMESPACE:-lean}"
+DEFAULT_NAMESPACE="${DEFAULT_NAMESPACE:-spek}"
 
 DEFAULT_SPECS_ROOT="$(get_yaml_value "$EXISTING_CONFIG" specs_root)"
 DEFAULT_SPECS_ROOT="${DEFAULT_SPECS_ROOT:-.specs}"
@@ -357,7 +357,7 @@ fi
 # Global config — written when installing globally (scope 2 or 3).
 # Skills fall back to this file when no per-project config.yaml is present.
 if [ "$INSTALL_SCOPE" = "2" ] || [ "$INSTALL_SCOPE" = "3" ]; then
-    GLOBAL_CONFIG_PATH="$HOME/.claude/lean-spec-config.yaml"
+    GLOBAL_CONFIG_PATH="$HOME/.claude/spek-config.yaml"
     if [ -f "$GLOBAL_CONFIG_PATH" ]; then
         echo "Preserving existing $GLOBAL_CONFIG_PATH (delete it and re-run if you want a full rewrite)"
     else
@@ -376,23 +376,23 @@ if [ "$CREATE_PRINCIPLES" = "true" ]; then
     else
         echo "Writing $PRINCIPLES_PATH"
         cp "$TEMPLATES_SRC/principles.md.tmpl" "$PRINCIPLES_PATH"
-        echo "  (run /$NAMESPACE:kickoff to have LeanSpec help fill it in)"
+        echo "  (run /$NAMESPACE:kickoff to have SpekLess help fill it in)"
     fi
 fi
 
 # ---------------------------------------------------------------------------
-# Write LeanSpec block to CLAUDE.md
+# Write SpekLess block to CLAUDE.md
 # ---------------------------------------------------------------------------
 CLAUDEMD_PATH="CLAUDE.md"
-if [ -f "$CLAUDEMD_PATH" ] && grep -qF "## LeanSpec" "$CLAUDEMD_PATH"; then
-    echo "CLAUDE.md already contains LeanSpec block — skipping"
+if [ -f "$CLAUDEMD_PATH" ] && grep -qF "## SpekLess" "$CLAUDEMD_PATH"; then
+    echo "CLAUDE.md already contains SpekLess block — skipping"
 else
-    echo "Writing LeanSpec section to CLAUDE.md"
+    echo "Writing SpekLess section to CLAUDE.md"
     cat >> "$CLAUDEMD_PATH" <<CLAUDEEOF
 
-## LeanSpec
+## SpekLess
 
-This project uses LeanSpec for spec-first development.
+This project uses SpekLess for spec-first development.
 - **Config:** \`$SPECS_ROOT/config.yaml\`
 - **Principles:** \`$SPECS_ROOT/principles.md\` — read by every skill, constrains all plans and execution
 - **Feature specs:** \`$SPECS_ROOT/NNN_*/spec.md\` — one living design doc per feature
@@ -407,7 +407,7 @@ fi
 # ---------------------------------------------------------------------------
 banner "Done"
 cat <<EOF
-LeanSpec is installed. Next steps:
+SpekLess is installed. Next steps:
 
   1. (Optional) Edit $SPECS_ROOT/principles.md to capture your project's conventions,
      or run /$NAMESPACE:kickoff — it will offer to help fill it in.

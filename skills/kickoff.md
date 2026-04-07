@@ -1,28 +1,28 @@
 ---
-name: lean:kickoff
+name: spek:kickoff
 description: Greenfield project kickoff — extended PRD-style discussion that produces .specs/project.md and optionally scaffolds initial feature folders. Use once at the start of a new product, or re-run later to evolve the vision. Safe to re-run; re-runs rewrite project.md and never delete existing feature folders.
 ---
 
-# /lean:kickoff — Define what you're building and why
+# /spek:kickoff — Define what you're building and why
 
-You are facilitating the PRD / product-vision conversation that precedes any feature work on a greenfield project. Your output is `.specs/project.md` — a living document that every other LeanSpec skill reads as context. This is the "WHAT & WHY" layer, sitting alongside `principles.md` (the "HOW" layer).
+You are facilitating the PRD / product-vision conversation that precedes any feature work on a greenfield project. Your output is `.specs/project.md` — a living document that every other SpekLess skill reads as context. This is the "WHAT & WHY" layer, sitting alongside `principles.md` (the "HOW" layer).
 
 This is NOT a feature spec. Do not write Plan/Execution sections. Do not create feature folders unless the user accepts the scaffolding offer at the end.
 
 ## Inputs
 
-- Optional short description of the product (e.g. `/lean:kickoff "habit tracker for ADHD adults"`). If omitted, start by asking "What are we building, in one or two sentences?"
+- Optional short description of the product (e.g. `/spek:kickoff "habit tracker for ADHD adults"`). If omitted, start by asking "What are we building, in one or two sentences?"
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/lean-spec-config.yaml` if not present; per-project wins when both exist) — confirms LeanSpec is installed. If neither config file exists, stop and point the user at `install.sh`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — confirms SpekLess is installed. If neither config file exists, stop and point the user at `install.sh`.
 2. **`.specs/principles.md`** (if exists) — some principles may shape the vision (e.g. "self-hosted only").
 3. **`.specs/project.md`** (if exists) — this is a re-run. Read it fully. Your job is to EVOLVE it, not start from scratch.
 4. **`.specs/*/spec.md`** frontmatter (if any features already exist) — read just frontmatter via Grep. Use to keep the "Initial Feature Set" checkboxes in sync with reality.
 
 ## Behavior
 
-Run an extended, clarification-heavy conversation. Reuse the clarification-detection pattern from `/lean:discuss`:
+Run an extended, clarification-heavy conversation. Reuse the clarification-detection pattern from `/spek:discuss`:
 
 - Proactively surface missing constraints, undefined users, vague success criteria, conflicting requirements.
 - Ask one question at a time, each with a recommended answer based on what you've already heard.
@@ -70,14 +70,14 @@ Question: "I drafted N candidate features in the Initial Feature Set. Want me to
 Options:
 1. Yes, scaffold all N features (recommended for most kickoffs)
 2. Let me pick which ones — show me the list
-3. No, I'll create features manually later via /lean:new
+3. No, I'll create features manually later via /spek:new
 ```
 
 If the user selects option 1:
 
-- For each candidate feature, create `.specs/NNN_<slug>/` with a skeleton `spec.md` (same way `/lean:new` does).
+- For each candidate feature, create `.specs/NNN_<slug>/` with a skeleton `spec.md` (same way `/spek:new` does).
 - Each scaffolded spec.md's `## Context` section gets a one-line reference back to `project.md`: `> Part of [**<project_name>**](../project.md). See "Initial Feature Set" for one-line scope.`
-- Do NOT run `/lean:discuss` or `/lean:plan` on the scaffolded features — that's for the user to do next.
+- Do NOT run `/spek:discuss` or `/spek:plan` on the scaffolded features — that's for the user to do next.
 
 If option 2: list candidates numbered, ask the user to select which ones (free-text or multi-select).
 
@@ -104,7 +104,7 @@ After the scaffolding offer (whether accepted or not), check `.specs/principles.
 End with:
 - One-paragraph summary of the project as captured in project.md
 - Whether scaffolding was done and for how many features
-- Suggested next step: `/lean:discuss <feature-number>` on the highest-priority feature, or manual review of `project.md` if they want to edit before proceeding
+- Suggested next step: `/spek:discuss <feature-number>` on the highest-priority feature, or manual review of `project.md` if they want to edit before proceeding
 
 ## Hard rules
 

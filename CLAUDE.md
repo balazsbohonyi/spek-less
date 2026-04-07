@@ -1,19 +1,19 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working on the **LeanSpec** codebase itself (not when using LeanSpec inside another project).
+This file provides guidance to Claude Code when working on the **SpekLess** codebase itself (not when using SpekLess inside another project).
 
-If you're here to *use* LeanSpec to build something else, read `README.md` instead. This file is for developing/maintaining the framework.
+If you're here to *use* SpekLess to build something else, read `README.md` instead. This file is for developing/maintaining the framework.
 
 ---
 
 ## Repository purpose
 
-LeanSpec is a lightweight, Claude Code–native spec-driven development framework. It ships as:
+SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
 - **Ten slash skills** in `skills/` — copied into a target project's `.claude/skills/<namespace>/` by the installer
 - **Five templates** in `templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.sh`) — Bash script that asks configuration questions and sets up a project
-- **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/lean:adopt`)
+- **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
 
 There is **no runtime code** beyond `install.sh`. The skills are markdown files read by Claude Code. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by `sed` from the installer.
@@ -24,22 +24,22 @@ There is **no runtime code** beyond `install.sh`. The skills are markdown files 
 
 Before making non-trivial changes, read in this order:
 
-1. **`README.md`** — user-facing walkthrough. Tells you what LeanSpec is trying to be.
+1. **`README.md`** — user-facing walkthrough. Tells you what SpekLess is trying to be.
 2. **`docs/architecture.md`** — the authoritative design reference. Every design decision and invariant is documented here. If a proposed change contradicts this doc, either the change is wrong or the doc needs updating first (not the other way around).
-3. **`docs/comparison-with-gsd-and-speckit.md`** — explains what LeanSpec deliberately keeps, rejects, and invents. Useful when you're tempted to add a feature "because GSD has it."
+3. **`docs/comparison-with-gsd-and-speckit.md`** — explains what SpekLess deliberately keeps, rejects, and invents. Useful when you're tempted to add a feature "because GSD has it."
 4. **`skills/new.md`** — the simplest skill. Read this to understand the skill file conventions before editing any other skill.
 5. **`examples/001_toy-feature/spec.md` + `execution.md`** — what the output of the full greenfield workflow looks like. Any change to templates or skills should still produce output that matches this shape.
-6. **`examples/002_adopted-feature/spec.md`** — what `/lean:adopt` output looks like. Retroactive spec with inferred Context, pre-checked tasks, no execution.md.
+6. **`examples/002_adopted-feature/spec.md`** — what `/spek:adopt` output looks like. Retroactive spec with inferred Context, pre-checked tasks, no execution.md.
 
 ---
 
 ## Core invariants (DO NOT violate without updating architecture.md first)
 
-These invariants are what LeanSpec *is*. If you're about to change one, stop and think hard — you're either fixing a bug or changing the identity of the framework.
+These invariants are what SpekLess *is*. If you're about to change one, stop and think hard — you're either fixing a bug or changing the identity of the framework.
 
-1. **Single-agent topology.** One main conversation drives everything. Sub-agents are used *only* as context firewalls for broad reads (Explore for codebase mapping, general-purpose for fresh-lens verify). Never create a new agent role per workflow step — that's the GSD failure mode LeanSpec exists to avoid.
+1. **Single-agent topology.** One main conversation drives everything. Sub-agents are used *only* as context firewalls for broad reads (Explore for codebase mapping, general-purpose for fresh-lens verify). Never create a new agent role per workflow step — that's the GSD failure mode SpekLess exists to avoid.
 
-2. **Section ownership is the core rule.** Each skill owns exactly one section of `spec.md` and rewrites it idempotently. The *one* exception is `/lean:execute` ticking checkboxes in `## Plan` → `### Tasks`. No other exceptions.
+2. **Section ownership is the core rule.** Each skill owns exactly one section of `spec.md` and rewrites it idempotently. The *one* exception is `/spek:execute` ticking checkboxes in `## Plan` → `### Tasks`. No other exceptions.
 
 3. **The document is the state.** No STATE.md. No lockfiles. No checkpoint machinery. If you need to know "where is this feature," read the sections. If you're about to create a new metadata file, stop.
 
@@ -47,7 +47,7 @@ These invariants are what LeanSpec *is*. If you're about to change one, stop and
 
 5. **Skills are idempotent.** Re-running any skill must produce correct output from the current on-disk state, without assuming the skill authored the existing content. This makes manual editing a first-class intervention path.
 
-6. **No forced commits.** The framework never runs `git commit` automatically. `starting_sha` is captured *passively* on first `/lean:execute` run as an audit anchor. `suggest_commits: true` offers commits via AskUserQuestion but never acts without user confirmation. `/lean:commit` is user-invoked only — it drafts a message and runs `git commit` strictly after explicit AskUserQuestion confirmation, never with `--amend`, never with `--no-verify`.
+6. **No forced commits.** The framework never runs `git commit` automatically. `starting_sha` is captured *passively* on first `/spek:execute` run as an audit anchor. `suggest_commits: true` offers commits via AskUserQuestion but never acts without user confirmation. `/spek:commit` is user-invoked only — it drafts a message and runs `git commit` strictly after explicit AskUserQuestion confirmation, never with `--amend`, never with `--no-verify`.
 
 7. **Principles-aware.** Every skill reads `.specs/principles.md` if present. If you add a new skill, it must too.
 
@@ -58,10 +58,10 @@ These invariants are what LeanSpec *is*. If you're about to change one, stop and
 ## Repository structure
 
 ```
-leanspec/
+spek-less/
 ├── install.sh                              # Bash installer (zero deps)
 ├── README.md                               # user-facing intro
-├── CLAUDE.md                               # this file — for working ON LeanSpec
+├── CLAUDE.md                               # this file — for working ON SpekLess
 ├── LICENSE                                 # MIT
 ├── skills/                                 # the 10 skill files (copied by installer)
 │   ├── kickoff.md, new.md, adopt.md        #   entry points
@@ -80,11 +80,11 @@ leanspec/
 │   ├── 001_toy-feature/                    # worked greenfield example
 │   │   ├── spec.md
 │   │   └── execution.md
-│   └── 002_adopted-feature/                # worked /lean:adopt example
-│       └── spec.md                         # no execution.md — work predates LeanSpec
+│   └── 002_adopted-feature/                # worked /spek:adopt example
+│       └── spec.md                         # no execution.md — work predates SpekLess
 └── docs/
     ├── architecture.md                     # authoritative design reference
-    └── comparison-with-gsd-and-speckit.md  # why certain things are / are not in LeanSpec
+    └── comparison-with-gsd-and-speckit.md  # why certain things are / are not in SpekLess
 ```
 
 ---
@@ -95,11 +95,11 @@ Every file in `skills/` follows this shape:
 
 ```markdown
 ---
-name: lean:<skill-name>
+name: spek:<skill-name>
 description: <one-paragraph description — Claude Code reads this to decide when the skill is relevant>
 ---
 
-# /lean:<skill-name> — <short tagline>
+# /spek:<skill-name> — <short tagline>
 
 <1-2 paragraphs: what this skill does and when to invoke it>
 
@@ -122,9 +122,9 @@ description: <one-paragraph description — Claude Code reads this to decide whe
 <bulleted list of invariants this skill enforces — idempotency, section scope, no side effects, etc.>
 ```
 
-**Frontmatter format:** `name` uses `lean:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/skills/<ns>/`). Keep the `name` field as `lean:<skill>` as a reasonable default; if this proves wrong in practice (skills not discoverable under non-default namespaces), adjust here first.
+**Frontmatter format:** `name` uses `spek:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/skills/<ns>/`). Keep the `name` field as `spek:<skill>` as a reasonable default; if this proves wrong in practice (skills not discoverable under non-default namespaces), adjust here first.
 
-**Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `/lean:new` description says "For greenfield projects use /lean:kickoff first. For retroactively documenting existing code use /lean:adopt." — this disambiguation is critical.
+**Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `/spek:new` description says "For greenfield projects use /spek:kickoff first. For retroactively documenting existing code use /spek:adopt." — this disambiguation is critical.
 
 **Length budget:** skill files should be **under ~300 lines** each. These are instructions Claude reads in-context, not documentation. Cut anything that isn't load-bearing. If a skill file is getting too long, the skill is probably doing too much — consider splitting.
 
@@ -197,28 +197,28 @@ Architecture changes are the slowest kind of change to make correctly — budget
 
 ## Manual smoke test
 
-LeanSpec has no automated test suite in v1.0.0. The smoke test is:
+SpekLess has no automated test suite in v1.0.0. The smoke test is:
 
 ```bash
 # 1. Create a scratch project
-mkdir /tmp/leanspec-smoke && cd /tmp/leanspec-smoke
+mkdir /tmp/spek-less-smoke && cd /tmp/spek-less-smoke
 git init
 
 # 2. Run the installer
-/path/to/leanspec/install.sh
+/path/to/spek-less/install.sh
 # Press Enter at every prompt to accept defaults.
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/skills/lean/       # should contain all 10 skill files
+ls -la .claude/skills/spek/       # should contain all 10 skill files
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow
-#    /lean:new "add a greeting endpoint"
-#    /lean:discuss
-#    /lean:plan
-#    /lean:execute
-#    /lean:verify
+#    /spek:new "add a greeting endpoint"
+#    /spek:discuss
+#    /spek:plan
+#    /spek:execute
+#    /spek:verify
 # Confirm each step writes to the correct section and respects the hard rules.
 ```
 
@@ -236,15 +236,15 @@ Use descriptive, scope-prefixed commit messages:
 - `docs: document the section-ownership exception`
 - `example: update toy-feature to match new spec.md structure`
 
-Do **not** use machine-generated commits (no Claude Code attribution footers in LeanSpec's own git history — this repo's commits should look hand-written, because LeanSpec's entire thesis is that forced agent commits are a pollution to avoid).
+Do **not** use machine-generated commits (no Claude Code attribution footers in SpekLess's own git history — this repo's commits should look hand-written, because SpekLess's entire thesis is that forced agent commits are a pollution to avoid).
 
 ---
 
 ## Things that are deliberately missing from v1.0.0
 
-When working on LeanSpec, resist the temptation to add these — they're on the post-v1.0.0 list for a reason:
+When working on SpekLess, resist the temptation to add these — they're on the post-v1.0.0 list for a reason:
 
-- `/lean:archive` — convenience skill for archiving completed features
+- `/spek:archive` — convenience skill for archiving completed features
 - Execution log compaction
 - Custom `spec-verifier` sub-agent type
 - Git hook integration

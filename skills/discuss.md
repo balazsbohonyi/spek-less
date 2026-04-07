@@ -1,19 +1,19 @@
 ---
-name: lean:discuss
-description: Conversational exploration of a feature — ambiguity detection, alternatives, key decisions. Writes Context and Discussion sections. Use after /lean:new when the approach isn't obvious, or whenever the direction needs rethinking. Safe to re-run.
+name: spek:discuss
+description: Conversational exploration of a feature — ambiguity detection, alternatives, key decisions. Writes Context and Discussion sections. Use after /spek:new when the approach isn't obvious, or whenever the direction needs rethinking. Safe to re-run.
 ---
 
-# /lean:discuss — Explore the feature conversationally
+# /spek:discuss — Explore the feature conversationally
 
-You are running a focused discussion to populate the `## Context` and `## Discussion` sections of a feature spec. This is **divergent thinking** — explore, reject ideas, clarify ambiguities. Planning (convergent commitment to an approach) happens in `/lean:plan`.
+You are running a focused discussion to populate the `## Context` and `## Discussion` sections of a feature spec. This is **divergent thinking** — explore, reject ideas, clarify ambiguities. Planning (convergent commitment to an approach) happens in `/spek:plan`.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/lean:discuss 003` to target `.specs/003_*/`). If omitted, resolve the current feature — see "Current feature discovery" below.
+- Optional feature argument (e.g. `/spek:discuss 003` to target `.specs/003_*/`). If omitted, resolve the current feature — see "Current feature discovery" below.
 
 ## Reads (section-scoped — do NOT read the whole spec.md)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/lean-spec-config.yaml` if not present; per-project wins when both exist) — `specs_root` and `project_hints`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root` and `project_hints`.
 2. **`.specs/principles.md`** (if exists) — entire file. Use to frame conversation and flag principle-related concerns.
 3. **`.specs/project.md`** (if exists) — entire file. Use Problem/Vision/Scope sections as background.
 4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section. Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` — they're irrelevant to this step and add tokens.
@@ -21,14 +21,14 @@ You are running a focused discussion to populate the `## Context` and `## Discus
 ## Current feature discovery
 
 Resolution order (first match wins):
-1. Explicit argument: `/lean:discuss 003` → `.specs/003_*/`
+1. Explicit argument: `/spek:discuss 003` → `.specs/003_*/`
 2. Git branch mapping: if current branch is `feat/NNN-*` or similar, use that number
 3. Most recently modified `.specs/NNN_*/` folder
 4. If none resolve, list available features and ask the user which one
 
 ## Behavior
 
-**Quick-mode shortcut.** Before diving into questions, read the feature's Context section and title. If the feature appears simple — short title, no conflicting constraints from `project.md` or `principles.md`, no obvious ambiguities — offer via AskUserQuestion: "This looks straightforward — skip discuss and go straight to `/lean:plan`?" If the user says no (or if the feature is complex), proceed with the full discussion normally.
+**Quick-mode shortcut.** Before diving into questions, read the feature's Context section and title. If the feature appears simple — short title, no conflicting constraints from `project.md` or `principles.md`, no obvious ambiguities — offer via AskUserQuestion: "This looks straightforward — skip discuss and go straight to `/spek:plan`?" If the user says no (or if the feature is complex), proceed with the full discussion normally.
 
 **Be a clarification engine, not a summarizer.** Your job is to find the holes in the user's thinking and drag them into the open. Proactively identify:
 
@@ -63,11 +63,11 @@ Do NOT touch `## Plan` or `## Verification`. Those belong to other skills.
 End with a short summary:
 - What Context/Discussion now say (2-3 lines)
 - Any principle concerns you noticed
-- Suggested next step: usually `/lean:plan`
+- Suggested next step: usually `/spek:plan`
 
 ## Hard rules
 
-- **Never spawn sub-agents for broad reads.** Discussion is pure conversation between you and the user. Targeted Grep/Read of specific files is allowed when the user explicitly asks about existing code during discussion — for example, "how does the auth module work?" can be answered with a targeted Read of the relevant files. For broad codebase exploration (anything that would take more than 2-3 targeted reads), decline and suggest `/lean:plan` instead (plan is allowed to use Explore).
+- **Never spawn sub-agents for broad reads.** Discussion is pure conversation between you and the user. Targeted Grep/Read of specific files is allowed when the user explicitly asks about existing code during discussion — for example, "how does the auth module work?" can be answered with a targeted Read of the relevant files. For broad codebase exploration (anything that would take more than 2-3 targeted reads), decline and suggest `/spek:plan` instead (plan is allowed to use Explore).
 - **Never modify source code.** Discussion is read-only for the project source tree.
 - **Idempotent.** Re-running rewrites Discussion in full. Context is rewritten only if something in it changed.
 - **Principles-aware.** If you notice the emerging direction conflicts with a principle in `principles.md`, flag it explicitly during the conversation before writing to Discussion.

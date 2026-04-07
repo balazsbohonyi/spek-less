@@ -12,7 +12,7 @@ tags: [auth, security, session-management]
 
 ## Context
 
-*This spec was created retroactively via `/lean:adopt`. The Context below is inferred from the existing code — it was not written before implementation.*
+*This spec was created retroactively via `/spek:adopt`. The Context below is inferred from the existing code — it was not written before implementation.*
 
 The application needs user authentication to protect private routes and personalize the experience. The auth module in `src/auth/` handles login, logout, session persistence via HTTP-only cookies, and route guards. It supports email/password credentials only (no OAuth, no magic links).
 
@@ -22,7 +22,7 @@ The application needs user authentication to protect private routes and personal
 
 ## Discussion
 
-*Design decisions visible in the code, as understood by `/lean:adopt`:*
+*Design decisions visible in the code, as understood by `/spek:adopt`:*
 
 **Session strategy — HTTP-only cookies vs localStorage tokens.** The code uses HTTP-only cookies with `SameSite=Strict`. This is the more secure option: tokens never touch JavaScript, eliminating XSS-based token theft. The trade-off is that the server must handle cookie management, and CORS configuration must include `credentials: 'include'`. The code accepts this trade-off explicitly — `src/auth/client.ts` sets `credentials: 'include'` on every fetch call.
 
@@ -74,6 +74,6 @@ The application needs user authentication to protect private routes and personal
 
 ## Verification
 
-<!-- Run /lean:verify to populate this section. For an adopted feature, verify
+<!-- Run /spek:verify to populate this section. For an adopted feature, verify
      checks that each task's Details match the actual code — discrepancies are
      documentation issues, not bugs. -->

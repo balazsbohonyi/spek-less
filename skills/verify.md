@@ -1,19 +1,19 @@
 ---
-name: lean:verify
+name: spek:verify
 description: Goal-backward verification of a feature — reads the Plan, execution.md, and git diff, checks whether the goal was actually achieved. Strictly read-only for source code. Writes the Verification section. If issues are flagged, offers next moves via AskUserQuestion.
 ---
 
-# /lean:verify — Check the work with a fresh lens
+# /spek:verify — Check the work with a fresh lens
 
 You are verifying that a feature actually achieves its goal. Your mindset is **goal-backward**: start from what the Plan said would be done, then check whether it was. Do not rationalize execute's output. Do not assume the code is correct because execute ran without errors. Your job is to find gaps.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/lean:verify 003`). Resolve via current-feature discovery if omitted.
+- Optional feature argument (e.g. `/spek:verify 003`). Resolve via current-feature discovery if omitted.
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/lean-spec-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file. Every principle is a thing to check.
 3. **`.specs/project.md`** (if exists) — only the Scope and Success Metrics sections. Use Grep + offset Read.
 4. **`<feature>/spec.md`** — read `## Context` (for the goal), `## Plan` (for what was promised), and skip `## Discussion` (not needed for verification).
@@ -21,7 +21,7 @@ You are verifying that a feature actually achieves its goal. Your mindset is **g
 6. **`git diff <starting_sha>..HEAD`** — the actual changes. Run this via Bash. This is your primary technical source.
 7. **Source files** — only ones referenced in the diff or flagged as suspect. Never bulk-read.
 
-If `starting_sha` is empty (feature was adopted via `/lean:adopt`, which captures a retroactive snapshot), the diff is empty; in that case, verify by reading the files listed in each task's Details section and checking that the code matches what the Plan claims.
+If `starting_sha` is empty (feature was adopted via `/spek:adopt`, which captures a retroactive snapshot), the diff is empty; in that case, verify by reading the files listed in each task's Details section and checking that the code matches what the Plan claims.
 
 ## Fresh-lens option (complex features)
 
@@ -86,8 +86,8 @@ After writing the Verification section, check if any issues were flagged:
 
 - **If status is READY_TO_SHIP:** output a short success message and stop.
 - **If status is ISSUES_TO_FIX or INCOMPLETE:** use the **AskUserQuestion tool** with three options:
-  1. **"Run `/lean:execute` now to fix the flagged issues"** (recommended)
-  2. **"Revise the Plan first via `/lean:plan`"** (when the issues are structural)
+  1. **"Run `/spek:execute` now to fix the flagged issues"** (recommended)
+  2. **"Revise the Plan first via `/spek:plan`"** (when the issues are structural)
   3. **"Stop — I'll handle it manually"**
 
 Do NOT proceed to fix issues yourself. Do NOT modify source code under any circumstances. Verify is strictly advisory.
@@ -105,4 +105,4 @@ Do NOT proceed to fix issues yourself. Do NOT modify source code under any circu
 - **Idempotent.** Re-running fully rewrites Verification based on current state.
 - **Fresh lens.** For non-trivial features, delegate to a general-purpose sub-agent. Do not rationalize the main conversation's prior execution.
 - **Goal-backward.** Start from Context's goal, not from execute's activity log. Activity is not achievement.
-- **No follow-up execution.** If the user selects "fix now" in the follow-up AskUserQuestion, tell them to invoke `/lean:execute` — do not chain into execution yourself from within the verify skill.
+- **No follow-up execution.** If the user selects "fix now" in the follow-up AskUserQuestion, tell them to invoke `/spek:execute` — do not chain into execution yourself from within the verify skill.

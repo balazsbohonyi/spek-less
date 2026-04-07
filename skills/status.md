@@ -1,22 +1,22 @@
 ---
-name: lean:status
-description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both /lean:list and /lean:status from the deferred convenience list.
+name: spek:status
+description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both /spek:list and /spek:status from the deferred convenience list.
 ---
 
-# /lean:status — See where things stand
+# /spek:status — See where things stand
 
-You are showing the user a summary of their LeanSpec features. This is the "where am I?" skill — useful when starting a fresh session, resuming after a context reset, or deciding what to work on next.
+You are showing the user a summary of their SpekLess features. This is the "where am I?" skill — useful when starting a fresh session, resuming after a context reset, or deciding what to work on next.
 
 This skill is **strictly read-only**. It writes nothing, modifies nothing, spawns no sub-agents.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/lean:status 003`). If given, show detail for that feature only.
+- Optional feature argument (e.g. `/spek:status 003`). If given, show detail for that feature only.
 - If omitted, show all features.
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/lean-spec-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** — not needed (this skill doesn't evaluate content against principles).
 3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines `- \[.\]`). Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
@@ -43,11 +43,11 @@ Feature status:
 ```
 
 5. Below the table, suggest a next step based on the current feature's status:
-   - `discussing` → "Next: `/lean:plan` when the direction is clear."
-   - `planning` → "Next: `/lean:execute` to start implementation."
-   - `executing` → "Next: `/lean:execute` to continue, or `/lean:verify` if all tasks are done."
-   - `verifying` → "Next: `/lean:commit` if verified clean, or `/lean:execute` to fix issues."
-   - `done` → "Feature is complete. Start a new one with `/lean:new`."
+   - `discussing` → "Next: `/spek:plan` when the direction is clear."
+   - `planning` → "Next: `/spek:execute` to start implementation."
+   - `executing` → "Next: `/spek:execute` to continue, or `/spek:verify` if all tasks are done."
+   - `verifying` → "Next: `/spek:commit` if verified clean, or `/spek:execute` to fix issues."
+   - `done` → "Feature is complete. Start a new one with `/spek:new`."
 
 ### Single-feature detail (with argument)
 
@@ -67,7 +67,7 @@ Tasks:
 Last log entry:
   ## 2026-04-05 09:22 — Task 2 complete
 
-Next: /lean:execute to continue from task 3.
+Next: /spek:execute to continue from task 3.
 ```
 
 ## Writes
