@@ -38,7 +38,7 @@ Rule of thumb: 3–8 tasks for a typical feature. Fewer than 3 means the feature
 
 If the user chooses decomposition, outline the proposed sibling specs and stop — do not write the current Plan section. The user will run `/spek:new` for each sibling, then plan them individually.
 
-**Self-validation (optional but recommended for non-trivial features):** after drafting the plan, you may delegate a review pass to the built-in **Plan sub-agent** with the draft plan, Context, Discussion, and principles as inputs. It critiques — you then revise before writing. This replaces GSD's plan-checker at a fraction of the cost. Skip for simple features.
+**Self-validation (optional but recommended for non-trivial features):** after drafting the plan, you may delegate a review pass to a **general-purpose sub-agent** with the draft plan, Context, Discussion, and principles as inputs. It critiques — you then revise before writing. This replaces GSD's plan-checker at a fraction of the cost. Skip for simple features.
 
 ## Mid-execute replanning (IMPORTANT)
 
@@ -47,9 +47,9 @@ If `execution.md` exists and contains completed work:
 1. Read the execution log (tail is fine).
 2. Determine which tasks from the **existing** Plan are already done.
 3. Write the new Plan so that:
-   - Completed tasks remain in the task list with `- [x]` checkboxes preserved
-   - Changed tasks are re-evaluated — if the change is substantive, reset the checkbox to `- [ ]`; if the title and approach are unchanged, keep the checkbox as-is
-   - New tasks added by the replan get fresh `- [ ]` boxes
+   - Completed tasks remain in the task list with `[x]` checkboxes preserved
+   - Changed tasks are re-evaluated — if the change is substantive, reset the checkbox to `[ ]`; if the title and approach are unchanged, keep the checkbox as-is
+   - New tasks added by the replan get fresh `[ ]` boxes
 4. Your rewrite must make sense read linearly alongside the execution log — a reader should see "these three tasks were done under the old plan, then direction changed, here are the remaining tasks."
 
 ## Writes
@@ -61,9 +61,9 @@ Fully rewrite `## Plan` in this structure:
 
 ### Tasks
 
-- [ ] 1. Short task title
-- [ ] 2. Short task title
-- [ ] 3. Short task title
+1. [ ] Short task title
+2. [ ] Short task title
+3. [ ] Short task title
 
 ### Details
 

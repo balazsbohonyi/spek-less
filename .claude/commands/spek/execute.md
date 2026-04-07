@@ -33,11 +33,11 @@ On the **first** run for this feature (detected by: no `execution.md` file AND n
 For each unchecked task in `## Plan` → `### Tasks`, in order:
 
 1. Read the matching `### Details` subsection for that task.
-2. Append a log entry `## <timestamp> — Task N: <short action>` describing what you're about to do (one line).
+2. Append a log entry `#### <timestamp> — Task N: <short action>` describing what you're about to do (one line).
 3. Make the code changes. Use targeted Edit/Write calls, not bulk rewrites. Follow principles.
 4. If the task says to run tests, run them via Bash. Record the result (pass/fail counts, not full output) in a new log entry.
 5. If the task succeeds, tick its checkbox in the Plan section:
-   - Find the exact line `- [ ] N. <title>` and replace with `- [x] N. <title>`.
+   - Find the exact line `N. [ ] <title>` and replace with `N. [x] <title>`.
    - This is the ONE section-ownership exception — you own checkbox state, not the rest of the Plan.
 6. Append a `Task N complete` log entry.
 7. Move to the next unchecked task.
@@ -48,7 +48,7 @@ Between tasks, check if the user has interrupted or given a course correction. I
 
 If during execution the user says "stop, change direction" or you discover the current task can't be completed as planned:
 
-1. Append a `## <timestamp> — Course correction` entry describing what changed and why.
+1. Append a `#### <timestamp> — Course correction` entry describing what changed and why.
 2. Do NOT edit the Plan section yourself — that's `/spek:plan`'s job.
 3. Stop and tell the user: "Plan needs revision. Run `/spek:plan <instructions>` to update the approach, then re-run `/spek:execute` to continue. I've recorded the correction in the log."
 
@@ -77,7 +77,7 @@ Long features can run out of conversation context before all tasks are complete.
 1. **Finish the current task cleanly.** Do NOT stop mid-edit. Reach a state where the on-disk code and `execution.md` both accurately reflect what's been done. If the current task can't be finished in the remaining context, back out what you started and leave the checkbox unchecked.
 2. **Append a pause-point entry to `execution.md`.** Make it unambiguous:
    ```
-   ## <timestamp> — Pausing for context reset
+   #### <timestamp> — Pausing for context reset
    Completed tasks 1–3. Task 4 not started. Source is clean;
    all changes reflected in this log and on disk. Resume with /spek:execute.
    ```
@@ -89,7 +89,7 @@ Long features can run out of conversation context before all tasks are complete.
 
 1. Read `execution.md`'s tail (last ~50 lines). The pause entry will be near the bottom.
 2. Read the Plan section. Identify the first unchecked task (this should match what the pause entry says).
-3. Append a `## <timestamp> — Resumed` entry with a one-line acknowledgment of where you're picking up.
+3. Append a `#### <timestamp> — Resumed` entry with a one-line acknowledgment of where you're picking up.
 4. Continue the main loop from that task.
 
 No special flag, no resume command, no state file to reconcile. The append-only log + unchecked checkboxes are the entire mechanism. This is what "the document is the state" was designed for.

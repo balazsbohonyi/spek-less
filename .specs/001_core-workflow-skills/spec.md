@@ -40,12 +40,12 @@ Key design decisions already made:
 
 ### Tasks
 
-- [x] 1. Implement `/spek:kickoff` — greenfield project PRD conversation, writes `project.md`
-- [x] 2. Implement `/spek:new` — creates skeleton spec folder, reads config + principles + project.md
-- [x] 3. Implement `/spek:discuss` — conversational Context + Discussion exploration with AskUserQuestion
-- [x] 4. Implement `/spek:plan` — writes Plan section with task breakdown + per-task details
-- [x] 5. Implement `/spek:execute` — executes plan task-by-task, ticks checkboxes, appends to execution.md
-- [x] 6. Implement `/spek:verify` — goal-backward verification, writes Verification section
+1. [x] Implement `/spek:kickoff` — greenfield project PRD conversation, writes `project.md`
+2. [x] Implement `/spek:new` — creates skeleton spec folder, reads config + principles + project.md
+3. [x] Implement `/spek:discuss` — conversational Context + Discussion exploration with AskUserQuestion
+4. [x] Implement `/spek:plan` — writes Plan section with task breakdown + per-task details
+5. [x] Implement `/spek:execute` — executes plan task-by-task, ticks checkboxes, appends to execution.md
+6. [x] Implement `/spek:verify` — goal-backward verification, writes Verification section
 
 ### Details
 

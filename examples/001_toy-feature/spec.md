@@ -36,10 +36,10 @@ Accessibility note: the toggle must be keyboard-navigable and the current state 
 
 ### Tasks
 
-- [x] 1. Add theme state module with localStorage persistence
-- [x] 2. Add theme toggle component to settings page
-- [x] 3. Initialize theme on app load (respect OS preference)
-- [x] 4. Add regression tests
+1. [x] Add theme state module with localStorage persistence
+2. [x] Add theme toggle component to settings page
+3. [x] Initialize theme on app load (respect OS preference)
+4. [x] Add regression tests
 
 ### Details
 

@@ -34,11 +34,11 @@ The application needs user authentication to protect private routes and personal
 
 ### Tasks
 
-- [x] 1. Create auth API client with cookie-based session handling
-- [x] 2. Build login page with form validation
-- [x] 3. Implement RequireAuth route guard component
-- [x] 4. Add session persistence check on app load
-- [x] 5. Write auth module tests
+1. [x] Create auth API client with cookie-based session handling
+2. [x] Build login page with form validation
+3. [x] Implement RequireAuth route guard component
+4. [x] Add session persistence check on app load
+5. [x] Write auth module tests
 
 ### Details
 

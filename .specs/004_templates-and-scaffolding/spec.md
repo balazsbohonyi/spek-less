@@ -45,11 +45,11 @@ Key decisions:
 
 ### Tasks
 
-- [x] 1. `spec.md.tmpl` — skeleton feature spec with frontmatter, all sections, HTML comment guidance
-- [x] 2. `execution.md.tmpl` — append-only log template with format examples in comments
-- [x] 3. `project.md.tmpl` — product vision template with all 7 sections + Initial Feature Set list
-- [x] 4. `config.yaml.tmpl` — config file with all 6 settings, inline documentation, `{{PLACEHOLDER}}` markers
-- [x] 5. `principles.md.tmpl` — principles template with `<e.g., ...>` placeholder bullets for 5 categories
+1. [x] `spec.md.tmpl` — skeleton feature spec with frontmatter, all sections, HTML comment guidance
+2. [x] `execution.md.tmpl` — append-only log template with format examples in comments
+3. [x] `project.md.tmpl` — product vision template with all 7 sections + Initial Feature Set list
+4. [x] `config.yaml.tmpl` — config file with all 6 settings, inline documentation, `{{PLACEHOLDER}}` markers
+5. [x] `principles.md.tmpl` — principles template with `<e.g., ...>` placeholder bullets for 5 categories
 
 ### Details
 

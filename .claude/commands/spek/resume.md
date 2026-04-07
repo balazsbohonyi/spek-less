@@ -16,9 +16,10 @@ This is NOT `/spek:status`. Status gives a broad overview of all features. Resum
 ## Reads
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
-2. **All `.specs/NNN_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
-3. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`) and `### Tasks` checkbox lines only.
-4. **`<feature>/execution.md`** (if exists) — last ~10 lines only.
+2. **`.specs/principles.md`** (if exists) — full file.
+3. **All `.specs/NNN_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
+4. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`) and `### Tasks` checkbox lines only.
+5. **`<feature>/execution.md`** (if exists) — last ~20 lines only.
 
 ## Current feature discovery
 
@@ -31,7 +32,7 @@ Same order as all workflow skills:
 ## Behavior
 
 1. Resolve the current feature.
-2. Read frontmatter, count checked (`- [x]`) vs total tasks, and read the execution log tail.
+2. Read frontmatter, count checked (`N. [x]`) vs total tasks, and read the execution log tail.
 3. Display a concise resume summary:
 
 ```

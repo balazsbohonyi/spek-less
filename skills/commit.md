@@ -19,7 +19,7 @@ This is a **convenience skill**, not a workflow step. The user invokes it whenev
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root` and `commit_style`. `commit_style` is one of: `plain` (default), `conventional`, or a free-text custom rule the installer captured. Empty / missing = treat as `plain`.
 2. **`.specs/principles.md`** (if exists) — full file. Principles **win over config** when they declare something more specific about commit messages (e.g. "prefix with [JIRA-xxx]"). Config is the baseline; principles override.
 3. **`<feature>/spec.md`** — frontmatter (`id`, `title`) plus `## Plan` → `### Tasks` only. Use Grep to find headers, then targeted Read. You need checkbox state and task titles, not `### Details`.
-4. **`<feature>/execution.md`** — tail (~80 lines, or back to the most recent `Committed` entry, whichever is shorter). This tells you what's new since the last commit.
+4. **`<feature>/execution.md`** — tail (~80 lines). This tells you what's been done recently.
 5. **Git state** — run via Bash:
    - `git status --short` (detect clean tree, staged vs unstaged split)
    - `git diff --stat` and `git diff --cached --stat` (file-level summary of changes)
@@ -66,7 +66,7 @@ If the user chooses to split: execute two sequential commits, each with its own 
 
 ### 4. Determine scope
 
-Read the execution log tail. Find the most recent `## <timestamp> — Committed <sha>:` entry (or the top of the log if there isn't one). Everything below that anchor is *uncommitted work*. Extract:
+Run `git log --oneline --follow -- <specs_root>/<feature>/` to find the most recent commit touching this feature's directory. Everything in execution.md *after* that commit's timestamp is *uncommitted work* (or everything, if there are no prior commits). Extract:
 
 - **Tasks that became checked** since the anchor (cross-reference `Task N complete` log entries with current checkbox state in the Plan).
 - **Verify-fix entries** since the anchor (log entries produced after a `/spek:verify` pass flagged issues).
@@ -155,22 +155,11 @@ EOF
 
 Capture the resulting short SHA: `git rev-parse --short HEAD`.
 
-### 10. Log back to execution.md
-
-Append exactly one entry:
-
-```
-## <YYYY-MM-DD HH:MM> — Committed <short-sha>: <subject line>
-```
-
-Keep it to one line of heading plus no body. The heading alone is enough for future `/spek:commit` runs to find the anchor.
-
-### 11. Output to the user
+### 10. Output to the user
 
 ```
 Committed <short-sha>: <subject>
 
-Logged to <feature>/execution.md.
 Next: <suggestion — /spek:execute to continue, /spek:verify if all tasks are done, or stop>.
 ```
 
@@ -200,9 +189,8 @@ The cue is in the log entries: look for headings like `Fix: <something>` or `Add
 
 ## Writes
 
-- **`execution.md`** — append exactly one `Committed` entry per successful commit. Never rewrite prior entries.
 - **Git commit** — exactly one, and only after explicit user confirmation.
-- **Nothing else.** No edits to `spec.md`, no edits to source files, no edits to config.
+- **Nothing else.** No edits to `execution.md`, no edits to `spec.md`, no edits to source files, no edits to config.
 
 ## Output to user
 
@@ -217,7 +205,7 @@ See step 11. Always end with a suggested next step.
 - **Never auto-stages silently.** Either the user staged first, or they explicitly approved staging this invocation.
 - **Never uses `git add .` or `git add -A`.** Use `git add -u` (tracked files only) to avoid accidentally committing secrets or untracked artifacts.
 - **Section-scoped reads.** No bulk-reads of `spec.md` or source files. The Plan's task list and the execution log tell you what happened.
-- **Append-only for `execution.md`.** Same rule as every other skill.
+- **Never writes to `execution.md`.** Commits are recorded in git history; the execution log is a work journal, not a commit log.
 - **No Claude Code attribution footer** in drafted messages. Users override this manually if they want attribution.
 - **Principles override config.** When `principles.md` declares a commit rule, it supersedes `commit_style` from config.
 - **Single feature per invocation by default.** Cross-feature diffs trigger an explicit confirmation.

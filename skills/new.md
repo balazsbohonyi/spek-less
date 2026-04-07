@@ -19,7 +19,7 @@ You are creating a new SpekLess feature spec folder. This is the lightest entry 
 3. **`.specs/project.md`** (if it exists) — optional. If present, the new feature's Context section should include a one-line reference back to the project vision so the connection is visible to readers.
 4. **`.specs/`** directory listing — to determine the next sequential feature number. Numbers are zero-padded to 3 digits. If the highest existing is `007_*/`, the new one is `008`. Gaps from deleted features are fine; do not backfill.
 
-## Actions
+## Behavior
 
 1. Derive a URL-safe slug from the title: lowercase, replace spaces and punctuation with hyphens, strip leading/trailing hyphens, max 40 chars.
 2. Create the folder `<specs_root>/NNN_<slug>/` (zero-padded number).
@@ -31,6 +31,13 @@ You are creating a new SpekLess feature spec folder. This is the lightest entry 
 4. If `project.md` exists, add a single line under the `## Context` heading of the new spec: `> Part of [**{{project_name}}**](../project.md).` (read `project.md`'s frontmatter `name` field for the project name).
 5. Do NOT create `execution.md` yet — that file is created by `/spek:execute` on its first run.
 6. Do NOT set `starting_sha` in frontmatter — that field is written by `/spek:execute`.
+
+## Writes
+
+- **`<specs_root>/NNN_<slug>/`** — new folder
+- **`<specs_root>/NNN_<slug>/spec.md`** — skeleton spec from template, with `## Context` stub (and project.md back-reference if applicable)
+- Does NOT create `execution.md` — that's `/spek:execute`'s job on first run
+- Does NOT touch any existing spec or source file
 
 ## Output to user
 
@@ -48,4 +55,5 @@ or /spek:plan if the feature is simple enough to plan directly.
 - This skill is non-interactive beyond asking for the title if missing. Do not ask clarifying questions about scope — that's `/spek:discuss`'s job.
 - Never overwrite an existing feature folder. If the derived slug collides (very rare), append `-2` to the slug.
 - Never spawn sub-agents.
+- **Idempotent within a session.** Running twice with the same title creates a second folder with a `-2` slug suffix rather than overwriting the first. The existing feature folder is never touched.
 - Section-scoped: you own the newly-created `spec.md`. Do not touch other files except to read them.

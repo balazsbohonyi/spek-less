@@ -48,10 +48,15 @@ This is a capability neither GSD nor SpecKit offers. It's the main reason SpekLe
      - `starting_sha:` set to the current git HEAD (short SHA). The diff baseline is "now," which means `/spek:verify` on an adopted feature becomes a documentation check rather than a diff check.
    - **`## Context`:** infer from the code's purpose, not from commit messages (commits may be noise). Write the "why" as you understand it from what the code does. If unsure, flag it: "The purpose here is inferred; confirm with the author."
    - **`## Discussion`:** write a brief section listing visible design decisions: what abstractions were chosen, what alternatives would have been plausible, what the code seems to explicitly NOT do. This is what a careful reader would say about the code, not what the original author thought.
-   - **`## Plan`:** **all tasks pre-checked** (`- [x]`). Break the work into retrospective tasks — "what would this plan have looked like if written up front?" Each task should map cleanly to a piece of the actual code. Include the Files and Approach fields per the template.
+   - **`## Plan`:** **all tasks pre-checked** (`N. [x]`). Break the work into retrospective tasks — "what would this plan have looked like if written up front?" Each task should map cleanly to a piece of the actual code. Include the Files and Approach fields per the template.
    - **`## Verification`:** leave empty. The user will run `/spek:verify` next.
 4. **Do not create `execution.md`.** Adopted features have no execution history — the work predates SpekLess. Leave it absent.
 5. **If `project.md` exists**, add the same `> Part of [**{{project_name}}**](../project.md).` link under `## Context` that `/spek:new` does.
+
+## Writes
+
+- **`<specs_root>/NNN_<slug>/spec.md`** — creates the feature folder and spec file, populated with inferred Context, Discussion, Plan (all tasks pre-checked), and empty Verification. Frontmatter `status: done`, `starting_sha:` set to current HEAD.
+- **Nothing else.** No `execution.md`, no source file edits, no config changes.
 
 ## Output to user
 

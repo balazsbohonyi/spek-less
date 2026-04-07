@@ -17,8 +17,8 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 ## Reads
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
-2. **`.specs/principles.md`** — not needed (this skill doesn't evaluate content against principles).
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines `- \[.\]`). Never read Context, Discussion, Details, or Verification.
+2. **`.specs/principles.md`** (if exists) — full file.
+3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines `^\d+\. \[.\]`). Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior
@@ -26,7 +26,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 ### All-features view (no argument)
 
 1. Scan `<specs_root>/` for directories matching `NNN_*/`.
-2. For each, read frontmatter (`id`, `title`, `status`, `part_of`) and count checked (`- [x]`) vs total (`- [ ]` + `- [x]`) tasks in `### Tasks`.
+2. For each, read frontmatter (`id`, `title`, `status`, `part_of`) and count checked (`N. [x]`) vs total (`N. [ ]` + `N. [x]`) tasks in `### Tasks`.
 3. Resolve the "current feature" using the standard discovery order (git branch → most recently modified → none).
 4. Display a table:
 

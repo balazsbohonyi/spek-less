@@ -38,10 +38,10 @@ Key decisions:
 
 ### Tasks
 
-- [x] 1. Implement `/spek:adopt` — retroactive spec creation for existing code, infers Context + Plan from files
-- [x] 2. Implement `/spek:resume` — session re-orientation from spec + execution.md tail, suggests next command
-- [x] 3. Implement `/spek:status` — reads all spec.md frontmatter, renders feature list with status indicators
-- [x] 4. Implement `/spek:commit` — reads spec + execution.md tail + git diff, drafts commit, confirms via AskUserQuestion
+1. [x] Implement `/spek:adopt` — retroactive spec creation for existing code, infers Context + Plan from files
+2. [x] Implement `/spek:resume` — session re-orientation from spec + execution.md tail, suggests next command
+3. [x] Implement `/spek:status` — reads all spec.md frontmatter, renders feature list with status indicators
+4. [x] Implement `/spek:commit` — reads spec + execution.md tail + git diff, drafts commit, confirms via AskUserQuestion
 
 ### Details
 

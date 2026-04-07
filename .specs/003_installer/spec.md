@@ -44,13 +44,13 @@ Key decisions:
 
 ### Tasks
 
-- [x] 1. Interactive prompt flow — ask namespace, specs_root, suggest_commits, subagent_threshold, project_hints, commit_style
-- [x] 2. `--defaults` / `-y` flag — skip all prompts, skip summary confirmation, auto-run `git init` if needed
-- [x] 3. Config generation — substitute placeholders in `config.yaml.tmpl` via sed, write to `.specs/config.yaml`
-- [x] 4. Skills installation — copy `skills/*.md` to `.claude/commands/<namespace>/`
-- [x] 5. Templates installation — copy `templates/` to `.specs/templates/` (always overwrite)
-- [x] 6. Idempotent re-run — skip existing `config.yaml` and `principles.md`; read existing config for prompt defaults
-- [x] 7. Windows / Git Bash compatibility — defensive quoting on all path variables
+1. [x] Interactive prompt flow — ask namespace, specs_root, suggest_commits, subagent_threshold, project_hints, commit_style
+2. [x] `--defaults` / `-y` flag — skip all prompts, skip summary confirmation, auto-run `git init` if needed
+3. [x] Config generation — substitute placeholders in `config.yaml.tmpl` via sed, write to `.specs/config.yaml`
+4. [x] Skills installation — copy `skills/*.md` to `.claude/commands/<namespace>/`
+5. [x] Templates installation — copy `templates/` to `.specs/templates/` (always overwrite)
+6. [x] Idempotent re-run — skip existing `config.yaml` and `principles.md`; read existing config for prompt defaults
+7. [x] Windows / Git Bash compatibility — defensive quoting on all path variables
 
 ### Details
 

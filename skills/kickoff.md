@@ -87,7 +87,7 @@ If option 3: skip scaffolding entirely.
 
 After the scaffolding offer (whether accepted or not), check `.specs/principles.md`:
 
-- If it does not exist, skip this section.
+- If it does not exist, offer via AskUserQuestion: "No `principles.md` found. Want me to create one now based on what we discussed?" If the user accepts, create the file from `templates/principles.md.tmpl` first, then proceed to fill it in via the questions below. If the user declines, skip.
 - If it exists and still contains template placeholder markers (detect by searching for `<e.g.` in the file content), offer via AskUserQuestion: "Your `principles.md` is still the template. Want me to help fill it in based on what we just discussed?"
 - If the user declines, skip.
 - If the user accepts, ask up to 5 targeted questions (one at a time), drawing on the project context you just gathered:
