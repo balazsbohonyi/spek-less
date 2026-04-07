@@ -263,3 +263,14 @@ Each of these is a real capability, but adding them to v1.0.0 blows up the MVP s
 - **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.sh` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
 
 When in doubt, read `docs/architecture.md` and check whether the change would contradict it. If yes, ask. If no, proceed.
+
+
+## SpekLess
+
+This project uses SpekLess for spec-first development.
+- **Config:** `.specs/config.yaml`
+- **Principles:** `.specs/principles.md` — read by every skill, constrains all plans and execution
+- **Feature specs:** `.specs/NNN_*/spec.md` — one living design doc per feature
+- **Skills:** `.claude/commands/spek/` — invoke as `/spek:new`, `/spek:adopt`, `/spek:discuss`, `/spek:plan`, `/spek:execute`, `/spek:verify`, `/spek:commit`, `/spek:status`, `/spek:resume`
+
+Workflow: `/spek:kickoff` (greenfield) or `/spek:new` (feature) → `/spek:discuss` → `/spek:plan` → `/spek:execute` → `/spek:verify`
