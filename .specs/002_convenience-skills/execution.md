@@ -29,3 +29,5 @@ renumbered items 3-5, and corrected execution.md tail from ~10 to ~20 lines.
 Changed `skills/status.md` Reads item 2 from "not needed (this skill doesn't evaluate
 content against principles)" to the standard `(if exists) — full file.` phrasing.
 
+## 2026-04-07 — Committed 9c41e6e: 002: Add convenience-skills spec with verification pass
+
