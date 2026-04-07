@@ -25,3 +25,5 @@ Renamed "Actions" → "Behavior", added `## Writes` section, added explicit idem
 ## 2026-04-07 — Started (verify-flagged fix run)
 
 All 6 Plan tasks were pre-checked (retroactive adopt). Running to address issues flagged by `/spek:verify`. Fixing: `new.md` convention gaps (3 issues), `kickoff.md` principles-building silent skip, `plan.md` undefined agent-type reference.
+
+## 2026-04-07 14:00 — Committed aeeb49f: 001: Add core-workflow-skills spec with verification
