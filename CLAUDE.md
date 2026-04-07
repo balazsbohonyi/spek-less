@@ -10,7 +10,7 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 
 SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
-- **Ten slash skills** in `skills/` — copied into a target project's `.claude/skills/<namespace>/` by the installer
+- **Ten slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
 - **Five templates** in `templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.sh`) — Bash script that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
@@ -122,7 +122,7 @@ description: <one-paragraph description — Claude Code reads this to decide whe
 <bulleted list of invariants this skill enforces — idempotency, section scope, no side effects, etc.>
 ```
 
-**Frontmatter format:** `name` uses `spek:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/skills/<ns>/`). Keep the `name` field as `spek:<skill>` as a reasonable default; if this proves wrong in practice (skills not discoverable under non-default namespaces), adjust here first.
+**Frontmatter format:** `name` uses `spek:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/commands/<ns>/`). Keep the `name` field as `spek:<skill>` as a reasonable default.
 
 **Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `/spek:new` description says "For greenfield projects use /spek:kickoff first. For retroactively documenting existing code use /spek:adopt." — this disambiguation is critical.
 
@@ -210,7 +210,7 @@ git init
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/skills/spek/       # should contain all 10 skill files
+ls -la .claude/commands/spek/     # should contain all 10 skill files
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow

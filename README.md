@@ -4,7 +4,7 @@
 
 SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of ten workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
-SpekLess ships today as **Claude Code skills** (the `.claude/skills/` convention). The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The slash-command mechanics and built-in sub-agent delegation (Explore, Plan) are Claude Code-specific in v1.0.0.
+SpekLess ships today as **Claude Code skills** (the `.claude/commands/` convention). The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The slash-command mechanics and built-in sub-agent delegation (Explore, Plan) are Claude Code-specific in v1.0.0.
 
 ---
 

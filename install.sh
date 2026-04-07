@@ -8,7 +8,7 @@
 # What it does:
 #   1. Asks a handful of configuration questions
 #   2. Writes .specs/config.yaml (per-project) and optionally ~/.claude/spek-config.yaml (global)
-#   3. Copies skills into .claude/skills/<namespace>/ or ~/.claude/skills/<namespace>/ or both
+#   3. Copies skills into .claude/commands/<namespace>/ or ~/.claude/commands/<namespace>/ or both
 #   4. Optionally creates .specs/principles.md from the template
 #   5. Copies templates to .specs/templates/ for runtime access by skills
 #   6. Writes a SpekLess section to CLAUDE.md (creates it if missing)
@@ -207,8 +207,8 @@ SPECS_ROOT=$(ask "Specs root directory (relative to project root)" "$DEFAULT_SPE
 
 echo
 echo "Install scope — where should the skills live?"
-echo "  1) Per-project only (.claude/skills/$NAMESPACE/) — skills only work in this project"
-echo "  2) Global only (~/.claude/skills/$NAMESPACE/) — skills work in all projects; per-project config still written here"
+echo "  1) Per-project only (.claude/commands/$NAMESPACE/) — skills only work in this project"
+echo "  2) Global only (~/.claude/commands/$NAMESPACE/) — skills work in all projects; per-project config still written here"
 echo "  3) Both — per-project wins when present"
 INSTALL_SCOPE=$(ask "Choice (1/2/3)" "1")
 
@@ -286,8 +286,8 @@ for tmpl_file in "$TEMPLATES_SRC"/*.tmpl; do
 done
 echo "Copied templates to $TEMPLATES_DEST/"
 
-PER_PROJECT_SKILLS_DIR=".claude/skills/$NAMESPACE"
-GLOBAL_SKILLS_DIR="$HOME/.claude/skills/$NAMESPACE"
+PER_PROJECT_SKILLS_DIR=".claude/commands/$NAMESPACE"
+GLOBAL_SKILLS_DIR="$HOME/.claude/commands/$NAMESPACE"
 
 install_skills_to() {
     local dest="$1"
@@ -396,7 +396,7 @@ This project uses SpekLess for spec-first development.
 - **Config:** \`$SPECS_ROOT/config.yaml\`
 - **Principles:** \`$SPECS_ROOT/principles.md\` — read by every skill, constrains all plans and execution
 - **Feature specs:** \`$SPECS_ROOT/NNN_*/spec.md\` — one living design doc per feature
-- **Skills:** \`.claude/skills/$NAMESPACE/\` — invoke as \`/$NAMESPACE:new\`, \`/$NAMESPACE:adopt\`, \`/$NAMESPACE:discuss\`, \`/$NAMESPACE:plan\`, \`/$NAMESPACE:execute\`, \`/$NAMESPACE:verify\`, \`/$NAMESPACE:commit\`, \`/$NAMESPACE:status\`, \`/$NAMESPACE:resume\`
+- **Skills:** \`.claude/commands/$NAMESPACE/\` — invoke as \`/$NAMESPACE:new\`, \`/$NAMESPACE:adopt\`, \`/$NAMESPACE:discuss\`, \`/$NAMESPACE:plan\`, \`/$NAMESPACE:execute\`, \`/$NAMESPACE:verify\`, \`/$NAMESPACE:commit\`, \`/$NAMESPACE:status\`, \`/$NAMESPACE:resume\`
 
 Workflow: \`/$NAMESPACE:kickoff\` (greenfield) or \`/$NAMESPACE:new\` (feature) → \`/$NAMESPACE:discuss\` → \`/$NAMESPACE:plan\` → \`/$NAMESPACE:execute\` → \`/$NAMESPACE:verify\`
 CLAUDEEOF
