@@ -23,7 +23,7 @@ You are creating a new SpekLess feature spec folder. This is the lightest entry 
 
 1. Derive a URL-safe slug from the title: lowercase, replace spaces and punctuation with hyphens, strip leading/trailing hyphens, max 40 chars.
 2. Create the folder `<specs_root>/NNN_<slug>/` (zero-padded number).
-3. Create `<specs_root>/NNN_<slug>/spec.md` from `<specs_root>/templates/spec.md.tmpl`, substituting:
+3. Create `<specs_root>/NNN_<slug>/spec.md` from `<specs_root>/_templates/spec.md.tmpl`, substituting:
    - `{{ID}}` → the zero-padded number
    - `{{TITLE}}` → the user's title (preserve case, strip surrounding quotes)
    - `{{DATE}}` → today's date in `YYYY-MM-DD` format

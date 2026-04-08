@@ -71,7 +71,7 @@ The installer asks:
 
 The installer also:
 - Detects if the directory is not a git repo and offers to run `git init`
-- Copies templates to `.specs/templates/` so skills can reference them at runtime
+- Copies templates to `.specs/_templates/` so skills can reference them at runtime
 - Writes a `## SpekLess` section to `CLAUDE.md` (created if missing) so every session has project context
 
 The installer is **idempotent and safe on existing projects**: re-running it preserves your features, config, and principles and only patches what's missing.

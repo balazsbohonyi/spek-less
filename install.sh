@@ -10,7 +10,7 @@
 #   2. Writes .specs/config.yaml (per-project) and optionally ~/.claude/spek-config.yaml (global)
 #   3. Copies skills into .claude/commands/<namespace>/ or ~/.claude/commands/<namespace>/ or both
 #   4. Optionally creates .specs/principles.md from the template
-#   5. Copies templates to .specs/templates/ for runtime access by skills
+#   5. Copies templates to .specs/_templates/ for runtime access by skills
 #   6. Writes a SpekLess section to CLAUDE.md (creates it if missing)
 #
 # Idempotent: re-running preserves existing features, config, and principles.
@@ -36,11 +36,11 @@ esac
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SKILLS_SRC="$SCRIPT_DIR/skills"
-TEMPLATES_SRC="$SCRIPT_DIR/templates"
+TEMPLATES_SRC="$SCRIPT_DIR/_templates"
 
 if [ ! -d "$SKILLS_SRC" ] || [ ! -d "$TEMPLATES_SRC" ]; then
-    echo "ERROR: Cannot find skills/ or templates/ next to install.sh"
-    echo "Expected layout: $SCRIPT_DIR/{skills,templates}/"
+    echo "ERROR: Cannot find skills/ or _templates/ next to install.sh"
+    echo "Expected layout: $SCRIPT_DIR/{skills,_templates}/"
     exit 1
 fi
 
@@ -279,7 +279,7 @@ banner "Installing"
 mkdir -p "$SPECS_ROOT"
 
 # Copy templates for runtime access by skills
-TEMPLATES_DEST="$SPECS_ROOT/templates"
+TEMPLATES_DEST="$SPECS_ROOT/_templates"
 mkdir -p "$TEMPLATES_DEST"
 for tmpl_file in "$TEMPLATES_SRC"/*.tmpl; do
     cp "$tmpl_file" "$TEMPLATES_DEST/"

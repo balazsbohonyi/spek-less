@@ -54,7 +54,7 @@ No custom agent types are defined in v1.0.0. The "verifier" behavior is a prompt
 ├── config.yaml          # per-project framework config (written by installer)
 ├── principles.md        # project constitution — HOW we build, read by every skill
 ├── project.md           # product vision / PRD — WHAT & WHY, read by skills as context (optional)
-├── templates/          # framework templates (copied by installer, overwritten on re-install)
+├── _templates/         # framework templates (copied by installer, overwritten on re-install)
 ├── 001_<slug>/
 │   ├── spec.md          # living design doc
 │   └── execution.md     # append-only work journal
@@ -223,7 +223,7 @@ spek-less/
 │   ├── commit.md                           # convenience: drafted commit message + commit on confirm
 │   ├── status.md                           # convenience: feature status at a glance (read-only)
 │   └── resume.md                           # convenience: resume guidance after break/reset (read-only)
-├── templates/
+├── _templates/
 │   ├── spec.md.tmpl
 │   ├── execution.md.tmpl
 │   ├── project.md.tmpl

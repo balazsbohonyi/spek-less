@@ -11,7 +11,7 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
 - **Ten slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
-- **Five templates** in `templates/` — used by skills and the installer to scaffold feature docs and config
+- **Five templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.sh`) — Bash script that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
@@ -70,7 +70,7 @@ spek-less/
 │   ├── commit.md                           #   convenience: drafted commits
 │   ├── status.md                           #   convenience: feature status (read-only)
 │   └── resume.md                           #   convenience: resume after break/reset (read-only)
-├── templates/                              # scaffolding templates
+├── _templates/                            # scaffolding templates
 │   ├── spec.md.tmpl
 │   ├── execution.md.tmpl
 │   ├── project.md.tmpl
@@ -132,7 +132,7 @@ description: <one-paragraph description — Claude Code reads this to decide whe
 
 ## Template file conventions
 
-Templates in `templates/` are plain markdown/yaml with `{{PLACEHOLDER}}` markers. The installer (`install.sh`) and the skills substitute placeholders using `sed` or inline string replacement.
+Templates in `_templates/` are plain markdown/yaml with `{{PLACEHOLDER}}` markers. The installer (`install.sh`) and the skills substitute placeholders using `sed` or inline string replacement.
 
 Current placeholders:
 - `{{ID}}`, `{{TITLE}}`, `{{DATE}}` — used in `spec.md.tmpl`
@@ -149,7 +149,7 @@ Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans e
 ## Installer conventions (`install.sh`)
 
 - **Zero dependencies beyond standard POSIX utilities.** No `jq`, no `yq`, no `python`. Use `sed`, `grep`, `awk`, `cp`, `mkdir`.
-- **Idempotent on existing projects.** Re-running must preserve existing `.specs/config.yaml`, `.specs/principles.md`, and all feature folders. When a file already exists, either skip it or read it for defaults — never silently overwrite. The `templates/` directory is the exception — it is always overwritten with the latest framework templates on re-install.
+- **Idempotent on existing projects.** Re-running must preserve existing `.specs/config.yaml`, `.specs/principles.md`, and all feature folders. When a file already exists, either skip it or read it for defaults — never silently overwrite. The `_templates/` directory is the exception — it is always overwritten with the latest framework templates on re-install.
 - **Per-project config is sovereign.** If both per-project and global configs exist, per-project wins. The installer writes per-project by default.
 - **`--defaults` / `-y` flag.** Passing either flag at invocation skips all prompts (using the defaults), skips the summary confirmation, and runs non-interactively. If the directory is not a git repo, it also auto-runs `git init` without asking. Useful for scripted setups and quick trials.
 - **All prompts have sensible defaults.** A user pressing Enter at every prompt should get a working install with reasonable choices.
