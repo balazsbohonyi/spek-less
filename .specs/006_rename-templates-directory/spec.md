@@ -2,7 +2,7 @@
 id: 006
 title: Rename templates directory
 status: done
-part_of:
+part_of: SpekLess
 starting_sha: 4369cf8
 created: 2026-04-08
 tags: []
