@@ -28,7 +28,9 @@ You are creating a new SpekLess feature spec folder. This is the lightest entry 
    - `{{TITLE}}` → the user's title (preserve case, strip surrounding quotes)
    - `{{DATE}}` → today's date in `YYYY-MM-DD` format
    The created spec will have `status: created` in its frontmatter.
-4. If `project.md` exists, add a single line under the `## Context` heading of the new spec: `> Part of [**{{project_name}}**](../project.md).` (read `project.md`'s frontmatter `name` field for the project name).
+4. If `project.md` exists, read its frontmatter `name` field and:
+   - Set `part_of: <project_name>` in the new spec's frontmatter.
+   - Add a single line under the `## Context` heading: `> Part of [**{{project_name}}**](../project.md).`
 5. Do NOT create `execution.md` yet — that file is created by `/spek:execute` on its first run.
 6. Do NOT set `starting_sha` in frontmatter — that field is written by `/spek:execute`.
 

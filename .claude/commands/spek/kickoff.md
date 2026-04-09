@@ -76,6 +76,7 @@ Options:
 If the user selects option 1:
 
 - For each candidate feature, create `.specs/NNN_<slug>/` with a skeleton `spec.md` (same way `/spek:new` does).
+- Set `part_of: <project_name>` in each scaffolded spec's frontmatter (use the `name:` field from `project.md`).
 - Each scaffolded spec.md's `## Context` section gets a one-line reference back to `project.md`: `> Part of [**<project_name>**](../project.md). See "Initial Feature Set" for one-line scope.`
 - Do NOT run `/spek:discuss` or `/spek:plan` on the scaffolded features — that's for the user to do next.
 

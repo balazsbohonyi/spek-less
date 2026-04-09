@@ -39,10 +39,10 @@ Same order as all workflow skills:
 Resuming 003: Add dark mode toggle
 Status: executing  (2 / 4 tasks done)
 
-  [x] 1. Create theme state module
-  [x] 2. Build ThemeSelect component
-  [ ] 3. Apply theme on app load
-  [ ] 4. Write regression tests
+  1. [x] Create theme state module
+  2. [x] Build ThemeSelect component
+  3. [ ] Apply theme on app load
+  4. [ ] Write regression tests
 
 Last log entry:
   ## 2026-04-05 09:40 — Task 2 complete

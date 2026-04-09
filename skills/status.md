@@ -18,7 +18,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines matching `\d+\. \[.\]` — handles both `N. [x] Title` and `- [x] N. Title` formats). Never read Context, Discussion, Details, or Verification.
+3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines matching `\d+\. \[.\]` — matches `N. [x] Title` and `N. [ ] Title`). Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior
@@ -59,10 +59,10 @@ Feature status:
 003: Add dark mode toggle
 Status: executing
 Tasks:
-  [x] 1. Create theme state module
-  [x] 2. Build ThemeSelect component
-  [ ] 3. Apply theme on app mount
-  [ ] 4. Write integration tests
+  1. [x] Create theme state module
+  2. [x] Build ThemeSelect component
+  3. [ ] Apply theme on app mount
+  4. [ ] Write integration tests
 
 Last log entry:
   ## 2026-04-05 09:22 — Task 2 complete

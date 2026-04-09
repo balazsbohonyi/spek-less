@@ -49,7 +49,7 @@ If `execution.md` exists and contains completed work:
 3. Write the new Plan so that:
    - Completed tasks remain in the task list with `[x]` checkboxes preserved
    - Changed tasks are re-evaluated — if the change is substantive, reset the checkbox to `[ ]`; if the title and approach are unchanged, keep the checkbox as-is
-   - New tasks added by the replan get fresh `[ ]` boxes
+   - New tasks added by the replan get fresh `[ ]` boxes (format: `N. [ ] Title`)
 4. Your rewrite must make sense read linearly alongside the execution log — a reader should see "these three tasks were done under the old plan, then direction changed, here are the remaining tasks."
 
 ## Writes
