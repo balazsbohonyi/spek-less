@@ -46,7 +46,7 @@ This is a capability neither GSD nor SpecKit offers. It's the main reason SpekLe
      - `id`, `title`, `created`: as normal
      - `status: done` (the work is already done — this is retroactive)
      - `starting_sha:` set to the current git HEAD (short SHA). The diff baseline is "now," which means `/spek:verify` on an adopted feature becomes a documentation check rather than a diff check.
-     - `part_of: <project_name>` if `project.md` exists (read its frontmatter `name` field).
+     - `part_of: <name-value>` if `project.md` exists — read its frontmatter `name` field (a plain string like `SpekLess`); use the string value, NOT a file path.
    - **`## Context`:** infer from the code's purpose, not from commit messages (commits may be noise). Write the "why" as you understand it from what the code does. If unsure, flag it: "The purpose here is inferred; confirm with the author."
    - **`## Discussion`:** write a brief section listing visible design decisions: what abstractions were chosen, what alternatives would have been plausible, what the code seems to explicitly NOT do. This is what a careful reader would say about the code, not what the original author thought.
    - **`## Plan`:** **all tasks pre-checked** (`N. [x]`). Break the work into retrospective tasks — "what would this plan have looked like if written up front?" Each task should map cleanly to a piece of the actual code. Include the Files and Approach fields per the template.
