@@ -36,6 +36,14 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 - Architecture changes cascade: update `docs/architecture.md` first, then skills, then examples, then README.
 - Examples in `examples/` are canonical output — not aspirational. Keep them in sync with what real workflow runs produce.
 
+## Sync Rule
+
+- Whenever any file in `skills/` or `_templates/` is created or modified, replicate the change to every installed copy that exists:
+  - `.claude/commands/spek/` (project-local install, in this repo)
+  - `~/.claude/commands/spek/` (global install, if the directory exists)
+- Check for existence before copying — do not create the directory if it isn't already there.
+- This sync is mandatory, not optional. A change to `skills/new.md` that isn't reflected in `.claude/commands/spek/new.md` means the running skills and the source diverge.
+
 ## Security
 
 - No secrets in skill files or templates. All per-project configuration lives in `.specs/config.yaml`.
