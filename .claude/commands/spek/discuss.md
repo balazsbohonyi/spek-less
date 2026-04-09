@@ -43,6 +43,16 @@ Ask one question at a time. Recommend an answer to each question based on contex
 
 Use the **AskUserQuestion tool** for choice-between-options questions (e.g., "localStorage vs user profile vs hybrid?"). Use plain conversation for open-ended prompts.
 
+**Watch for project-wide principles during the conversation.** While discussing the feature, notice when a decision clearly transcends this feature and should apply everywhere. Signals: language like "we always want X", "never do Y", "this is a hard rule", or any constraint the user frames as universal rather than feature-specific. Track these candidates silently — do not interrupt the discussion flow to announce them. If no clear signals appear, skip the principles step entirely.
+
+**At the end of the discussion — after writing Context + Discussion to `spec.md` (steps 1–3 of Writes) — if at least one candidate was noticed and `principles.md` exists:**
+
+1. Draft each candidate as a concrete, testable principle in the style of existing entries (e.g., "Skill files stay under ~300 lines." not "Keep files short.").
+2. Present all candidates at once via a single `AskUserQuestion`. Show the drafted text for each and ask which to add. Let the user edit the text inline — if they supply a revised version, use that.
+3. Append confirmed principles to `principles.md` (see Writes step 4).
+
+If `principles.md` does not exist, skip silently — do not create it.
+
 ## Writes (section-scoped)
 
 When the user signals the discussion is done (or you've reached the natural end):
@@ -58,11 +68,14 @@ Do NOT touch `## Plan` or `## Verification`. Those belong to other skills.
 
 3. Update frontmatter `status:` to `discussing` if it was `created` or blank, or leave as-is if it's already further along (re-runs of discuss after planning are legitimate and shouldn't regress status).
 
+4. **Conditionally append to `principles.md`** — only if: (a) `principles.md` exists, (b) at least one candidate was noticed during the conversation, and (c) the user confirmed at least one via AskUserQuestion. Append confirmed principles to the most relevant existing section (Code Style, Architecture, Testing, Documentation, Security). If no section clearly fits, append under a new section heading at the end. Use the exact text the user supplied if they edited the draft; otherwise use the drafted text. Never restructure or rewrite existing content in `principles.md`.
+
 ## Output to user
 
 End with a short summary:
 - What Context/Discussion now say (2-3 lines)
 - Any principle concerns you noticed
+- If principles were appended: how many and to which section of `principles.md`
 - Suggested next step: usually `/spek:plan`
 
 ## Hard rules
@@ -72,3 +85,4 @@ End with a short summary:
 - **Idempotent.** Re-running rewrites Discussion in full. Context is rewritten only if something in it changed.
 - **Principles-aware.** If you notice the emerging direction conflicts with a principle in `principles.md`, flag it explicitly during the conversation before writing to Discussion.
 - **One question at a time.** Do not dump a list of 10 questions. The user will answer the most important one and forget the rest.
+- **`principles.md` writes are strictly conditional.** Only append when: the file already exists, at least one project-wide candidate was noticed, and the user explicitly confirmed via AskUserQuestion. Never create `principles.md`. Never rewrite or restructure existing content — append only.
