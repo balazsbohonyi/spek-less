@@ -18,7 +18,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines `^\d+\. \[.\]`). Never read Context, Discussion, Details, or Verification.
+3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines matching `\d+\. \[.\]` — handles both `N. [x] Title` and `- [x] N. Title` formats). Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior

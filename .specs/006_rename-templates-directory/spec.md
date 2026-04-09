@@ -37,23 +37,16 @@ Renaming `templates/` → `_templates/` in the SpekLess repo (and therefore in t
 
 ## Plan
 
-<!--
-Written by /spek:plan. Fully rewritten on re-run, EXCEPT checkbox state in ### Tasks,
-which /spek:execute owns.
--->
-
 ### Tasks
 
-<!-- One checkbox per atomic unit of work. /spek:execute ticks these as they complete. -->
-
-- [x] 1. Rename source directory `templates/` → `_templates/`
-- [x] 2. Update installer (`install.sh`)
-- [x] 3. Update skills (`kickoff.md`, `new.md`) and installed copies
-- [x] 4. Update contributor docs (`CLAUDE.md`, `docs/architecture.md`)
-- [x] 5. Update user-facing docs (`README.md`)
-- [x] 6. Update completed feature specs (003, 004)
-- [x] 7. Smoke test: run installer with --defaults in /tmp and verify _templates/ lands correctly
-- [x] 8. Rename dogfooding project's installed `.specs/templates/` → `.specs/_templates/`
+1. [x] Rename source directory `templates/` → `_templates/`
+2. [x] Update installer (`install.sh`)
+3. [x] Update skills (`kickoff.md`, `new.md`) and installed copies
+4. [x] Update contributor docs (`CLAUDE.md`, `docs/architecture.md`)
+5. [x] Update user-facing docs (`README.md`)
+6. [x] Update completed feature specs (003, 004)
+7. [x] Smoke test: run installer with --defaults in /tmp and verify _templates/ lands correctly
+8. [x] Rename dogfooding project's installed `.specs/templates/` → `.specs/_templates/`
 
 ### Details
 
