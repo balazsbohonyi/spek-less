@@ -18,7 +18,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter (via Grep for `^---` boundaries) and the `### Tasks` subsection (via Grep for checkbox lines matching `\d+\. \[.\]` — matches `N. [x] Title` and `N. [ ] Title`). Never read Context, Discussion, Details, or Verification.
+3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter and the `### Tasks` subsection. **Each spec file must be Grep'd individually** — one Grep call per file, scoped to that file's path. Never use a single Grep across all spec files; results bleed across files and the per-feature counts will be wrong. Match checkbox lines with `\d+\. \[.\]` (total) and `\d+\. \[x\]` (done). Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior
@@ -26,7 +26,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 ### All-features view (no argument)
 
 1. Scan `<specs_root>/` for directories matching `NNN_*/`.
-2. For each, read frontmatter (`id`, `title`, `status`, `part_of`) and count checked (`N. [x]`) vs total (`N. [ ]` + `N. [x]`) tasks in `### Tasks`.
+2. For each feature directory, make a **separate Grep call scoped to that feature's `spec.md`** to count checkbox lines. Do NOT use a single bulk Grep across all spec files — results will bleed across features. Concretely: for each `<specs_root>/NNN_<slug>/spec.md`, grep that file individually for lines matching `\d+\. \[.\]` to get total, and `\d+\. \[x\]` to get done count. Extract `id`, `title`, `status`, `part_of` from that same file's frontmatter.
 3. Resolve the "current feature" using the standard discovery order (git branch → most recently modified → none).
 4. Display a table:
 
@@ -84,3 +84,4 @@ The table or detail view described above, plus a suggested next step.
 - **No sub-agents.** The reads are lightweight (frontmatter + checkbox lines); sub-agents would be wasteful.
 - **Section-scoped reads.** Never read Context, Discussion, Details, or Verification sections. Frontmatter and checkbox lines are all you need.
 - **No interaction.** Display the status and stop. Do not ask clarifying questions — the only ambiguity is which feature, and current-feature discovery handles that.
+- **Per-file Grep, never bulk.** Task counts MUST come from individual Grep calls scoped to each `spec.md`. A bulk Grep across all spec files will produce wrong counts — only the last file's tasks will be attributed correctly.
