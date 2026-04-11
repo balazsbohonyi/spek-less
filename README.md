@@ -21,7 +21,7 @@ SpekLess is the minimal system that keeps the good parts and cuts the rest:
 - **One living `spec.md` per feature.** Reads like an RFC. Sections for Context, Discussion, Plan, Verification. Everything about a feature is in one place.
 - **Append-only `execution.md` work journal.** A human-readable narrative of what was actually done, stored alongside the spec. Replaces atomic commit discipline without forcing you to commit on anyone else's rhythm.
 - **Flat feature list.** No milestones-inside-phases-inside-tasks hierarchy. Big work decomposes into sibling docs via a single `part_of:` frontmatter field.
-- **Ten skills, not thirty subagents.** A single main agent drives everything via slash-commands; sub-agents are used *only* as context firewalls for broad codebase reads, never as pipeline steps.
+- **Ten skills, not thirty subagents.** A single main agent drives everything via slash-commands; sub-agents are used *only* as context firewalls for broad codebase reads, never as pipeline steps. This solves a real problem multi-agent pipelines struggle with: *inter-agent amnesia*. When you spawn a PlanAgent after a DiscussAgent, the planner only knows what got serialized into a file — the *why* behind decisions is gone. SpekLess keeps one conversation alive across all steps, so context accumulates continuously and you can intervene at any point without re-briefing a new agent from scratch.
 - **Free intervention.** The document *is* the state. There's no STATE.md, no checkpoint files, no locked step order. Edit any section, re-run any skill, at any time.
 
 ---

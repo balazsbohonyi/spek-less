@@ -37,13 +37,9 @@ Before making non-trivial changes, read in this order:
 
 These invariants are what SpekLess *is*. If you're about to change one, stop and think hard — you're either fixing a bug or changing the identity of the framework.
 
-1. **Single-agent topology.** One main conversation drives everything. Sub-agents are used *only* as context firewalls: Explore for broad codebase reads, Plan for optional architectural critique of a drafted plan, general-purpose for fresh-lens verify. Never create a new agent role per workflow step — that's the GSD failure mode SpekLess exists to avoid.
+1–4. See `.specs/principles.md` → **Architecture** section. The four canonical rules (single-agent topology, section ownership, document-as-state, append-only log) live there.
 
-2. **Section ownership is the core rule.** Each skill owns exactly one section of `spec.md` and rewrites it idempotently. The *one* exception is `/spek:execute` ticking checkboxes in `## Plan` → `### Tasks`. No other exceptions.
-
-3. **The document is the state.** No STATE.md. No lockfiles. No checkpoint machinery. If you need to know "where is this feature," read the sections. If you're about to create a new metadata file, stop.
-
-4. **Append-only execution log.** `execution.md` is never rewritten. Course corrections, plan revisions, verify fixes — all append new entries.
+   Keep the main conversation alive across all steps. Sub-agents may be spawned only as read-only context helpers (Explore, Plan for critique, general-purpose for fresh-lens verify) — never as owners of a workflow step. Each sub-agent reads, returns a result, and exits. Spawning a new agent per step breaks continuity: prior decisions become invisible to the next agent, which forces complex state serialization and makes the workflow hard to debug.
 
 5. **Skills are idempotent.** Re-running any skill must produce correct output from the current on-disk state, without assuming the skill authored the existing content. This makes manual editing a first-class intervention path.
 
@@ -84,6 +80,7 @@ spek-less/
 │       └── spec.md                         # no execution.md — work predates SpekLess
 └── docs/
     ├── architecture.md                     # authoritative design reference
+    ├── maintenance.md                      # agent instructions for editing the framework
     └── comparison-with-gsd-and-speckit.md  # why certain things are / are not in SpekLess
 ```
 
@@ -91,139 +88,47 @@ spek-less/
 
 ## Skill file conventions
 
-Every file in `skills/` follows this shape:
-
-```markdown
----
-name: spek:<skill-name>
-description: <one-paragraph description — Claude Code reads this to decide when the skill is relevant>
----
-
-# /spek:<skill-name> — <short tagline>
-
-<1-2 paragraphs: what this skill does and when to invoke it>
-
-## Inputs
-<what arguments / context the skill expects>
-
-## Reads (section-scoped)
-<exactly which files and which sections the skill reads — be specific about section-scoped reads vs whole-file reads>
-
-## Behavior
-<what the skill actually does, including decision points and sub-agent delegation rules>
-
-## Writes
-<what files/sections the skill modifies — be explicit about what it does NOT touch>
-
-## Output to user
-<what the skill tells the user at the end — always include a suggested next step>
-
-## Hard rules
-<bulleted list of invariants this skill enforces — idempotency, section scope, no side effects, etc.>
-```
-
-**Frontmatter format:** `name` uses `spek:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/commands/<ns>/`). Keep the `name` field as `spek:<skill>` as a reasonable default.
-
-**Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `/spek:new` description says "For greenfield projects use /spek:kickoff first. For retroactively documenting existing code use /spek:adopt." — this disambiguation is critical.
-
-**Length budget:** skill files should be **under ~300 lines** each. These are instructions Claude reads in-context, not documentation. Cut anything that isn't load-bearing. If a skill file is getting too long, the skill is probably doing too much — consider splitting.
+Skills follow a standard shape: frontmatter, then sections Inputs / Reads / Behavior / Writes / Output to user / Hard rules. See [`docs/maintenance.md`](docs/maintenance.md#skill-file-conventions) for the full template, frontmatter rules, and length budget.
 
 ---
 
 ## Template file conventions
 
-Templates in `_templates/` are plain markdown/yaml with `{{PLACEHOLDER}}` markers. The installer (`install.js`) substitutes these via `String.prototype.replace`; skills substitute their own inline.
-
-Current placeholders:
-- `{{ID}}`, `{{TITLE}}`, `{{DATE}}` — used in `spec.md.tmpl`
-- `{{PROJECT_NAME}}`, `{{DATE}}` — used in `project.md.tmpl`
-- `{{TITLE}}` — used in `execution.md.tmpl`
-- `{{NAMESPACE}}`, `{{SPECS_ROOT}}`, `{{SUGGEST_COMMITS}}`, `{{SUBAGENT_THRESHOLD}}`, `{{PROJECT_HINTS}}`, `{{COMMIT_STYLE}}` — used in `config.yaml.tmpl`
-
-When adding a new placeholder, update both the template and the code that substitutes it. The installer uses `String.prototype.replace(new RegExp('{{KEY}}', 'g'), value)` — no `sed`, no delimiter issues.
-
-Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans editing the resulting files. Do not convert these to visible text — they're meant to disappear from rendered output.
+Templates use `{{PLACEHOLDER}}` markers substituted via `String.prototype.replace`. See [`docs/maintenance.md`](docs/maintenance.md#template-file-conventions) for the current placeholder list and substitution rules.
 
 ---
 
 ## Installer conventions (`install.js`)
 
-- **Zero runtime dependencies.** `install.js` is a single CommonJS file that uses only Node.js built-ins (`fs`, `path`, `os`, `readline`, `child_process`). No `npm`, no `node_modules`, no `package.json`.
-- **Node.js 14 LTS minimum.** Uses the callback-based `readline.createInterface` API (not `readline/promises`, which requires Node 17+).
-- **Idempotent on existing projects.** Re-running must preserve existing `.specs/config.yaml`, `.specs/principles.md`, and all feature folders. When a file already exists, either skip it or read it for defaults — never silently overwrite. The `_templates/` directory is the exception — it is always overwritten with the latest framework templates on re-install.
-- **Per-project config is sovereign.** If both per-project and global configs exist, per-project wins. The installer writes per-project by default.
-- **`--defaults` / `-y` flag.** Passing either flag at invocation skips all prompts (using the defaults), skips the summary confirmation, and runs non-interactively. Useful for scripted setups and quick trials.
-- **All prompts have sensible defaults.** A user pressing Enter at every prompt should get a working install with reasonable choices.
-- **Platform guards.** On startup, the installer detects WSL + Windows-native Node.js (where `process.execPath` starts with `/mnt/`) and exits with a clear error message pointing the user to `nvm`. Gracefully skips global install if `os.homedir()` returns null.
+The installer is CommonJS, zero-deps, Node 14+, and idempotent on re-run. See [`docs/maintenance.md`](docs/maintenance.md#installer-conventions) for the full constraint list.
 
 ---
 
 ## Making changes
 
+See [`docs/maintenance.md`](docs/maintenance.md#making-changes) for the step-by-step checklists for each change type.
+
 ### Adding a new skill
 
-1. Decide whether the new skill is genuinely needed, or whether an existing skill should be extended. **Default to extending.** New skills expand the surface area users have to learn.
-2. Read `skills/new.md` as a structural template.
-3. Create `skills/<name>.md` following the skill file conventions above.
-4. Update `README.md` (the skills table — update count accordingly) and `docs/architecture.md` (add to the ownership / behavior sections).
-5. Update `install.js` only if the new skill needs special installation handling — it shouldn't, because the installer copies `skills/*.md` generically.
-6. Update `docs/comparison-with-gsd-and-speckit.md` if the new capability changes the feature matrix.
+After confirming with the user that the new skill is warranted (see [When to ask](#when-to-ask-the-user-vs-just-do-it)), follow the checklist in `docs/maintenance.md`.
 
 ### Modifying an existing skill
 
-1. Read the skill's current file in full. Skills have load-bearing details in the "Hard rules" section that are easy to accidentally break.
-2. Check `docs/architecture.md` for invariants the skill enforces.
-3. Make the edit.
-4. **Smoke test manually** (see below).
-5. If the edit changes externally-visible behavior, update the README walkthrough that covers this skill.
+Read the skill in full first — the "Hard rules" section is load-bearing. Then follow the checklist in `docs/maintenance.md`.
 
 ### Changing a template
 
-1. Search for the template filename across `skills/` and `install.js` to find all consumers.
-2. If you add a placeholder, add the substitution in every consumer.
-3. Run the installer against a scratch directory to verify the generated config looks right.
-4. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` — several skills use `Grep "^## "` to find section boundaries.
+Several skills use `Grep "^## "` to find section boundaries in `spec.md` — a structure change cascades to every skill that reads it. See `docs/maintenance.md` for the full checklist.
 
 ### Changing the architecture
 
-1. Edit `docs/architecture.md` first.
-2. Then edit the affected skills.
-3. Then update the worked example in `examples/001_toy-feature/` so it still matches what real runs would produce.
-4. Then update README.
-5. Then update `docs/comparison-with-gsd-and-speckit.md` if the feature matrix changes.
-
-Architecture changes are the slowest kind of change to make correctly — budget time for the cascade.
+Edit `docs/architecture.md` first, then cascade to skills → examples → README → comparison doc. See `docs/maintenance.md` for the full sequence.
 
 ---
 
 ## Manual smoke test
 
-SpekLess has no automated test suite in v1.0.0. The smoke test is:
-
-```bash
-# 1. Create a scratch project
-mkdir /tmp/spek-less-smoke && cd /tmp/spek-less-smoke
-git init
-
-# 2. Run the installer
-node /path/to/spek-less/install.js
-# Press Enter at every prompt to accept defaults.
-
-# 3. Verify the install
-ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/commands/spek/     # should contain all 10 skill files
-cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
-
-# 4. Start Claude Code in the scratch project and run a workflow
-#    /spek:new "add a greeting endpoint"
-#    /spek:discuss
-#    /spek:plan
-#    /spek:execute
-#    /spek:verify
-# Confirm each step writes to the correct section and respects the hard rules.
-```
-
-**Before committing a non-trivial change, run at least steps 1-3 of the smoke test.** Skipping this has caused `sed` substitution bugs in the past.
+Before committing a non-trivial change, run the smoke test in [`docs/maintenance.md`](docs/maintenance.md#manual-smoke-test).
 
 ---
 
@@ -243,18 +148,7 @@ Do **not** use machine-generated commits (no Claude Code attribution footers in 
 
 ## Things that are deliberately missing from v1.0.0
 
-When working on SpekLess, resist the temptation to add these — they're on the post-v1.0.0 list for a reason:
-
-- `/spek:archive` — convenience skill for archiving completed features
-- Execution log compaction
-- Custom `spec-verifier` sub-agent type
-- Git hook integration
-- Contract tests / OpenAPI extension
-- Standalone CLI beyond the installer
-- Wave-based parallel execution
-- Coverage auditing (Nyquist-style)
-
-Each of these is a real capability, but adding them to v1.0.0 blows up the MVP surface area before real usage has surfaced which ones actually matter.
+See [What's deliberately missing](docs/architecture.md#whats-deliberately-missing-from-v100) in architecture.md — resist adding these.
 
 ---
 
@@ -264,7 +158,6 @@ Each of these is a real capability, but adding them to v1.0.0 blows up the MVP s
 - **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.js` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
 
 When in doubt, read `docs/architecture.md` and check whether the change would contradict it. If yes, ask. If no, proceed.
-
 
 ## SpekLess
 
