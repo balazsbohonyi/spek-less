@@ -21,7 +21,7 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 ## Architecture
 
 - **Single-agent topology.** One main conversation drives everything. Sub-agents are context firewalls only: Explore for broad codebase reads, Plan for optional plan critique, general-purpose for fresh-lens verification. Never create a new agent role per workflow step.
-- **Section ownership is strict.** Each skill owns exactly one section of `spec.md` and rewrites it idempotently. The only exception is `/spek:execute` ticking checkboxes in `## Plan → ### Tasks`. No other exceptions.
+- **Section ownership is strict.** Each section has exactly one write-owning skill that rewrites it idempotently. Checkbox-ticking by a downstream skill is the allowed narrow exception: `/spek:execute` ticks checkboxes in `## Plan → ### Tasks`, and `/spek:verify` ticks checkboxes in `## Assumptions`.
 - **The document is the state.** No STATE.md, no lockfiles, no checkpoint files. If you need to know where a feature is, read the spec sections.
 - **Append-only execution log.** `execution.md` is never rewritten. Course corrections and plan revisions append new entries.
 

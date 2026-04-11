@@ -32,6 +32,12 @@ For the toggle UI, considered a `<select>` with light/dark/system vs a simple bi
 
 Accessibility note: the toggle must be keyboard-navigable and the current state must be announced by screen readers. Using a native `<select>` gives us this for free.
 
+## Assumptions
+
+- [x] The app's existing CSS custom properties cover all color values (no hardcoded hex colors in components that would need per-theme overrides)
+- [x] `localStorage` is available in all target browsers (no private-browsing restrictions that would silently fail writes)
+- [x] `window.matchMedia` is available in all target environments (not a server-side render context)
+
 ## Plan
 
 ### Tasks
@@ -81,4 +87,14 @@ All four tasks complete. Verified against Plan:
 - Tests colocated as `*.test.ts`: ✓
 - No new async operations, so Result-typed return rule doesn't apply here
 
-**No issues flagged.** Feature is ready to ship.
+**Assumptions check:**
+- CSS custom properties cover all color values: ✓ confirmed — grep found no hardcoded hex colors in modified components
+- `localStorage` available in target browsers: ✓ confirmed — state module writes succeed in test environment; no silent-fail path needed
+- `window.matchMedia` available: ✓ confirmed — jsdom stub present in tests; guarded with existence check in `app.ts`
+
+**Goal check:** Goal achieved — users can toggle between light, dark, and system themes from the settings page; choice persists in `localStorage`; first load respects `prefers-color-scheme` via the matchMedia listener. All three stated success criteria met. Out-of-scope items (custom themes, per-component overrides, high-contrast mode) untouched.
+
+**Issues found:**
+None.
+
+**Status:** READY_TO_SHIP

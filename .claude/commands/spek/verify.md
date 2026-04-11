@@ -16,7 +16,7 @@ You are verifying that a feature actually achieves its goal. Your mindset is **g
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file. Every principle is a thing to check.
 3. **`.specs/project.md`** (if exists) — only the Scope and Success Metrics sections. Use Grep + offset Read.
-4. **`<feature>/spec.md`** — read `## Context` (for the goal), `## Plan` (for what was promised), and skip `## Discussion` (not needed for verification).
+4. **`<feature>/spec.md`** — read `## Context` (for the goal), `## Assumptions` (if present, for what was taken as given), and `## Plan` (for what was promised). Skip `## Discussion` (not needed for verification).
 5. **`<feature>/execution.md`** — full file. This is your primary narrative source.
 6. **`git diff <starting_sha>..HEAD`** — the actual changes. Run this via Bash. This is your primary technical source.
 7. **Source files** — only ones referenced in the diff or flagged as suspect. Never bulk-read.
@@ -53,6 +53,7 @@ For simple features (1-3 tasks), verify inline in the main conversation.
 4. **Test coverage.** If the Plan included tests, were they written? Do they actually exercise the new code path, or are they token placeholders?
 5. **Obvious bugs.** Null/undefined handling at boundaries, off-by-one, missing error paths, resource leaks. Do not go on a fishing expedition — check the kinds of things that realistically slip past execute.
 6. **Regression risk.** Did the diff touch anything outside the Plan's declared files? If so, is the touch justified?
+7. **Assumption check.** For each `- [ ]` entry in `## Assumptions`: does the diff or the touched source files confirm the assumption held? Mark `[x]` directly in `spec.md`'s `## Assumptions` for confirmed. For assumptions that can't be verified from the diff (e.g., scale limits, third-party guarantees), append `<!-- unverifiable: <reason> -->` inline and leave the checkbox `[ ]` — do not tick silently.
 
 ## Writes
 
@@ -70,6 +71,10 @@ For simple features (1-3 tasks), verify inline in the main conversation.
 - <principle name>: ✓ / ⚠ / ✗ — <evidence>
 ...
 
+**Assumptions check:** *(omit section if `## Assumptions` is absent or has no checkbox entries — a comment-only section counts as empty)*
+- <assumption text>: ✓ confirmed / ⚠ unverifiable — <one-line evidence or reason>
+...
+
 **Goal check:** <one paragraph: does the implementation achieve Context's stated goal? Any gaps against Success Metrics?>
 
 **Issues found:**
@@ -77,6 +82,8 @@ For simple features (1-3 tasks), verify inline in the main conversation.
 
 **Status:** READY_TO_SHIP | ISSUES_TO_FIX | INCOMPLETE
 ```
+
+After writing the Verification section, if `## Assumptions` is present and has checkbox entries, tick confirmed assumptions directly in `spec.md`'s `## Assumptions` section: replace `- [ ]` with `- [x]` for each confirmed entry. For unverifiable assumptions, append `<!-- unverifiable: <reason> -->` on the same line and leave `[ ]`. This is the only write to a section not named `## Verification` — permitted by the checkbox-ticking exception in `principles.md`.
 
 Update frontmatter `status:` to `done` if READY_TO_SHIP, otherwise leave as `verifying`.
 
@@ -101,7 +108,7 @@ Do NOT proceed to fix issues yourself. Do NOT modify source code under any circu
 ## Hard rules
 
 - **Strictly read-only for source code.** You never write, edit, or delete source files. Full stop.
-- **Section-scoped writes.** Only `## Verification` is yours. Never touch Context, Discussion, Plan, or execution.md.
+- **Section-scoped writes.** `## Verification` is your primary write target. The one exception: tick checkboxes in `## Assumptions` (permitted by the checkbox-ticking exception in `principles.md`). Never touch Context, Discussion, Plan, or execution.md.
 - **Idempotent.** Re-running fully rewrites Verification based on current state.
 - **Fresh lens.** For non-trivial features, delegate to a general-purpose sub-agent. Do not rationalize the main conversation's prior execution.
 - **Goal-backward.** Start from Context's goal, not from execute's activity log. Activity is not achievement.

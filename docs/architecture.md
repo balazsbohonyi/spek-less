@@ -9,7 +9,7 @@ This document is the refined design reference for SpekLess.
 These are the foundational commitments every other decision follows from:
 
 1. **The document is the state.** No separate state files, no lockfiles, no checkpoint machinery. The presence and content of sections within `spec.md` and `execution.md` is the entire representation of "where is this feature."
-2. **Skills are idempotent and section-scoped.** Each skill owns exactly one section of the spec. Re-running a skill rewrites that section in full from the current inputs. The one exception is `/spek:execute`, which is append-only for `execution.md` and may tick checkboxes in the Plan's task list.
+2. **Skills are idempotent and section-scoped.** Each skill owns exactly one section of the spec. Re-running a skill rewrites that section in full from the current inputs. Two narrow exceptions exist: `/spek:execute` may tick checkboxes in the `## Plan` task list, and `/spek:verify` may tick checkboxes in `## Assumptions`. Both are execution-state writes, not content rewrites — see the exceptions section below.
 3. **Sub-agents are context firewalls, not workflow roles.** SpekLess does not have a "planner agent" or a "reviewer agent." It has a main conversation that invokes sub-agents only to absorb large reads and return distilled summaries — preserving the main context.
 4. **Workflow is a menu, not a pipeline.** The four workflow skills (`discuss`, `plan`, `execute`, `verify`) have a natural order but no enforced sequence. Any skill is skippable. Any skill is re-enterable. Mid-execute course correction is just "run `/spek:plan` again, then `/spek:execute` again" — no special intervention mode.
 5. **Human-readable documents first.** Spec files are written to be read by humans as design docs, not as machine state. Fragmenting a feature across many files would optimize for tooling at the expense of readability.
@@ -73,6 +73,7 @@ Features are numbered sequentially and prefixed with a zero-padded integer. Numb
 | Frontmatter (YAML) | shared — each skill can update its relevant fields | `status` advances; `starting_sha` written once by `/spek:execute`; other fields stable after creation |
 | `## Context` | `/spek:new` (skeleton), `/spek:discuss` (fills) | Rewritten by `/spek:discuss` only when the problem/goal/constraints shift |
 | `## Discussion` | `/spek:discuss` | Fully rewritten on every `/spek:discuss` run |
+| `## Assumptions` | `/spek:discuss` (writes); `/spek:verify` (ticks checkboxes only) | Written by `/spek:discuss` at the close of the assumptions conversation; checkbox state ticked by `/spek:verify` on each run — see exceptions section |
 | `## Plan` → `### Tasks` | `/spek:plan` owns titles/structure; `/spek:execute` owns checkbox state | `/spek:plan` rewrites titles/structure; on rewrite, checkbox state is preserved for unchanged tasks and reset for changed ones |
 | `## Plan` → `### Details` | `/spek:plan` | Fully rewritten on every `/spek:plan` run |
 | `## Verification` | `/spek:verify` | Fully rewritten on every `/spek:verify` run |
@@ -102,15 +103,19 @@ Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may writ
 
 ---
 
-## The single section-ownership exception
+## Section-ownership exceptions
 
-There is exactly one place where strict section ownership is relaxed:
+There are exactly two places where strict section ownership is relaxed:
 
 > `/spek:execute` may tick checkboxes in the `### Tasks` subsection of `## Plan` as it completes tasks. Everything else in `## Plan` is owned by `/spek:plan`.
 
-This carve-out exists because checkboxes are **execution state**, not plan content. Without it, either (a) checkbox state would have to live in a separate file (breaking "the document is the state"), or (b) `/spek:execute` would need a more complex mechanism to signal completion.
+> `/spek:verify` may tick checkboxes in `## Assumptions` as it confirms each assumption held. Everything else in `## Assumptions` is owned by `/spek:discuss`.
+
+Both carve-outs exist for the same reason: checkboxes in these sections represent **execution state** (work done / assumptions confirmed), not section content. Without the exceptions, either (a) that state would have to live in a separate file (breaking "the document is the state"), or (b) the owning skill would need to re-run just to mark progress.
 
 When `/spek:plan` re-runs, it **preserves checkbox state for unchanged tasks** and **resets checkboxes for changed tasks**. A task is considered "unchanged" if its title and approach are substantively the same; cosmetic edits (rewording) preserve the checkbox.
+
+When `/spek:verify` runs, it ticks confirmed assumptions in-place and leaves unverifiable ones as `[ ]` with an inline `<!-- unverifiable: <reason> -->` comment.
 
 ---
 

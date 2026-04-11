@@ -30,6 +30,18 @@ The application needs user authentication to protect private routes and personal
 
 **What the code explicitly does NOT do:** there is no token refresh mechanism. Sessions expire when the cookie expires (24h, set in `src/auth/config.ts`). No refresh token, no silent renewal. This is a simplicity choice that works for the current user base but would need revisiting for longer sessions.
 
+## Assumptions
+
+<!--
+Written by /spek:discuss. Things taken as given before building — external service
+behavior, data contracts, scale limits, third-party availability.
+Checkboxes ticked [x] by /spek:verify when confirmed in the implementation.
+Unverifiable assumptions are flagged explicitly rather than left silently unchecked.
+
+This feature was adopted via /spek:adopt — no /spek:discuss pass was run,
+so assumptions were not captured. Add them manually if needed.
+-->
+
 ## Plan
 
 ### Tasks

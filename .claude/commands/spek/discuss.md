@@ -1,6 +1,6 @@
 ---
 name: spek:discuss
-description: Conversational exploration of a feature — ambiguity detection, alternatives, key decisions. Writes Context and Discussion sections. Use after /spek:new when the approach isn't obvious, or whenever the direction needs rethinking. Safe to re-run.
+description: Conversational exploration of a feature — ambiguity detection, alternatives, key decisions. Writes Context, Discussion, and Assumptions sections. Use after /spek:new when the approach isn't obvious, or whenever the direction needs rethinking. Safe to re-run.
 ---
 
 # /spek:discuss — Explore the feature conversationally
@@ -16,7 +16,7 @@ You are running a focused discussion to populate the `## Context` and `## Discus
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root` and `project_hints`.
 2. **`.specs/principles.md`** (if exists) — entire file. Use to frame conversation and flag principle-related concerns.
 3. **`.specs/project.md`** (if exists) — entire file. Use Problem/Vision/Scope sections as background.
-4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section. Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` — they're irrelevant to this step and add tokens.
+4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section + `## Assumptions` section (if present). Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` — they're irrelevant to this step and add tokens.
 
 ## Current feature discovery
 
@@ -45,6 +45,8 @@ Use the **AskUserQuestion tool** for choice-between-options questions (e.g., "lo
 
 **Watch for project-wide principles during the conversation.** While discussing the feature, notice when a decision clearly transcends this feature and should apply everywhere. Signals: language like "we always want X", "never do Y", "this is a hard rule", or any constraint the user frames as universal rather than feature-specific. Track these candidates silently — do not interrupt the discussion flow to announce them. If no clear signals appear, skip the principles step entirely.
 
+**At the natural close of discussion** (all questions resolved, direction clear), before writing, ask: *"Any assumptions worth writing down before you build? Think: external service behavior, data contracts, scale limits, third-party availability."* This is a lightweight prompt, not a formal gate. If the user has none, the section is written empty (comment only). Collect each assumption as a one-line statement.
+
 **At the end of the discussion — after writing Context + Discussion to `spec.md` (steps 1–3 of Writes) — if at least one candidate was noticed and `principles.md` exists:**
 
 1. Draft each candidate as a concrete, testable principle in the style of existing entries (e.g., "Skill files stay under ~300 lines." not "Keep files short.").
@@ -66,9 +68,11 @@ When the user signals the discussion is done (or you've reached the natural end)
 
 Do NOT touch `## Plan` or `## Verification`. Those belong to other skills.
 
-3. Update frontmatter `status:` to `discussing` if it was `created` or blank, or leave as-is if it's already further along (re-runs of discuss after planning are legitimate and shouldn't regress status).
+3. Write `## Assumptions` section. One `- [ ]` line per assumption stated by the user. If the user had none, write the section with only the HTML comment (no placeholder line — the template placeholder is for skeleton specs, not discuss output). Rewrite the section if it already exists (re-runs are safe).
 
-4. **Conditionally append to `principles.md`** — only if: (a) `principles.md` exists, (b) at least one candidate was noticed during the conversation, and (c) the user confirmed at least one via AskUserQuestion. Append confirmed principles to the most relevant existing section (Code Style, Architecture, Testing, Documentation, Security). If no section clearly fits, append under a new section heading at the end. Use the exact text the user supplied if they edited the draft; otherwise use the drafted text. Never restructure or rewrite existing content in `principles.md`.
+4. Update frontmatter `status:` to `discussing` if it was `created` or blank, or leave as-is if it's already further along (re-runs of discuss after planning are legitimate and shouldn't regress status).
+
+5. **Conditionally append to `principles.md`** — only if: (a) `principles.md` exists, (b) at least one candidate was noticed during the conversation, and (c) the user confirmed at least one via AskUserQuestion. Append confirmed principles to the most relevant existing section (Code Style, Architecture, Testing, Documentation, Security). If no section clearly fits, append under a new section heading at the end. Use the exact text the user supplied if they edited the draft; otherwise use the drafted text. Never restructure or rewrite existing content in `principles.md`.
 
 ## Output to user
 
@@ -86,3 +90,4 @@ End with a short summary:
 - **Principles-aware.** If you notice the emerging direction conflicts with a principle in `principles.md`, flag it explicitly during the conversation before writing to Discussion.
 - **One question at a time.** Do not dump a list of 10 questions. The user will answer the most important one and forget the rest.
 - **`principles.md` writes are strictly conditional.** Only append when: the file already exists, at least one project-wide candidate was noticed, and the user explicitly confirmed via AskUserQuestion. Never create `principles.md`. Never rewrite or restructure existing content — append only.
+- **Section ownership.** Discuss owns `## Context`, `## Discussion`, and `## Assumptions`. Do NOT touch `## Plan`, `## Verification`, or `execution.md`.
