@@ -41,7 +41,7 @@ This choice is the single largest token-cost difference between SpekLess and GSD
 | `/spek:adopt` | **Explore** (built-in) | When the user supplies a broad scope ("the auth module") rather than specific files. |
 | `/spek:verify` | **general-purpose** (built-in) | For non-trivial features (more than ~5 tasks or large diffs). The fresh sub-agent conversation is the mechanism behind "fresh lens." |
 
-No custom agent types are defined in v1.0.0. The "verifier" behavior is a prompt pattern applied to the general-purpose sub-agent, not a new agent class. If the pattern proves unreliable in practice, a dedicated `spec-verifier` sub-agent can be added post-v1.0.0 without disturbing the core design.
+SpekLess uses three Claude Code built-in agent types — no custom types are defined. `Explore` is read-only (no Edit/Write tools) and best for codebase mapping. `Plan` is the architectural analysis agent, suitable for critiquing a drafted plan. `general-purpose` has full tool access and handles complex multi-step reasoning tasks like fresh-lens verification. **Portability note:** these `subagent_type` names are Claude Code-specific. Codex CLI and OpenCode have no equivalent named types — porting SpekLess to another tool requires mapping each role to that tool's agent primitive, using the prose description in each skill as the guide.
 
 ---
 

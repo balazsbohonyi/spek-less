@@ -38,7 +38,7 @@ Rule of thumb: 3–8 tasks for a typical feature. Fewer than 3 means the feature
 
 If the user chooses decomposition, outline the proposed sibling specs and stop — do not write the current Plan section. The user will run `/spek:new` for each sibling, then plan them individually.
 
-**Self-validation (optional but recommended for non-trivial features):** after drafting the plan, you may delegate a review pass to a **general-purpose sub-agent** with the draft plan, Context, Discussion, and principles as inputs. It critiques — you then revise before writing. This replaces GSD's plan-checker at a fraction of the cost. Skip for simple features.
+**Self-validation (optional but recommended for non-trivial features):** after drafting the plan, you may delegate a review pass to a **Plan sub-agent** with the draft plan, Context, Discussion, and principles as inputs. It critiques — you then revise before writing. This replaces GSD's plan-checker at a fraction of the cost. Skip for simple features.
 
 ## Mid-execute replanning (IMPORTANT)
 

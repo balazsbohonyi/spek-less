@@ -37,7 +37,7 @@ Before making non-trivial changes, read in this order:
 
 These invariants are what SpekLess *is*. If you're about to change one, stop and think hard — you're either fixing a bug or changing the identity of the framework.
 
-1. **Single-agent topology.** One main conversation drives everything. Sub-agents are used *only* as context firewalls for broad reads (Explore for codebase mapping, general-purpose for fresh-lens verify). Never create a new agent role per workflow step — that's the GSD failure mode SpekLess exists to avoid.
+1. **Single-agent topology.** One main conversation drives everything. Sub-agents are used *only* as context firewalls: Explore for broad codebase reads, Plan for optional architectural critique of a drafted plan, general-purpose for fresh-lens verify. Never create a new agent role per workflow step — that's the GSD failure mode SpekLess exists to avoid.
 
 2. **Section ownership is the core rule.** Each skill owns exactly one section of `spec.md` and rewrites it idempotently. The *one* exception is `/spek:execute` ticking checkboxes in `## Plan` → `### Tasks`. No other exceptions.
 
