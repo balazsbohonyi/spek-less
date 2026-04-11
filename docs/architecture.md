@@ -210,7 +210,7 @@ This is the full list of files:
 
 ```
 spek-less/
-├── install.sh                              # interactive installer
+├── install.js                              # Node.js installer (CommonJS, zero deps)
 ├── README.md                               # user-facing introduction + walkthroughs
 ├── skills/
 │   ├── kickoff.md                          # greenfield entry point

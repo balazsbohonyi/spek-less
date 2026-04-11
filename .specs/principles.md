@@ -28,7 +28,7 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 ## Testing
 
 - Manual smoke test only in v1 (see CLAUDE.md for procedure). No automated test suite.
-- Before committing a non-trivial change, run at least steps 1–3 of the smoke test: create a scratch git repo, run `install.sh`, verify no `{{PLACEHOLDER}}` strings remain in generated files.
+- Before committing a non-trivial change, run at least steps 1–3 of the smoke test: create a scratch git repo, run `node install.js`, verify no `{{PLACEHOLDER}}` strings remain in generated files.
 
 ## Documentation
 
@@ -47,4 +47,4 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 ## Security
 
 - No secrets in skill files or templates. All per-project configuration lives in `.specs/config.yaml`.
-- Values containing `|` break the installer's `sed` substitution (it uses `|` as the delimiter). Avoid `|` in installer prompt values, or strip it before substitution.
+- The installer uses `String.prototype.replace` for placeholder substitution — no `sed`, no delimiter issues. Values can contain any characters.

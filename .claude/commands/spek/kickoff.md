@@ -15,7 +15,7 @@ This is NOT a feature spec. Do not write Plan/Execution sections. Do not create 
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — confirms SpekLess is installed. If neither config file exists, stop and point the user at `install.sh`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — confirms SpekLess is installed. If neither config file exists, stop and point the user at `node install.js`.
 2. **`.specs/principles.md`** (if exists) — some principles may shape the vision (e.g. "self-hosted only").
 3. **`.specs/project.md`** (if exists) — this is a re-run. Read it fully. Your job is to EVOLVE it, not start from scratch.
 4. **`.specs/*/spec.md`** frontmatter (if any features already exist) — read just frontmatter via Grep. Use to keep the "Initial Feature Set" checkboxes in sync with reality.

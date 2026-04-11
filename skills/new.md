@@ -14,7 +14,7 @@ You are creating a new SpekLess feature spec folder. This is the lightest entry 
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — to get `specs_root` and confirm SpekLess is installed. If neither config file exists, tell the user SpekLess hasn't been installed yet and point them at `install.sh`. Stop.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — to get `specs_root` and confirm SpekLess is installed. If neither config file exists, tell the user SpekLess hasn't been installed yet and point them at `node install.js`. Stop.
 2. **`.specs/principles.md`** (if it exists) — optional, for context when writing the initial Context stub.
 3. **`.specs/project.md`** (if it exists) — optional. If present, the new feature's Context section should include a one-line reference back to the project vision so the connection is visible to readers.
 4. **`.specs/`** directory listing — to determine the next sequential feature number. Numbers are zero-padded to 3 digits. If the highest existing is `007_*/`, the new one is `008`. Gaps from deleted features are fine; do not backfill.

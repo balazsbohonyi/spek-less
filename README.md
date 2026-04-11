@@ -49,13 +49,13 @@ SpekLess is a set of Claude Code skills and an installer. Clone or download this
 ```bash
 git clone https://github.com/balazsbohonyi/spek-less.git /path/to/spek-less
 cd /path/to/your/project
-/path/to/spek-less/install.sh
+node /path/to/spek-less/install.js
 ```
 
 Pass `--defaults` (or `-y`) to skip all prompts and accept default values non-interactively:
 
 ```bash
-/path/to/spek-less/install.sh --defaults
+node /path/to/spek-less/install.js --defaults
 ```
 
 The installer asks:
@@ -117,7 +117,7 @@ You're starting a new product. You have an idea but no code.
 
 ```bash
 cd /path/to/new/empty/repo
-/path/to/spek-less/install.sh       # say yes to creating principles.md
+node /path/to/spek-less/install.js       # say yes to creating principles.md
 ```
 
 In Claude Code:

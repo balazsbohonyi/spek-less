@@ -12,11 +12,11 @@ SpekLess is a lightweight, Claude Code–native spec-driven development framewor
 
 - **Ten slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
 - **Five templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
-- **One installer** (`install.sh`) — Bash script that asks configuration questions and sets up a project
+- **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
 
-There is **no runtime code** beyond `install.sh`. The skills are markdown files read by Claude Code. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by `sed` from the installer.
+There is **no runtime code** beyond `install.js`. The skills are markdown files read by Claude Code. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by the installer via `String.prototype.replace`.
 
 ---
 
@@ -59,7 +59,7 @@ These invariants are what SpekLess *is*. If you're about to change one, stop and
 
 ```
 spek-less/
-├── install.sh                              # Bash installer (zero deps)
+├── install.js                              # Node.js installer (CommonJS, zero deps)
 ├── README.md                               # user-facing intro
 ├── CLAUDE.md                               # this file — for working ON SpekLess
 ├── LICENSE                                 # MIT
@@ -132,7 +132,7 @@ description: <one-paragraph description — Claude Code reads this to decide whe
 
 ## Template file conventions
 
-Templates in `_templates/` are plain markdown/yaml with `{{PLACEHOLDER}}` markers. The installer (`install.sh`) and the skills substitute placeholders using `sed` or inline string replacement.
+Templates in `_templates/` are plain markdown/yaml with `{{PLACEHOLDER}}` markers. The installer (`install.js`) substitutes these via `String.prototype.replace`; skills substitute their own inline.
 
 Current placeholders:
 - `{{ID}}`, `{{TITLE}}`, `{{DATE}}` — used in `spec.md.tmpl`
@@ -140,20 +140,21 @@ Current placeholders:
 - `{{TITLE}}` — used in `execution.md.tmpl`
 - `{{NAMESPACE}}`, `{{SPECS_ROOT}}`, `{{SUGGEST_COMMITS}}`, `{{SUBAGENT_THRESHOLD}}`, `{{PROJECT_HINTS}}`, `{{COMMIT_STYLE}}` — used in `config.yaml.tmpl`
 
-When adding a new placeholder, update both the template and the code that substitutes it. The installer's `sed` calls use `|` as the delimiter, so values containing `|` will break — avoid them in prompts or escape explicitly.
+When adding a new placeholder, update both the template and the code that substitutes it. The installer uses `String.prototype.replace(new RegExp('{{KEY}}', 'g'), value)` — no `sed`, no delimiter issues.
 
 Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans editing the resulting files. Do not convert these to visible text — they're meant to disappear from rendered output.
 
 ---
 
-## Installer conventions (`install.sh`)
+## Installer conventions (`install.js`)
 
-- **Zero dependencies beyond standard POSIX utilities.** No `jq`, no `yq`, no `python`. Use `sed`, `grep`, `awk`, `cp`, `mkdir`.
+- **Zero runtime dependencies.** `install.js` is a single CommonJS file that uses only Node.js built-ins (`fs`, `path`, `os`, `readline`, `child_process`). No `npm`, no `node_modules`, no `package.json`.
+- **Node.js 14 LTS minimum.** Uses the callback-based `readline.createInterface` API (not `readline/promises`, which requires Node 17+).
 - **Idempotent on existing projects.** Re-running must preserve existing `.specs/config.yaml`, `.specs/principles.md`, and all feature folders. When a file already exists, either skip it or read it for defaults — never silently overwrite. The `_templates/` directory is the exception — it is always overwritten with the latest framework templates on re-install.
 - **Per-project config is sovereign.** If both per-project and global configs exist, per-project wins. The installer writes per-project by default.
-- **`--defaults` / `-y` flag.** Passing either flag at invocation skips all prompts (using the defaults), skips the summary confirmation, and runs non-interactively. If the directory is not a git repo, it also auto-runs `git init` without asking. Useful for scripted setups and quick trials.
+- **`--defaults` / `-y` flag.** Passing either flag at invocation skips all prompts (using the defaults), skips the summary confirmation, and runs non-interactively. Useful for scripted setups and quick trials.
 - **All prompts have sensible defaults.** A user pressing Enter at every prompt should get a working install with reasonable choices.
-- **Quoting matters on Windows.** This installer is expected to run under Git Bash on Windows as well as Linux/macOS. Quote path variables defensively (`"$PROJECT_ROOT"`, not `$PROJECT_ROOT`).
+- **Platform guards.** On startup, the installer detects WSL + Windows-native Node.js (where `process.execPath` starts with `/mnt/`) and exits with a clear error message pointing the user to `nvm`. Gracefully skips global install if `os.homedir()` returns null.
 
 ---
 
@@ -165,7 +166,7 @@ Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans e
 2. Read `skills/new.md` as a structural template.
 3. Create `skills/<name>.md` following the skill file conventions above.
 4. Update `README.md` (the skills table — update count accordingly) and `docs/architecture.md` (add to the ownership / behavior sections).
-5. Update `install.sh` only if the new skill needs special installation handling — it shouldn't, because the installer copies `skills/*.md` generically.
+5. Update `install.js` only if the new skill needs special installation handling — it shouldn't, because the installer copies `skills/*.md` generically.
 6. Update `docs/comparison-with-gsd-and-speckit.md` if the new capability changes the feature matrix.
 
 ### Modifying an existing skill
@@ -178,7 +179,7 @@ Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans e
 
 ### Changing a template
 
-1. Search for the template filename across `skills/` and `install.sh` to find all consumers.
+1. Search for the template filename across `skills/` and `install.js` to find all consumers.
 2. If you add a placeholder, add the substitution in every consumer.
 3. Run the installer against a scratch directory to verify the generated config looks right.
 4. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` — several skills use `Grep "^## "` to find section boundaries.
@@ -205,7 +206,7 @@ mkdir /tmp/spek-less-smoke && cd /tmp/spek-less-smoke
 git init
 
 # 2. Run the installer
-/path/to/spek-less/install.sh
+node /path/to/spek-less/install.js
 # Press Enter at every prompt to accept defaults.
 
 # 3. Verify the install
@@ -260,7 +261,7 @@ Each of these is a real capability, but adding them to v1.0.0 blows up the MVP s
 ## When to ask the user vs just do it
 
 - **Just do it:** typo fixes, comment clarifications, template placeholder additions, skill "Hard rules" tightening, adding a section to the example.
-- **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.sh` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
+- **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.js` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
 
 When in doubt, read `docs/architecture.md` and check whether the change would contradict it. If yes, ask. If no, proceed.
 

@@ -16,7 +16,7 @@ Existing solutions (GSD, SpecKit, manual ADRs) either introduce too much orchest
 
 SpekLess becomes the default lightweight spec discipline for solo developers using Claude Code. Every feature starts with a two-minute spec conversation. The AI stays on-target through planning, execution, and verification without the developer re-explaining context. When work pauses, the spec is the handoff — readable by the next Claude Code session, or by the developer themselves in six months.
 
-The framework is so small it disappears: a handful of markdown skill files, a Bash installer, and a `.specs/` folder in every project.
+The framework is so small it disappears: a handful of markdown skill files, a Node.js installer, and a `.specs/` folder in every project.
 
 ## Users & Use Cases
 
@@ -42,7 +42,7 @@ The framework is so small it disappears: a handful of markdown skill files, a Ba
 ### In Scope
 
 - **10 Claude Code skills** (`kickoff`, `new`, `adopt`, `discuss`, `plan`, `execute`, `verify`, `commit`, `status`, `resume`) shipped as markdown files in `skills/`
-- **Bash installer** (`install.sh`) that sets up SpekLess in any git repo with zero non-POSIX dependencies
+- **Node.js installer** (`install.js`) that sets up SpekLess in any git repo — single CommonJS file, zero npm dependencies
 - **5 templates** scaffolding `spec.md`, `execution.md`, `project.md`, `config.yaml`, and `principles.md`
 - **2 worked examples** showing the full greenfield workflow and the retroactive adopt workflow
 - **Architecture and comparison documentation** in `docs/`
@@ -53,14 +53,14 @@ The framework is so small it disappears: a handful of markdown skill files, a Ba
 - Multi-agent orchestration or wave-based parallel execution (GSD-style complexity)
 - CI/CD and git hook integration (auto-spec validation in pipelines)
 - Coverage auditing (Nyquist-style test coverage baked into workflow)
-- Standalone CLI or binary beyond `install.sh`
+- Standalone CLI or binary beyond `install.js`
 - IDE plugins or editor integrations
 - Team collaboration features (shared spec reviews, PR-linked specs)
 
 ## Constraints
 
 - **Claude Code-native only.** Skills are markdown files read by Claude Code. No runtime, no build step, no separate tooling required.
-- **Zero non-POSIX installer dependencies.** `install.sh` uses only `sed`, `grep`, `awk`, `cp`, `mkdir`. No `jq`, `yq`, `python`, or `node`.
+- **Zero npm dependencies.** `install.js` uses only Node.js built-ins (`fs`, `path`, `os`, `readline`). Requires Node.js 14 LTS or later.
 - **Windows / Git Bash compatible.** The installer and all skills must work on Windows under Git Bash, not just Linux/macOS. Path quoting and newline handling must be defensive.
 - **Single-agent topology.** The framework must not require or encourage multi-agent orchestration — one main conversation drives everything.
 - **Solo maintainer.** No CI pipeline, no automated tests in v1. Changes are validated by manual smoke test against a scratch project.
@@ -74,6 +74,6 @@ lightweight backlog — the single source of truth for "what are we building rig
 
 - [x] 001: Core workflow skills — The six primary skills (kickoff, new, discuss, plan, execute, verify) that constitute the full spec-first workflow
 - [x] 002: Convenience skills — The four supporting skills (commit, status, resume, adopt) that complete the developer experience
-- [x] 003: Installer — install.sh with full interactive prompts, `--defaults` flag, and idempotent re-run behavior
+- [x] 003: Installer — install.js with full interactive prompts, `--defaults` flag, and idempotent re-run behavior
 - [x] 004: Templates and scaffolding — Five templates covering spec, execution log, project vision, config, and principles
 - [x] 005: Documentation and examples — Architecture reference, GSD/SpecKit comparison, and two worked examples (greenfield + adopted)

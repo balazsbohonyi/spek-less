@@ -1,5 +1,5 @@
 # SpekLess per-project configuration
-# Written by install.sh. Skills read this on every invocation.
+# Written by install.js. Skills read this on every invocation.
 # See ~/.claude/spek-config.yaml for global defaults (per-project wins when both exist).
 
 # Slash command namespace. Skills are invoked as /<namespace>:<skill>.
