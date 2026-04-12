@@ -2,7 +2,7 @@
 
 **A lightweight spec-first development workflow for AI coding agents.**
 
-SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of ten workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
+SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of eleven workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
 SpekLess ships today as **Claude Code skills** (the `.claude/commands/` convention). The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The slash-command mechanics and built-in sub-agent delegation (Explore, Plan) are Claude Code-specific in v1.0.0.
 
@@ -78,7 +78,7 @@ The installer is **idempotent and safe on existing projects**: re-running it pre
 
 ---
 
-## The ten skills
+## The eleven skills
 
 Skills fall into three groups.
 
@@ -89,6 +89,7 @@ Skills fall into three groups.
 | **`/spek:kickoff`** | Starting a greenfield project. Runs an extended PRD-style discussion, writes `.specs/project.md`, and offers to scaffold initial feature folders. |
 | **`/spek:new`** | Adding a new feature to any project. Creates a skeleton feature folder and nothing else. |
 | **`/spek:adopt`** | Retroactively documenting code that already exists. Reads the actual files (via an Explore sub-agent if broad), reverse-engineers Context and Plan sections, marks all tasks as already done. Unique to SpekLess. |
+| **`/spek:quick`** | Small, self-contained tasks where the full workflow would be overhead. Describe the task in one sentence — the skill creates the spec, executes inline, and leaves a complete audit trail. Skips discuss, plan, and assumptions. |
 
 ### Workflow (use in sequence per feature)
 
@@ -322,7 +323,7 @@ Two worked examples are included:
 
 ## Status
 
-**v1.0.0** — Ten skills, installer, templates, and two worked examples. See `docs/architecture.md` for the full design and `docs/comparison-with-gsd-and-speckit.md` for a detailed comparison.
+**v1.0.0** — Eleven skills, installer, templates, and two worked examples. See `docs/architecture.md` for the full design and `docs/comparison-with-gsd-and-speckit.md` for a detailed comparison.
 
 Post-v1.0.0 candidates (explicitly deferred until real usage demands them):
 

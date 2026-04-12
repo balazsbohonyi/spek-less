@@ -70,7 +70,7 @@ Features are numbered sequentially and prefixed with a zero-padded integer. Numb
 
 | Section | Owner skill | Rewrite behavior |
 |---|---|---|
-| Frontmatter (YAML) | shared — each skill can update its relevant fields | `status` advances; `starting_sha` written once by `/spek:execute`; other fields stable after creation |
+| Frontmatter (YAML) | shared — each skill can update its relevant fields | `status` advances; `starting_sha` written once by `/spek:execute` (or by `/spek:quick` on first run); `type: quick` written by `/spek:quick` (absent = standard); other fields stable after creation |
 | `## Context` | `/spek:new` (skeleton), `/spek:discuss` (fills) | Rewritten by `/spek:discuss` only when the problem/goal/constraints shift |
 | `## Discussion` | `/spek:discuss` | Fully rewritten on every `/spek:discuss` run |
 | `## Assumptions` | `/spek:discuss` (writes); `/spek:verify` (ticks checkboxes only) | Written by `/spek:discuss` at the close of the assumptions conversation; checkbox state ticked by `/spek:verify` on each run — see exceptions section |
@@ -88,6 +88,8 @@ created → discussing → planning → executing → verifying → done
 ```
 
 Skills advance the status automatically as they complete their work. Manual editing is safe — skills never regress status unless the user explicitly re-runs an earlier step. The initial status `created` is set when `/spek:new` (or `/spek:kickoff` scaffolding) creates the spec; `/spek:discuss` advances it to `discussing` on its first run.
+
+**Quick specs** (created by `/spek:quick`) enter the lifecycle at `executing`, skipping `created`, `discussing`, and `planning`. They have `type: quick` in frontmatter and omit the `## Discussion` and `## Assumptions` sections. This is an intentional fast path for small, self-contained tasks where the full workflow would be overhead.
 
 ### `execution.md` ownership
 
@@ -221,6 +223,7 @@ spek-less/
 │   ├── kickoff.md                          # greenfield entry point
 │   ├── new.md                              # new-feature entry point
 │   ├── adopt.md                            # retroactive-documentation entry point
+│   ├── quick.md                            # one-shot entry point: create spec + execute inline
 │   ├── discuss.md                          # workflow: exploration
 │   ├── plan.md                             # workflow: task breakdown
 │   ├── execute.md                          # workflow: implementation
@@ -233,7 +236,8 @@ spek-less/
 │   ├── execution.md.tmpl
 │   ├── project.md.tmpl
 │   ├── config.yaml.tmpl
-│   └── principles.md.tmpl
+│   ├── principles.md.tmpl
+│   └── spekless-block.md.tmpl              # CLAUDE.md SpekLess block (rendered by installer)
 ├── examples/
 │   ├── 001_toy-feature/                    # fully worked greenfield feature
 │   │   ├── spec.md

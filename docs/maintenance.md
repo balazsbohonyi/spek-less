@@ -128,7 +128,7 @@ node /path/to/spek-less/install.js
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/commands/spek/     # should contain all 10 skill files
+ls -la .claude/commands/spek/     # should contain all 11 skill files
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow

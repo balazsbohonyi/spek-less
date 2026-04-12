@@ -10,8 +10,8 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 
 SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
-- **Ten slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
-- **Five templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
+- **Eleven slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
+- **Six templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
@@ -59,8 +59,9 @@ spek-less/
 ├── README.md                               # user-facing intro
 ├── CLAUDE.md                               # this file — for working ON SpekLess
 ├── LICENSE                                 # MIT
-├── skills/                                 # the 10 skill files (copied by installer)
-│   ├── kickoff.md, new.md, adopt.md        #   entry points
+├── skills/                                 # the 11 skill files (copied by installer)
+│   ├── kickoff.md, new.md, adopt.md,       #   entry points
+│   │   quick.md
 │   ├── discuss.md, plan.md,                #   workflow skills
 │   │   execute.md, verify.md
 │   ├── commit.md                           #   convenience: drafted commits
@@ -71,7 +72,8 @@ spek-less/
 │   ├── execution.md.tmpl
 │   ├── project.md.tmpl
 │   ├── config.yaml.tmpl
-│   └── principles.md.tmpl
+│   ├── principles.md.tmpl
+│   └── spekless-block.md.tmpl              # CLAUDE.md SpekLess block (rendered by installer)
 ├── examples/
 │   ├── 001_toy-feature/                    # worked greenfield example
 │   │   ├── spec.md
@@ -165,6 +167,9 @@ This project uses SpekLess for spec-first development.
 - **Config:** `.specs/config.yaml`
 - **Principles:** `.specs/principles.md` — read by every skill, constrains all plans and execution
 - **Feature specs:** `.specs/NNN_*/spec.md` — one living design doc per feature
-- **Skills:** `.claude/commands/spek/` — invoke as `/spek:new`, `/spek:adopt`, `/spek:discuss`, `/spek:plan`, `/spek:execute`, `/spek:verify`, `/spek:commit`, `/spek:status`, `/spek:resume`
+- **Skills:** `.claude/commands/spek/`
+  - *Entry points:* `/spek:kickoff`, `/spek:new`, `/spek:adopt`, `/spek:quick`
+  - *Workflow:* `/spek:discuss`, `/spek:plan`, `/spek:execute`, `/spek:verify`
+  - *Convenience:* `/spek:commit`, `/spek:status`, `/spek:resume`
 
 Workflow: `/spek:kickoff` (greenfield) or `/spek:new` (feature) → `/spek:discuss` → `/spek:plan` → `/spek:execute` → `/spek:verify`

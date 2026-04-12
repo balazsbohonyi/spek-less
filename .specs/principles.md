@@ -43,6 +43,7 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
   - `~/.claude/commands/spek/` (global install, if the directory exists)
 - Check for existence before copying — do not create the directory if it isn't already there.
 - This sync is mandatory, not optional. A change to `skills/new.md` that isn't reflected in `.claude/commands/spek/new.md` means the running skills and the source diverge.
+- **When adding a new skill**, also update `_templates/spekless-block.md.tmpl` to include the new skill in the invocation list. This template is what `install.js` renders into a project's `CLAUDE.md` — if it falls behind, newly installed projects will be missing the skill from their contributor docs.
 
 ## Security
 

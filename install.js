@@ -453,18 +453,8 @@ async function runInstall(config, scriptDir) {
 
   // (f) Append SpekLess block to CLAUDE.md
   const claudeMdPath = path.join(cwd, 'CLAUDE.md');
-  const speklessBlock = [
-    '',
-    '## SpekLess',
-    '',
-    'This project uses SpekLess for spec-first development.',
-    `- **Config:** \`${specsRoot}/config.yaml\``,
-    `- **Principles:** \`${specsRoot}/principles.md\` — read by every skill, constrains all plans and execution`,
-    `- **Feature specs:** \`${specsRoot}/NNN_*/spec.md\` — one living design doc per feature`,
-    `- **Skills:** \`.claude/commands/${namespace}/\` — invoke as \`/${namespace}:new\`, \`/${namespace}:adopt\`, \`/${namespace}:discuss\`, \`/${namespace}:plan\`, \`/${namespace}:execute\`, \`/${namespace}:verify\`, \`/${namespace}:commit\`, \`/${namespace}:status\`, \`/${namespace}:resume\``,
-    '',
-    `Workflow: \`/${namespace}:kickoff\` (greenfield) or \`/${namespace}:new\` (feature) → \`/${namespace}:discuss\` → \`/${namespace}:plan\` → \`/${namespace}:execute\` → \`/${namespace}:verify\``,
-  ].join('\n');
+  const speklessBlockTmpl = path.join(templatesSrc, 'spekless-block.md.tmpl');
+  const speklessBlock = renderConfig(fs.readFileSync(speklessBlockTmpl, 'utf8'));
 
   let claudeMdContent = '';
   if (fs.existsSync(claudeMdPath)) {
