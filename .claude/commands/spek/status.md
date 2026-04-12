@@ -18,7 +18,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter and the `### Tasks` subsection. **Each spec file must be Grep'd individually** — one Grep call per file, scoped to that file's path. Never use a single Grep across all spec files; results bleed across files and the per-feature counts will be wrong. Match checkbox lines with `\d+\. \[.\]` (total) and `\d+\. \[x\]` (done). Never read Context, Discussion, Details, or Verification.
+3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter and the `### Tasks` subsection. **Each spec file must be Grep'd individually** — one Grep call per file, scoped to that file's path. Never use a single Grep across all spec files; results bleed across files and the per-feature counts will be wrong. Match checkbox lines with `\d+\. \[.\]` (total) and `\d+\. \[x\]` (done). Extract `id`, `title`, `status`, `type`, and `part_of` from frontmatter. When `type` is absent, treat it as `standard`. Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior
@@ -26,18 +26,18 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 ### All-features view (no argument)
 
 1. Scan `<specs_root>/` for directories matching `NNN_*/`.
-2. For each feature directory, make a **separate Grep call scoped to that feature's `spec.md`** to count checkbox lines. Do NOT use a single bulk Grep across all spec files — results will bleed across features. Concretely: for each `<specs_root>/NNN_<slug>/spec.md`, grep that file individually for lines matching `\d+\. \[.\]` to get total, and `\d+\. \[x\]` to get done count. Extract `id`, `title`, `status`, `part_of` from that same file's frontmatter.
+2. For each feature directory, make a **separate Grep call scoped to that feature's `spec.md`** to count checkbox lines. Do NOT use a single bulk Grep across all spec files — results will bleed across features. Concretely: for each `<specs_root>/NNN_<slug>/spec.md`, grep that file individually for lines matching `\d+\. \[.\]` to get total, and `\d+\. \[x\]` to get done count. Extract `id`, `title`, `status`, `type`, `part_of` from that same file's frontmatter. When `type` is absent, display `standard`.
 3. Resolve the "current feature" using the standard discovery order (git branch → most recently modified → none).
 4. Display a table:
 
 ```
 Feature status:
 
-  ID  | Title                    | Status     | Tasks | Part of
-  ----+--------------------------|------------|-------|---------
-> 003 | Add dark mode toggle     | executing  |  2/4  |
-  002 | Token storage migration  | done       |  5/5  | auth-rewrite
-  001 | Auth rewrite             | verifying  |  3/3  |
+  ID  | Title                    | Status     | Type     | Tasks | Part of
+  ----+--------------------------|------------|----------|-------|---------
+> 003 | Add dark mode toggle     | executing  | quick    |  2/4  |
+  002 | Token storage migration  | done       | standard |  5/5  | auth-rewrite
+  001 | Auth rewrite             | verifying  | adopted  |  3/3  |
 
 > = current feature (resolved from git branch)
 ```
