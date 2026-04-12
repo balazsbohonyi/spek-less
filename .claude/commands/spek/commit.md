@@ -29,7 +29,7 @@ This is a **convenience skill**, not a workflow step. The user invokes it whenev
 
 ### 1. Resolve feature
 
-Use the standard current-feature discovery: explicit argument → git branch → most-recently-modified `.specs/NNN_*/` → ask.
+Use the standard current-feature discovery: explicit argument (supports `NNN.M` form) → git branch (`feat/NNN-*` or `feat/NNN.M-*`) → most-recently-modified `.specs/NNN_*/` or `.specs/NNN.M_*/` → ask.
 
 ### 2. Detect nothing-to-commit
 

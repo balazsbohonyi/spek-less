@@ -17,17 +17,17 @@ This is NOT `/spek:status`. Status gives a broad overview of all features. Resum
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
+3. **All `.specs/NNN_*/spec.md` and `.specs/NNN.M_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
 4. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`) and `### Tasks` checkbox lines only.
 5. **`<feature>/execution.md`** (if exists) — last ~20 lines only.
 
 ## Current feature discovery
 
 Same order as all workflow skills:
-1. Explicit argument → `.specs/NNN_*/`
-2. Git branch mapping (e.g. `feat/003-*` → `.specs/003_*/`)
-3. Most recently modified `.specs/NNN_*/` directory
-4. If none resolve, list available features and ask the user which one
+1. Explicit argument: `/spek:resume 003` or `/spek:resume 016.1` → `.specs/<id>_*/` (the supplied ID is used as-is as the folder prefix; no special-casing needed for the `NNN.M` form).
+2. Git branch mapping (e.g. `feat/003-*` → `.specs/003_*/`, `feat/016.1-*` → `.specs/016.1_*/`).
+3. Most recently modified `.specs/NNN_*/` or `.specs/NNN.M_*/` directory.
+4. If none resolve, list available features and ask the user which one.
 
 ## Behavior
 
@@ -59,7 +59,22 @@ Next: /spek:execute to continue from task 3.
 | `planning` | `/spek:execute` to start implementation |
 | `executing` | `/spek:execute` to continue (picks up from first unchecked task) |
 | `verifying` | `/spek:commit` if Verification is clean, `/spek:execute` to fix issues |
+| `decomposed` | See sibling routing below |
 | `done` | Feature is complete — `/spek:new` to start another |
+
+**Decomposed feature routing.** When the resolved feature has `status: decomposed`, glob `<specs_root>/<parent_id>.[0-9]*_*/spec.md`, read frontmatter and checkbox lines for each sibling, and display them in order:
+
+```
+Resuming 016: Improve plan.md decomposition  (decomposed)
+
+  ↳ 016.1  Auth sessions     done      4 / 4 ✓
+  ↳ 016.2  Token refresh     executing 1 / 3   ← next
+  ↳ 016.3  Audit logging     planning  0 / 5
+
+Next: /spek:execute 016.2 to continue from task 2.
+```
+
+Mark the first sibling that is not `done` with `← next`. If all siblings are `done`, suggest setting the parent to `done` as well: "All siblings complete — update 016's status to `done`."
 
 5. If no features exist yet, tell the user to run `/spek:kickoff` (greenfield) or `/spek:new` (new feature) to get started.
 

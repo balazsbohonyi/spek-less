@@ -18,35 +18,40 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
-3. **All `.specs/NNN_*/spec.md`** — read ONLY frontmatter and the `### Tasks` subsection. **Each spec file must be Grep'd individually** — one Grep call per file, scoped to that file's path. Never use a single Grep across all spec files; results bleed across files and the per-feature counts will be wrong. Match checkbox lines with `\d+\. \[.\]` (total) and `\d+\. \[x\]` (done). Extract `id`, `title`, `status`, `type`, and `part_of` from frontmatter. When `type` is absent, treat it as `standard`. Never read Context, Discussion, Details, or Verification.
+3. **All `.specs/NNN_*/spec.md` and `.specs/NNN.M_*/spec.md`** — read ONLY frontmatter and the `### Tasks` subsection. **Each spec file must be Grep'd individually** — one Grep call per file, scoped to that file's path. Never use a single Grep across all spec files; results bleed across files and the per-feature counts will be wrong. Match checkbox lines with `\d+\. \[.\]` (total) and `\d+\. \[x\]` (done). Extract `id`, `title`, `status`, `type`, and `part_of` from frontmatter. When `type` is absent, treat it as `standard`. Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.
 
 ## Behavior
 
 ### All-features view (no argument)
 
-1. Scan `<specs_root>/` for directories matching `NNN_*/`.
-2. For each feature directory, make a **separate Grep call scoped to that feature's `spec.md`** to count checkbox lines. Do NOT use a single bulk Grep across all spec files — results will bleed across features. Concretely: for each `<specs_root>/NNN_<slug>/spec.md`, grep that file individually for lines matching `\d+\. \[.\]` to get total, and `\d+\. \[x\]` to get done count. Extract `id`, `title`, `status`, `type`, `part_of` from that same file's frontmatter. When `type` is absent, display `standard`.
+1. Scan `<specs_root>/` for directories matching `NNN_*/` and `NNN.M_*/`.
+2. For each feature directory, make a **separate Grep call scoped to that feature's `spec.md`** to count checkbox lines. Do NOT use a single bulk Grep across all spec files — results will bleed across features. Concretely: for each `spec.md`, grep that file individually for lines matching `\d+\. \[.\]` to get total, and `\d+\. \[x\]` to get done count. Extract `id`, `title`, `status`, `type`, `part_of` from that same file's frontmatter. When `type` is absent, display `standard`.
 3. Resolve the "current feature" using the standard discovery order (git branch → most recently modified → none).
-4. Display a table:
+4. Display a table. **Group siblings under their parent:** after collecting all specs, sort parent specs first (those without a `.` in the `id`), then for each parent that has siblings (specs where `part_of` equals the parent's `id`), render the sibling rows immediately after the parent, indented with `↳`:
 
 ```
 Feature status:
 
-  ID  | Title                    | Status     | Type     | Tasks | Part of
-  ----+--------------------------|------------|----------|-------|---------
-> 003 | Add dark mode toggle     | executing  | quick    |  2/4  |
-  002 | Token storage migration  | done       | standard |  5/5  | auth-rewrite
-  001 | Auth rewrite             | verifying  | adopted  |  3/3  |
+  ID    | Title                    | Status     | Type     | Tasks | Part of
+  ------+--------------------------|------------|----------|-------|--------
+> 016   | Big Feature              | decomposed | standard |  —    |
+  ↳016.1| Auth sessions            | done       | standard |  4/4  | 016
+  ↳016.2| Token refresh            | planning   | standard |  0/3  | 016
+  003   | Add dark mode toggle     | executing  | quick    |  2/4  |
+  001   | Auth rewrite             | verifying  | adopted  |  3/3  |
 
 > = current feature (resolved from git branch)
 ```
+
+Order siblings by their `.N` suffix. Parent rows with `status: decomposed` show `—` in the Tasks column (the work is in the siblings).
 
 5. Below the table, suggest a next step based on the current feature's status:
    - `discussing` → "Next: `/spek:plan` when the direction is clear."
    - `planning` → "Next: `/spek:execute` to start implementation."
    - `executing` → "Next: `/spek:execute` to continue, or `/spek:verify` if all tasks are done."
    - `verifying` → "Next: `/spek:commit` if verified clean, or `/spek:execute` to fix issues."
+   - `decomposed` → "Feature decomposed. Run `/spek:resume <id>` to see sibling progress and get routed to the next step."
    - `done` → "Feature is complete. Start a new one with `/spek:new`."
 
 ### Single-feature detail (with argument)

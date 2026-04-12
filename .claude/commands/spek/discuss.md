@@ -21,10 +21,10 @@ You are running a focused discussion to populate the `## Context` and `## Discus
 ## Current feature discovery
 
 Resolution order (first match wins):
-1. Explicit argument: `/spek:discuss 003` → `.specs/003_*/`
-2. Git branch mapping: if current branch is `feat/NNN-*` or similar, use that number
-3. Most recently modified `.specs/NNN_*/` folder
-4. If none resolve, list available features and ask the user which one
+1. Explicit argument: `/spek:discuss 003` or `/spek:discuss 016.1` → `.specs/<id>_*/` (the supplied ID is used as-is as the folder prefix; no special-casing needed for the `NNN.M` form).
+2. Git branch mapping: if current branch is `feat/NNN-*` or `feat/NNN.M-*` (e.g., `feat/016.1-auth-sessions`), use that number.
+3. Most recently modified `.specs/NNN_*/` or `.specs/NNN.M_*/` folder.
+4. If none resolve, list available features and ask the user which one.
 
 ## Behavior
 
