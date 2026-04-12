@@ -68,7 +68,7 @@ When the user signals the discussion is done (or you've reached the natural end)
 
 Do NOT touch `## Plan` or `## Verification`. Those belong to other skills.
 
-3. Write `## Assumptions` section. One `- [ ]` line per assumption stated by the user. If the user had none, write the section with only the HTML comment (no placeholder line — the template placeholder is for skeleton specs, not discuss output). Rewrite the section if it already exists (re-runs are safe).
+3. Write `## Assumptions` section. One `- [ ]` line per assumption stated by the user. If the user had none, write `None.` followed by a single sentence such as "No external bets identified — this task has no dependencies on third-party behavior, data contracts, or scale limits." (adapt wording to context). Do NOT write only the HTML comment when there are no assumptions. Rewrite the section if it already exists (re-runs are safe).
 
 4. Update frontmatter `status:` to `discussing` if it was `created` or blank, or leave as-is if it's already further along (re-runs of discuss after planning are legitimate and shouldn't regress status).
 
