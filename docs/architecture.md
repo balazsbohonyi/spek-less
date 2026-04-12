@@ -97,11 +97,11 @@ Skills advance the status automatically as they complete their work. Manual edit
 
 ### `principles.md` ownership
 
-Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may write to it via an opt-in "principles building" conversation — it asks targeted questions and fills in the template with real project conventions. No other skill writes to it. The installer creates a starter template on request.
+Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may write to it via an opt-in "principles building" conversation — it asks targeted questions and fills in the template with real project conventions. `/spek:ingest` may also write to it (on any input, single- or multi-feature) when it detects principles-worthy prose in the ingested content and the user confirms creation or fill-in via AskUserQuestion. Both skills follow the same opt-in, user-confirmed pattern and never fabricate conventions. The installer creates a starter template on request.
 
 ### `project.md` ownership
 
-`/spek:kickoff` owns this file. It is fully rewritten on every `/spek:kickoff` run. Other skills read it as context (scope, constraints, vision) but never modify it.
+`/spek:kickoff` owns this file. It is fully rewritten on every `/spek:kickoff` run. `/spek:ingest` may also create it on the multi-feature path when the file doesn't exist and the ingested content contains project-level material (vision, goals, scope, success metrics) — the user must confirm via AskUserQuestion before creation. Once created by either skill, `/spek:ingest` will not overwrite it (the user can run `/spek:kickoff` to evolve it). Other skills read it as context (scope, constraints, vision) but never modify it.
 
 ---
 
@@ -221,6 +221,7 @@ spek-less/
 ├── README.md                               # user-facing introduction + walkthroughs
 ├── skills/
 │   ├── kickoff.md                          # greenfield entry point
+│   ├── ingest.md                           # document-to-specs entry point
 │   ├── new.md                              # new-feature entry point
 │   ├── adopt.md                            # retroactive-documentation entry point
 │   ├── quick.md                            # one-shot entry point: create spec + execute inline
@@ -246,5 +247,5 @@ spek-less/
 │       └── spec.md                         # no execution.md — work predates SpekLess
 └── docs/
     ├── architecture.md                     # this document
-    └── comparison-with-gsd-and-speckit.md  # detailed competitor comparison
+    └── comparison.md                       # detailed competitor comparison
 ```

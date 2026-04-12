@@ -35,6 +35,7 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 - `README.md` is the user-facing source of truth. `docs/architecture.md` is the contributor source of truth. When they conflict, update both.
 - Architecture changes cascade: update `docs/architecture.md` first, then skills, then examples, then README.
 - Examples in `examples/` are canonical output — not aspirational. Keep them in sync with what real workflow runs produce.
+- **During `/spek:plan`, always evaluate `docs/architecture.md`, `docs/maintenance.md`, and `docs/comparison.md` as candidate update targets.** Any spec that adds, removes, or significantly changes a skill, template, or the installer almost certainly requires updates to one or more of these files. Evaluate each one explicitly and add tasks for them — do not skip them silently or assume they are unaffected.
 
 ## Sync Rule
 

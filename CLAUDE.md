@@ -10,7 +10,7 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 
 SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
-- **Eleven slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
+- **Twelve slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
 - **Six templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
@@ -26,7 +26,7 @@ Before making non-trivial changes, read in this order:
 
 1. **`README.md`** — user-facing walkthrough. Tells you what SpekLess is trying to be.
 2. **`docs/architecture.md`** — the authoritative design reference. Every design decision and invariant is documented here. If a proposed change contradicts this doc, either the change is wrong or the doc needs updating first (not the other way around).
-3. **`docs/comparison-with-gsd-and-speckit.md`** — explains what SpekLess deliberately keeps, rejects, and invents. Useful when you're tempted to add a feature "because GSD has it."
+3. **`docs/comparison.md`** — explains what SpekLess deliberately keeps, rejects, and invents. Useful when you're tempted to add a feature "because GSD has it."
 4. **`skills/new.md`** — the simplest skill. Read this to understand the skill file conventions before editing any other skill.
 5. **`examples/001_toy-feature/spec.md` + `execution.md`** — what the output of the full greenfield workflow looks like. Any change to templates or skills should still produce output that matches this shape.
 6. **`examples/002_adopted-feature/spec.md`** — what `/spek:adopt` output looks like. Retroactive spec with inferred Context, pre-checked tasks, no execution.md.
@@ -59,9 +59,9 @@ spek-less/
 ├── README.md                               # user-facing intro
 ├── CLAUDE.md                               # this file — for working ON SpekLess
 ├── LICENSE                                 # MIT
-├── skills/                                 # the 11 skill files (copied by installer)
-│   ├── kickoff.md, new.md, adopt.md,       #   entry points
-│   │   quick.md
+├── skills/                                 # the 12 skill files (copied by installer)
+│   ├── kickoff.md, ingest.md, new.md,       #   entry points
+│   │   adopt.md, quick.md
 │   ├── discuss.md, plan.md,                #   workflow skills
 │   │   execute.md, verify.md
 │   ├── commit.md                           #   convenience: drafted commits
@@ -83,7 +83,7 @@ spek-less/
 └── docs/
     ├── architecture.md                     # authoritative design reference
     ├── maintenance.md                      # agent instructions for editing the framework
-    └── comparison-with-gsd-and-speckit.md  # why certain things are / are not in SpekLess
+    └── comparison.md                       # why certain things are / are not in SpekLess
 ```
 
 ---
@@ -168,7 +168,7 @@ This project uses SpekLess for spec-first development.
 - **Principles:** `.specs/principles.md` — read by every skill, constrains all plans and execution
 - **Feature specs:** `.specs/NNN_*/spec.md` — one living design doc per feature
 - **Skills:** `.claude/commands/spek/`
-  - *Entry points:* `/spek:kickoff`, `/spek:new`, `/spek:adopt`, `/spek:quick`
+  - *Entry points:* `/spek:kickoff`, `/spek:ingest`, `/spek:new`, `/spek:adopt`, `/spek:quick`
   - *Workflow:* `/spek:discuss`, `/spek:plan`, `/spek:execute`, `/spek:verify`
   - *Convenience:* `/spek:commit`, `/spek:status`, `/spek:resume`
 

@@ -84,7 +84,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 3. Create `skills/<name>.md` following the skill file conventions above.
 4. Update `README.md` (the skills table — update count accordingly) and `docs/architecture.md` (add to the ownership / behavior sections).
 5. Update `install.js` only if the new skill needs special installation handling — it shouldn't, because the installer copies `skills/*.md` generically.
-6. Update `docs/comparison-with-gsd-and-speckit.md` if the new capability changes the feature matrix.
+6. Update `docs/comparison.md` if the new capability changes the feature matrix.
 
 ### Modifying an existing skill
 
@@ -107,7 +107,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 2. Then edit the affected skills.
 3. Then update the worked example in `examples/001_toy-feature/` so it still matches what real runs would produce.
 4. Then update README.
-5. Then update `docs/comparison-with-gsd-and-speckit.md` if the feature matrix changes.
+5. Then update `docs/comparison.md` if the feature matrix changes.
 
 Architecture changes are the slowest kind of change to make correctly — budget time for the cascade.
 
@@ -128,7 +128,7 @@ node /path/to/spek-less/install.js
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/commands/spek/     # should contain all 11 skill files
+ls -la .claude/commands/spek/     # should contain all 12 skill files
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow

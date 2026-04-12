@@ -30,6 +30,7 @@ A detailed comparison against the closest existing spec-driven development frame
 | **Context and knowledge** | | | | |
 | Project constitution / principles file | ✓ (`principles.md`) | ✗ | ✓ (`constitution.md`) | ✗ |
 | Greenfield PRD layer | ✓ (`/spek:kickoff` + `project.md`) | ✓ (PROJECT.md + new-project skill) | partial (constitution covers some) | ✗ |
+| Ingest existing plans / PRDs to specs | ✓ (`/spek:ingest`) | ✗ | ✗ | ✗ |
 | Retroactive adoption of existing code | ✓ (`/spek:adopt`) | ✗ | ✗ | ✗ |
 | Clarification detection in discuss | ✓ (prompt pattern) | partial | ✓ (explicit clarify step) | ✗ |
 | Principles building assistance | ✓ (via `/spek:kickoff`) | ✗ | ✗ | ✗ |
@@ -124,6 +125,10 @@ SpecKit has strong support for API-heavy projects via contract tests and schema 
 As far as I can find, no existing spec-driven framework offers this. GSD, SpecKit, BMAD, and the ADR tradition all assume you start with a spec and produce code. SpekLess recognizes the common case of **installing a framework on a codebase with existing, undocumented work** and provides a skill that reverse-engineers a spec from the actual files.
 
 `/spek:adopt` is what makes SpekLess useful on day one of installation in a mature repo. You don't have to write fake historical specs by hand.
+
+### `/spek:ingest` — document-driven spec creation
+
+When the user already has a plan, PRD, or notes, `/spek:ingest` converts them into properly-formed specs with graduated status, an import note, optional `project.md` creation, and a `principles.md` offer when the content warrants it. No existing framework offers this document-to-specs path.
 
 ### Intervention as "just re-run a skill"
 
