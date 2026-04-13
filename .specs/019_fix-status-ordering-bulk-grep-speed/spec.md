@@ -1,10 +1,10 @@
 ---
-id: "019"
-title: "Fix /spek:status — ordering and bulk-Grep speed"
+id: 019
+title: Fix /spek:status — ordering and bulk-Grep speed
 status: done
-type: standard
 part_of: SpekLess
 created: 2026-04-14
+tags: []
 starting_sha: 59c4579
 ---
 
@@ -41,19 +41,15 @@ The plan combines Edit A (ordering note in Reads) and Edit D (bulk-Grep instruct
 
 ## Plan
 
-### Goal
-
-Fix `/spek:status` so that (a) output order is deterministic across runs, (b) checkbox counting uses two bulk Greps instead of 2N per-file Greps, and (c) the "Part of" column is omitted when no sibling specs exist.
-
 ### Tasks
 
-- [x] 1. Edit A+D — Rewrite Reads item 3 in `skills/status.md`: replace the "per-file Grep" mandate with the two-bulk-Grep instruction and add the ordering note
-- [x] 2. Edit B — In Behavior step 4, replace "sort parent specs first" with "sort parent specs in **descending** numeric order … highest `NNN` first"
-- [x] 3. Edit C — After the table example, replace "Order siblings by their `.N` suffix" with "… in **ascending** order (016.1 before 016.2)"
-- [x] 4. Edit E — In Behavior step 2, replace the per-file Grep loop with the two-bulk-Grep procedure (Grep 1: all checkboxes; Grep 2: done checkboxes; group by file path)
-- [x] 5. Edit F — In Hard rules, replace "Per-file Grep, never bulk" with "Two bulk Greps, never per-file"
-- [x] 6. Edit G — In Behavior step 4, add sibling-detection logic and conditional "Part of" column; update the table example to show both the with-siblings and no-siblings variants
-- [x] 7. Sync — Copy the updated `skills/status.md` to `.claude/commands/spek/status.md`; if `~/.claude/commands/spek/` exists, copy there too
+1. [x] Edit A+D — Rewrite Reads item 3 in `skills/status.md`: replace the "per-file Grep" mandate with the two-bulk-Grep instruction and add the ordering note
+2. [x] Edit B — In Behavior step 4, replace "sort parent specs first" with "sort parent specs in **descending** numeric order … highest `NNN` first"
+3. [x] Edit C — After the table example, replace "Order siblings by their `.N` suffix" with "… in **ascending** order (016.1 before 016.2)"
+4. [x] Edit E — In Behavior step 2, replace the per-file Grep loop with the two-bulk-Grep procedure (Grep 1: all checkboxes; Grep 2: done checkboxes; group by file path)
+5. [x] Edit F — In Hard rules, replace "Per-file Grep, never bulk" with "Two bulk Greps, never per-file"
+6. [x] Edit G — In Behavior step 4, add sibling-detection logic and conditional "Part of" column; update the table example to show both the with-siblings and no-siblings variants
+7. [x] Sync — Copy the updated `skills/status.md` to `.claude/commands/spek/status.md`; if `~/.claude/commands/spek/` exists, copy there too
 
 ### Details
 

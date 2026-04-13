@@ -1,17 +1,18 @@
 ---
-id: "018"
-title: "Remove hardcoded skill counts from docs"
+id: 018
+title: Remove hardcoded skill counts from docs
 status: done
 created: 2026-04-13
+tags: []
 part_of: SpekLess
 starting_sha: "04b79ad"
 ---
 
 # Remove hardcoded skill counts from docs
 
-> Part of [**SpekLess**](../project.md).
-
 ## Context
+
+> Part of [**SpekLess**](../project.md).
 
 Every time a new skill is added to SpekLess, four documentation files require manual edits to update skill counts. These appear in multiple forms: written-out numbers ("twelve skills", "ten skills"), numeric ("12 skill files"), and count-by-category ("three groups"). The "ten skills" reference was already stale — it predated both `/spek:quick` and `/spek:ingest` and went unnoticed.
 
@@ -39,15 +40,15 @@ Decisions reached during planning:
 
 ### Tasks
 
-- [x] Task 1: CLAUDE.md — remove "Twelve" from repo purpose bullet
-- [x] Task 2: CLAUDE.md — remove "12" from directory tree comment
-- [x] Task 3: README.md — remove "twelve" from opening paragraph
-- [x] Task 4: README.md — reframe "Ten skills, not thirty subagents" bullet
-- [x] Task 5: README.md — rename section heading to `## The skills`
-- [x] Task 6: README.md — change "three groups" to "three categories"
-- [x] Task 7: README.md — remove "Twelve" from Status section
-- [x] Task 8: docs/maintenance.md — replace "update count accordingly" with file list
-- [x] Task 9: docs/maintenance.md — remove "12" from smoke test comment
+1. [x] CLAUDE.md — remove "Twelve" from repo purpose bullet
+2. [x] CLAUDE.md — remove "12" from directory tree comment
+3. [x] README.md — remove "twelve" from opening paragraph
+4. [x] README.md — reframe "Ten skills, not thirty subagents" bullet
+5. [x] README.md — rename section heading to `## The skills`
+6. [x] README.md — change "three groups" to "three categories"
+7. [x] README.md — remove "Twelve" from Status section
+8. [x] docs/maintenance.md — replace "update count accordingly" with file list
+9. [x] docs/maintenance.md — remove "12" from smoke test comment
 
 ### Details
 

@@ -19,6 +19,7 @@ You are transforming existing content — a file, a PRD, conversation notes — 
 3. **`.specs/project.md`** (if exists) — frontmatter `name:` field for `part_of:` assignment.
 4. **Existing spec numbering** — Glob both `<specs_root>/[0-9][0-9][0-9]_*/spec.md` and `<specs_root>/[0-9][0-9][0-9].[0-9]*/spec.md`. Parse the 3-digit integer prefix from each match (e.g. `016.1` → `16`), take `max`, assign IDs consecutively from `max + 1`. Never assign `NNN.M` IDs.
 5. **Source document** — the file arg if given; otherwise the current conversation.
+6. **`_templates/spec.md.tmpl`** — the authoritative structural reference for spec files. Read once before creating any spec in Step 5.
 
 ## Behavior
 
@@ -68,6 +69,13 @@ For each approved spec:
 3. **Create** `<specs_root>/<id>_<slug>/spec.md`.
 4. **`part_of:`** — read `project.md`'s frontmatter `name:` field if it exists; otherwise leave blank. Use the string value, not a file path.
 5. **`starting_sha:`** — always leave blank (captured on first `/spek:execute` run).
+
+**Structural reference: `_templates/spec.md.tmpl` is authoritative.**
+- Frontmatter field names, order, and format must match the template exactly.
+- Section headings and their order must match the template exactly.
+- Subsections not present in the template (e.g. `### Goal`) must not appear.
+- Content (Context narrative, Discussion body, task text, Assumptions) comes from the ingested source.
+- Exception: `planning` specs may use Old/New diff blocks in `### Details` rather than the `**Files:**`/`**Approach:**` skeleton when the ingested material already contains before/after comparisons.
 
 **Section content by granularity:**
 
