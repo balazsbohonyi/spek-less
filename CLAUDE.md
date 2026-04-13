@@ -10,7 +10,7 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 
 SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
 
-- **Twelve slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
+- **Slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
 - **Six templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
 - **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
@@ -59,7 +59,7 @@ spek-less/
 ├── README.md                               # user-facing intro
 ├── CLAUDE.md                               # this file — for working ON SpekLess
 ├── LICENSE                                 # MIT
-├── skills/                                 # the 12 skill files (copied by installer)
+├── skills/                                 # skill files (copied by installer)
 │   ├── kickoff.md, ingest.md, new.md,       #   entry points
 │   │   adopt.md, quick.md
 │   ├── discuss.md, plan.md,                #   workflow skills

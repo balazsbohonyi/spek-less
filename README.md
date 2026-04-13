@@ -2,7 +2,7 @@
 
 **A lightweight spec-first development workflow for AI coding agents.**
 
-SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of twelve workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
+SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
 SpekLess ships today as **Claude Code skills** (the `.claude/commands/` convention). The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The slash-command mechanics and built-in sub-agent delegation (Explore, Plan) are Claude Code-specific in v1.0.0.
 
@@ -21,7 +21,7 @@ SpekLess is the minimal system that keeps the good parts and cuts the rest:
 - **One living `spec.md` per feature.** Reads like an RFC. Sections for Context, Discussion, Plan, Verification. Everything about a feature is in one place.
 - **Append-only `execution.md` work journal.** A human-readable narrative of what was actually done, stored alongside the spec. Replaces atomic commit discipline without forcing you to commit on anyone else's rhythm.
 - **Flat feature list.** No milestones-inside-phases-inside-tasks hierarchy. Big work decomposes into sibling docs via a single `part_of:` frontmatter field.
-- **Ten skills, not thirty subagents.** A single main agent drives everything via slash-commands; sub-agents are used *only* as context firewalls for broad codebase reads, never as pipeline steps. This solves a real problem multi-agent pipelines struggle with: *inter-agent amnesia*. When you spawn a PlanAgent after a DiscussAgent, the planner only knows what got serialized into a file — the *why* behind decisions is gone. SpekLess keeps one conversation alive across all steps, so context accumulates continuously and you can intervene at any point without re-briefing a new agent from scratch.
+- **Slash skills, not subagent fan-out.** A single main agent drives everything via slash-commands; sub-agents are used *only* as context firewalls for broad codebase reads, never as pipeline steps. This solves a real problem multi-agent pipelines struggle with: *inter-agent amnesia*. When you spawn a PlanAgent after a DiscussAgent, the planner only knows what got serialized into a file — the *why* behind decisions is gone. SpekLess keeps one conversation alive across all steps, so context accumulates continuously and you can intervene at any point without re-briefing a new agent from scratch.
 - **Free intervention.** The document *is* the state. There's no STATE.md, no checkpoint files, no locked step order. Edit any section, re-run any skill, at any time.
 
 ---
@@ -78,11 +78,12 @@ The installer is **idempotent and safe on existing projects**: re-running it pre
 
 ---
 
-## The twelve skills
+## The skills
 
-Skills fall into three groups.
+Skills fall into three categories.
 
-### Entry points (pick one when starting)
+### Entry points
+Pick one of these skills when starting.
 
 | Skill | Use when |
 |---|---|
@@ -92,7 +93,8 @@ Skills fall into three groups.
 | **`/spek:adopt`** | Retroactively documenting code that already exists. Reads the actual files (via an Explore sub-agent if broad), reverse-engineers Context and Plan sections, marks all tasks as already done. Unique to SpekLess. |
 | **`/spek:quick`** | Small, self-contained tasks where the full workflow would be overhead. Describe the task in one sentence — the skill creates the spec, executes inline, and leaves a complete audit trail. Skips discuss, plan, and assumptions. |
 
-### Workflow (use in sequence per feature)
+### Workflow
+Use these skills in sequence per feature.
 
 | Skill | What it does |
 |---|---|
@@ -101,7 +103,8 @@ Skills fall into three groups.
 | **`/spek:execute`** | Implements the tasks one at a time. Writes append-only entries to `execution.md`. Ticks checkboxes in the Plan as it goes. Resumable from whatever's unchecked. |
 | **`/spek:verify`** | Goal-backward verification. Reads Plan, execution log, and `git diff`. Writes `## Verification`. If issues are found, offers (via AskUserQuestion) to run `/spek:execute` to fix, `/spek:plan` to revise, or stop. Strictly read-only for source code. |
 
-### Convenience (use any time)
+### Convenience
+Use these skills any time.
 
 | Skill | What it does |
 |---|---|
@@ -324,7 +327,7 @@ Two worked examples are included:
 
 ## Status
 
-**v1.0.0** — Twelve skills, installer, templates, and two worked examples. See `docs/architecture.md` for the full design and `docs/comparison.md` for a detailed comparison.
+**v1.0.0** — Skill set, installer, templates, and two worked examples. See `docs/architecture.md` for the full design and `docs/comparison.md` for a detailed comparison.
 
 Post-v1.0.0 candidates (explicitly deferred until real usage demands them):
 

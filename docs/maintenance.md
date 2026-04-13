@@ -82,7 +82,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 1. Decide whether the new skill is genuinely needed, or whether an existing skill should be extended. **Default to extending.** New skills expand the surface area users have to learn.
 2. Read `skills/new.md` as a structural template.
 3. Create `skills/<name>.md` following the skill file conventions above.
-4. Update `README.md` (the skills table — update count accordingly) and `docs/architecture.md` (add to the ownership / behavior sections).
+4. Update `README.md`, `CLAUDE.md`, and `docs/architecture.md` to reference the new skill.
 5. Update `install.js` only if the new skill needs special installation handling — it shouldn't, because the installer copies `skills/*.md` generically.
 6. Update `docs/comparison.md` if the new capability changes the feature matrix.
 
@@ -128,7 +128,7 @@ node /path/to/spek-less/install.js
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/commands/spek/     # should contain all 12 skill files
+ls -la .claude/commands/spek/     # should contain all skill files
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow
