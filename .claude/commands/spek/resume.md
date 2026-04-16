@@ -1,17 +1,17 @@
 ---
 name: spek:resume
-description: Pick up where you left off — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Read-only. Use when returning after a break or context reset. More focused than /spek:status — oriented toward "what do I do now?" rather than "give me an overview."
+description: Pick up where you left off — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Read-only. Use when returning after a break or context reset. More focused than spek:status — oriented toward "what do I do now?" rather than "give me an overview."
 ---
 
-# /spek:resume — Pick up where you left off
+# spek:resume — Pick up where you left off
 
 You are helping the user resume work after a break, a context reset, or switching back from another task. This skill is a lightweight, action-oriented read of the current feature state — it tells the user exactly where they are and what to do next, without requiring them to remember the workflow.
 
-This is NOT `/spek:status`. Status gives a broad overview of all features. Resume is narrower: it focuses on the single current feature and frames everything around "what should I do next?"
+This is NOT `spek:status`. Status gives a broad overview of all features. Resume is narrower: it focuses on the single current feature and frames everything around "what should I do next?"
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:resume 003`). Resolve via current-feature discovery if omitted.
+- Optional feature argument (e.g. `spek:resume 003`). Resolve via current-feature discovery if omitted.
 
 ## Reads
 
@@ -24,7 +24,7 @@ This is NOT `/spek:status`. Status gives a broad overview of all features. Resum
 ## Current feature discovery
 
 Same order as all workflow skills:
-1. Explicit argument: `/spek:resume 003` or `/spek:resume 016.1` → `.specs/<id>_*/` (the supplied ID is used as-is as the folder prefix; no special-casing needed for the `NNN.M` form).
+1. Explicit argument: `spek:resume 003` or `spek:resume 016.1` → `.specs/<id>_*/` (the supplied ID is used as-is as the folder prefix; no special-casing needed for the `NNN.M` form).
 2. Git branch mapping (e.g. `feat/003-*` → `.specs/003_*/`, `feat/016.1-*` → `.specs/016.1_*/`).
 3. Most recently modified `.specs/NNN_*/` or `.specs/NNN.M_*/` directory.
 4. If none resolve, list available features and ask the user which one.
@@ -76,7 +76,7 @@ Next: /spek:execute 016.2 to continue from task 2.
 
 Mark the first sibling that is not `done` with `← next`. If all siblings are `done`, suggest setting the parent to `done` as well: "All siblings complete — update 016's status to `done`."
 
-5. If no features exist yet, tell the user to run `/spek:kickoff` (greenfield) or `/spek:new` (new feature) to get started.
+5. If no features exist yet, tell the user to run `spek:kickoff` (greenfield) or `spek:new` (new feature) to get started.
 
 ## Writes
 

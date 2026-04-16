@@ -3,20 +3,20 @@ name: spek:commit
 description: Draft and create a git commit summarizing work done on a feature — reads the spec, execution log tail, and git diff, drafts a spec-anchored commit message, and asks the user to confirm before committing. Never automatic. Never amends. Never bypasses hooks.
 ---
 
-# /spek:commit — User-triggered, LLM-drafted commits
+# spek:commit — User-triggered, LLM-drafted commits
 
-You are drafting a git commit message that summarizes the work done on a feature since the last commit, and (on user confirmation) creating the commit. You are the only skill besides `/spek:execute` that can write to the working tree, and the only skill anywhere that runs `git commit`.
+You are drafting a git commit message that summarizes the work done on a feature since the last commit, and (on user confirmation) creating the commit. You are the only skill besides `spek:execute` that can write to the working tree, and the only skill anywhere that runs `git commit`.
 
 This is a **convenience skill**, not a workflow step. The user invokes it whenever they want — after one task, after all tasks, after a verify-fix pass, never. SpekLess does not force commits and never calls this skill automatically.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:commit 003`). Resolve via current-feature discovery if omitted.
-- Optional free-text modifier (e.g. `/spek:commit just the verify fixes`, `/spek:commit scope=task 3`). Use it to narrow what the draft summarizes.
+- Optional feature argument (e.g. `spek:commit 003`). Resolve via current-feature discovery if omitted.
+- Optional free-text modifier (e.g. `spek:commit just the verify fixes`, `spek:commit scope=task 3`). Use it to narrow what the draft summarizes.
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root` and `commit_style`. `commit_style` is one of: `plain` (default), `conventional`, or a free-text custom rule the installer captured. Empty / missing = treat as `plain`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `commit_style`. `commit_style` is one of: `plain` (default), `conventional`, or a free-text custom rule the installer captured. Empty / missing = treat as `plain`.
 2. **`.specs/principles.md`** (if exists) — full file. Principles **win over config** when they declare something more specific about commit messages (e.g. "prefix with [JIRA-xxx]"). Config is the baseline; principles override.
 3. **`<feature>/spec.md`** — frontmatter (`id`, `title`) plus `## Plan` → `### Tasks` only. Use Grep to find headers, then targeted Read. You need checkbox state and task titles, not `### Details`.
 4. **`<feature>/execution.md`** — tail (~80 lines). This tells you what's been done recently.
@@ -69,7 +69,7 @@ If the user chooses to split: execute two sequential commits, each with its own 
 Run `git log --oneline --follow -- <specs_root>/<feature>/` to find the most recent commit touching this feature's directory. Everything in execution.md *after* that commit's timestamp is *uncommitted work* (or everything, if there are no prior commits). Extract:
 
 - **Tasks that became checked** since the anchor (cross-reference `Task N complete` log entries with current checkbox state in the Plan).
-- **Verify-fix entries** since the anchor (log entries produced after a `/spek:verify` pass flagged issues).
+- **Verify-fix entries** since the anchor (log entries produced after a `spek:verify` pass flagged issues).
 - **Course corrections** since the anchor.
 
 If the user supplied a free-text modifier ("just the verify fixes"), use it to narrow the scope — include only the matching entries in the draft.
@@ -160,7 +160,7 @@ Capture the resulting short SHA: `git rev-parse --short HEAD`.
 ```
 Committed <short-sha>: <subject>
 
-Next: <suggestion — /spek:execute to continue, /spek:verify if all tasks are done, or stop>.
+Next: <suggestion — {{CMD_PREFIX}}spek:execute to continue, {{CMD_PREFIX}}spek:verify if all tasks are done, or stop>.
 ```
 
 ## Hook failure handling
@@ -169,12 +169,12 @@ If `git commit` exits non-zero because a pre-commit hook rejected the commit:
 
 1. Surface the hook's stderr to the user verbatim.
 2. Do NOT retry with `--no-verify`. That's a Claude Code-level hard rule, and it's also the right call here — hooks exist to catch problems, and bypassing them would undo the exact audit trail the user wanted from this skill.
-3. Suggest the user fix the underlying issue, then re-run `/spek:commit`.
+3. Suggest the user fix the underlying issue, then re-run `spek:commit`.
 4. Do NOT append a `Committed` entry to `execution.md` — the commit did not happen.
 
 ## Addressing verify-flagged commits
 
-When `/spek:commit` runs after a verify→fix cycle, the execution log tail will contain entries from `/spek:execute` addressing the Verification section's issues. The draft should name those as fixes, not as a re-do of the original tasks. Example:
+When `spek:commit` runs after a verify→fix cycle, the execution log tail will contain entries from `spek:execute` addressing the Verification section's issues. The draft should name those as fixes, not as a re-do of the original tasks. Example:
 
 ```
 001: Fix verify-flagged issues — auth session leak
@@ -185,7 +185,7 @@ When `/spek:commit` runs after a verify→fix cycle, the execution log tail will
 Spec: .specs/001_auth-rewrite/spec.md
 ```
 
-The cue is in the log entries: look for headings like `Fix: <something>` or `Addressing verify issue: <something>` produced by the prior `/spek:execute` run.
+The cue is in the log entries: look for headings like `Fix: <something>` or `Addressing verify issue: <something>` produced by the prior `spek:execute` run.
 
 ## Writes
 
@@ -194,7 +194,7 @@ The cue is in the log entries: look for headings like `Fix: <something>` or `Add
 
 ## Output to user
 
-See step 11. Always end with a suggested next step.
+See step 10. Always end with a suggested next step.
 
 ## Hard rules
 
@@ -210,4 +210,4 @@ See step 11. Always end with a suggested next step.
 - **Principles override config.** When `principles.md` declares a commit rule, it supersedes `commit_style` from config.
 - **Single feature per invocation by default.** Cross-feature diffs trigger an explicit confirmation.
 - **Idempotent.** Re-running after a successful commit with no new changes → clean exit. Re-running on the same unstaged changes after cancelling → regenerates the draft from current state.
-- **Never spawns sub-agents.** Same reasoning as `/spek:execute`: the user is watching a commit get drafted, and that oversight is the point.
+- **Never spawns sub-agents.** Same reasoning as `spek:execute`: the user is watching a commit get drafted, and that oversight is the point.

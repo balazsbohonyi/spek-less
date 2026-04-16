@@ -1,9 +1,9 @@
 ---
 name: spek:status
-description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both /spek:list and /spek:status from the deferred convenience list.
+description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both spek:list and spek:status from the deferred convenience list.
 ---
 
-# /spek:status — See where things stand
+# spek:status — See where things stand
 
 You are showing the user a summary of their SpekLess features. This is the "where am I?" skill — useful when starting a fresh session, resuming after a context reset, or deciding what to work on next.
 
@@ -11,7 +11,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:status 003`). If given, show detail for that feature only.
+- Optional feature argument (e.g. `spek:status 003`). If given, show detail for that feature only.
 - If omitted, show all features.
 
 ## Reads

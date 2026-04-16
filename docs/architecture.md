@@ -66,6 +66,24 @@ SpekLess uses three Claude Code built-in agent types — no custom types are def
 
 Features are numbered sequentially and prefixed with a zero-padded integer. Numbers are assigned at creation time and never reused or backfilled. Gaps from deleted features are acceptable and expected.
 
+**`config.yaml` key fields** (written by the installer, read by every skill):
+
+| Field | Purpose |
+|---|---|
+| `namespace` | Slash command namespace (default: `spek`) |
+| `specs_root` | Root directory for spec documents |
+| `suggest_commits` | Whether `spek:execute` offers commits at task boundaries |
+| `subagent_threshold` | How many targeted reads before plan/adopt delegate to Explore |
+| `commit_style` | Commit message style for `spek:commit` |
+
+**Agent → skills directory mapping** (used by the installer and the Sync Rule):
+
+| AI Agent | Project-local | Global |
+|---|---|---|
+| Claude Code | `.claude/commands/{ns}/` | `~/.claude/commands/{ns}/` |
+| Codex | `.codex/skills/` | `~/.codex/skills/` |
+| OpenCode | `.opencode/commands/{ns}/` | `~/.config/opencode/commands/{ns}/` |
+
 ### `spec.md` sections and ownership
 
 | Section | Owner skill | Rewrite behavior |
@@ -238,7 +256,6 @@ spek-less/
 │   ├── project.md.tmpl
 │   ├── config.yaml.tmpl
 │   ├── principles.md.tmpl
-│   └── spekless-block.md.tmpl              # CLAUDE.md SpekLess block (rendered by installer)
 ├── examples/
 │   ├── 001_toy-feature/                    # fully worked greenfield feature
 │   │   ├── spec.md

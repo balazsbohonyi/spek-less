@@ -14,7 +14,7 @@ name: spek:<skill-name>
 description: <one-paragraph description — Claude Code reads this to decide when the skill is relevant>
 ---
 
-# /spek:<skill-name> — <short tagline>
+# spek:<skill-name> — <short tagline>
 
 <1-2 paragraphs: what this skill does and when to invoke it>
 
@@ -39,7 +39,9 @@ description: <one-paragraph description — Claude Code reads this to decide whe
 
 **Frontmatter format:** `name` uses `spek:<skill>` even though the actual namespace is configurable at install time. The installer does not rewrite skill frontmatter — Claude Code resolves namespaces from the directory the skills live in (`.claude/commands/<ns>/`). Keep the `name` field as `spek:<skill>` as a reasonable default.
 
-**Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `/spek:new` description says "For greenfield projects use /spek:kickoff first. For retroactively documenting existing code use /spek:adopt." — this disambiguation is critical.
+**Description field:** this is what Claude Code shows to the model when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `spek:new` description says "For greenfield projects use spek:kickoff first. For retroactively documenting existing code use spek:adopt." — this disambiguation is critical.
+
+**Platform command prefix:** skill source files (`skills/*.md`) use `{{CMD_PREFIX}}spek:X` in `## Output to user` sections and user-facing AskUserQuestion text — never a hardcoded prefix. Internal guidance (frontmatter descriptions, behavior rules, section headers) uses bare `spek:X`. The installer substitutes `{{CMD_PREFIX}}` with the correct prefix per agent when copying skills to their target directory (via `installSkillsTo(dest, prefix)`).
 
 **Length budget:** skill files should be **under ~300 lines** each. These are instructions Claude reads in-context, not documentation. Cut anything that isn't load-bearing. If a skill file is getting too long, the skill is probably doing too much — consider splitting.
 
@@ -53,7 +55,7 @@ Current placeholders:
 - `{{ID}}`, `{{TITLE}}`, `{{DATE}}` — used in `spec.md.tmpl`
 - `{{PROJECT_NAME}}`, `{{DATE}}` — used in `project.md.tmpl`
 - `{{TITLE}}` — used in `execution.md.tmpl`
-- `{{NAMESPACE}}`, `{{SPECS_ROOT}}`, `{{SUGGEST_COMMITS}}`, `{{SUBAGENT_THRESHOLD}}`, `{{PROJECT_HINTS}}`, `{{COMMIT_STYLE}}` — used in `config.yaml.tmpl`
+- `{{NAMESPACE}}`, `{{SPECS_ROOT}}`, `{{SUGGEST_COMMITS}}`, `{{SUBAGENT_THRESHOLD}}`, `{{COMMIT_STYLE}}` — used in `config.yaml.tmpl`
 
 When adding a new placeholder, update both the template and the code that substitutes it. The installer uses `String.prototype.replace(new RegExp('{{KEY}}', 'g'), value)` — no `sed`, no delimiter issues.
 
@@ -65,7 +67,7 @@ Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans e
 
 - **Zero runtime dependencies.** `install.js` is a single CommonJS file that uses only Node.js built-ins (`fs`, `path`, `os`, `readline`, `child_process`). No `npm`, no `node_modules`, no `package.json`.
 - **Node.js 14 LTS minimum.** Uses the callback-based `readline.createInterface` API (not `readline/promises`, which requires Node 17+).
-- **Idempotent on existing projects.** Re-running must preserve existing `.specs/config.yaml`, `.specs/principles.md`, and all feature folders. When a file already exists, either skip it or read it for defaults — never silently overwrite. The `_templates/` directory is the exception — it is always overwritten with the latest framework templates on re-install.
+- **Idempotent on existing projects.** Re-running must preserve existing `.specs/principles.md` and all feature folders. `config.yaml` is **always overwritten** on re-run — `collectConfig()` reads all existing values as defaults before prompting, so the rendered output reflects the user's current choices. The `_templates/` directory is also always overwritten with the latest framework templates on re-install.
 - **Per-project config is sovereign.** If both per-project and global configs exist, per-project wins. The installer writes per-project by default.
 - **`--defaults` / `-y` flag.** Passing either flag at invocation skips all prompts (using the defaults), skips the summary confirmation, and runs non-interactively. Useful for scripted setups and quick trials.
 - **All prompts have sensible defaults.** A user pressing Enter at every prompt should get a working install with reasonable choices.
@@ -128,7 +130,7 @@ node /path/to/spek-less/install.js
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
-ls -la .claude/commands/spek/     # should contain all skill files
+ls -la .claude/commands/spek/     # Claude Code default; Codex → .codex/skills/, OpenCode → .opencode/commands/spek/
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
 # 4. Start Claude Code in the scratch project and run a workflow

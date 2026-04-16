@@ -39,12 +39,23 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 
 ## Sync Rule
 
-- Whenever any file in `skills/` or `_templates/` is created or modified, replicate the change to every installed copy that exists:
-  - `.claude/commands/spek/` (project-local install, in this repo)
-  - `~/.claude/commands/spek/` (global install, if the directory exists)
-- Check for existence before copying — do not create the directory if it isn't already there.
-- This sync is mandatory, not optional. A change to `skills/new.md` that isn't reflected in `.claude/commands/spek/new.md` means the running skills and the source diverge.
-- **When adding a new skill**, also update `_templates/spekless-block.md.tmpl` to include the new skill in the invocation list. This template is what `install.js` renders into a project's `CLAUDE.md` — if it falls behind, newly installed projects will be missing the skill from their contributor docs.
+Whenever any file in `skills/` or `_templates/` is created, modified, or deleted, replicate the change to every installed copy that exists. Check for existence before copying — do not create the directory if it isn't already there. When a file is deleted from `skills/` or `_templates/`, also delete the corresponding installed copy from every path that exists. Running `node install.js` handles both concerns automatically on re-run.
+
+| AI Agent | Project-local | Global |
+|---|---|---|
+| Claude Code | `.claude/commands/spek/` | `~/.claude/commands/spek/` |
+| Codex | `.codex/skills/` | `~/.codex/skills/` |
+| OpenCode | `.opencode/commands/spek/` | `~/.config/opencode/commands/spek/` |
+
+This sync is mandatory, not optional. A change to `skills/new.md` that isn't reflected in the installed copy means the running skills and the source diverge.
+
+**Sync is not a raw copy.** When syncing `skills/` changes to an installed directory, apply `{{CMD_PREFIX}}` substitution with the correct prefix for that agent's directory — identical to what `installSkillsTo(dest, prefix)` does in `install.js`. Copying `skills/new.md` verbatim to `.claude/commands/spek/` would leave `{{CMD_PREFIX}}spek:X` literals in the installed file instead of the resolved `/spek:X`.
+
+## Command References
+
+- Skill source files (`skills/*.md`) use `{{CMD_PREFIX}}spek:X` in `## Output to user` sections — never a hardcoded prefix. The installer substitutes the correct prefix per agent when copying skills to their target directory.
+- Internal guidance (frontmatter descriptions, behavior rules, section headers) uses bare `spek:X` — the prefix is irrelevant there.
+- When authoring a new skill, use `{{CMD_PREFIX}}spek:X` in every user-facing reference (output text, AskUserQuestion prompts). Do not read `cmd_prefix` from `config.yaml` at runtime.
 
 ## Security
 

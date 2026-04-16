@@ -72,8 +72,7 @@ spek-less/
 │   ├── execution.md.tmpl
 │   ├── project.md.tmpl
 │   ├── config.yaml.tmpl
-│   ├── principles.md.tmpl
-│   └── spekless-block.md.tmpl              # CLAUDE.md SpekLess block (rendered by installer)
+│   └── principles.md.tmpl
 ├── examples/
 │   ├── 001_toy-feature/                    # worked greenfield example
 │   │   ├── spec.md
@@ -139,8 +138,8 @@ Before committing a non-trivial change, run the smoke test in [`docs/maintenance
 Use descriptive, scope-prefixed commit messages:
 
 - `skills/plan: handle mid-execute replanning correctly`
-- `installer: preserve existing config on re-run`
-- `templates: add {{PROJECT_HINTS}} placeholder to config.yaml.tmpl`
+- `installer: route skills to correct agent directory`
+- `templates: add {{SUBAGENT_THRESHOLD}} placeholder to config.yaml.tmpl`
 - `docs: document the section-ownership exception`
 - `example: update toy-feature to match new spec.md structure`
 
@@ -160,16 +159,3 @@ See [What's deliberately missing](docs/architecture.md#whats-deliberately-missin
 - **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.js` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
 
 When in doubt, read `docs/architecture.md` and check whether the change would contradict it. If yes, ask. If no, proceed.
-
-## SpekLess
-
-This project uses SpekLess for spec-first development.
-- **Config:** `.specs/config.yaml`
-- **Principles:** `.specs/principles.md` — read by every skill, constrains all plans and execution
-- **Feature specs:** `.specs/NNN_*/spec.md` — one living design doc per feature
-- **Skills:** `.claude/commands/spek/`
-  - *Entry points:* `/spek:kickoff`, `/spek:ingest`, `/spek:new`, `/spek:adopt`, `/spek:quick`
-  - *Workflow:* `/spek:discuss`, `/spek:plan`, `/spek:execute`, `/spek:verify`
-  - *Convenience:* `/spek:commit`, `/spek:status`, `/spek:resume`
-
-Workflow: `/spek:kickoff` (greenfield) or `/spek:new` (feature) → `/spek:discuss` → `/spek:plan` → `/spek:execute` → `/spek:verify`
