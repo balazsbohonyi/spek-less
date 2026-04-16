@@ -3,18 +3,18 @@ name: spek:plan
 description: Write or rewrite the Plan section of a feature spec — task breakdown with checkboxes plus per-task details. Reads execution.md if present (for mid-execute replanning). Safe to re-run. May spawn an Explore sub-agent for unfamiliar codebases.
 ---
 
-# /spek:plan — Commit to an approach
+# spek:plan — Commit to an approach
 
-You are writing the `## Plan` section of a feature spec. This is **convergent thinking** — pick one approach and lay out the concrete work. If the user still has open questions about direction, send them back to `/spek:discuss`.
+You are writing the `## Plan` section of a feature spec. This is **convergent thinking** — pick one approach and lay out the concrete work. If the user still has open questions about direction, send them back to `spek:discuss`.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:plan 003`). Resolve via "Current feature discovery" (see `discuss.md`) if omitted.
-- Optional free-text modifier from the invocation (e.g. `/spek:plan use Postgres instead`). Incorporate into the new plan.
+- Optional feature argument (e.g. `spek:plan 003`). Resolve via "Current feature discovery" (see `discuss.md`) if omitted.
+- Optional free-text modifier from the invocation (e.g. `spek:plan use Postgres instead`). Incorporate into the new plan.
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `project_hints`, `subagent_threshold`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists) — full file. Every task in the Plan must be consistent with these.
 3. **`.specs/project.md`** (if exists) — full file. Scope and constraints sections matter most.
 4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` + `## Discussion`. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite").
@@ -28,9 +28,9 @@ Produce a task breakdown where each task is:
 - **Atomic** — can be completed in one sitting, one logical change.
 - **Ordered** — sequential dependencies explicit; independent tasks can be in any order.
 - **Scoped** — names the files it touches (or a clear "create new file" marker).
-- **Testable** — `/spek:verify` must be able to tell whether it was done correctly.
+- **Testable** — `spek:verify` must be able to tell whether it was done correctly.
 
-Rule of thumb: 3–8 tasks for a typical feature. Fewer than 3 means the feature is too small to need a plan; go straight to `/spek:execute`. More than 8 usually means the feature should be decomposed into sibling specs via `part_of:`.
+Rule of thumb: 3–8 tasks for a typical feature. Fewer than 3 means the feature is too small to need a plan; go straight to `spek:execute`. More than 8 usually means the feature should be decomposed into sibling specs via `part_of:`.
 
 **Decomposition offer.** Always draft the **full plan first** — all tasks + Details — before raising decomposition. Then, if the task count exceeds 8, use AskUserQuestion with the proposed sibling groupings spelled out (e.g., "Tasks 1–3 → 016.1 Auth sessions; Tasks 4–6 → 016.2 Token refresh") and two options:
 
@@ -120,4 +120,4 @@ End with:
 - **Idempotent.** Re-running fully rewrites Plan. Checkbox state preservation on unchanged tasks is the one subtlety — respect it.
 - **Principles-enforcing.** If the most obvious plan would violate a principle in `principles.md`, either pick a different approach or flag the conflict prominently in the task details so the user can override consciously.
 - **Explore sub-agent for unfamiliar code.** Follow the `subagent_threshold` rule. Burning main-context tokens on bulk source reads is exactly the failure mode SpekLess exists to avoid.
-- **Never execute.** Planning does not edit code. If you catch yourself about to write a code change, stop — that's `/spek:execute`'s job.
+- **Never execute.** Planning does not edit code. If you catch yourself about to write a code change, stop — that's `spek:execute`'s job.

@@ -3,13 +3,13 @@ name: spek:ingest
 description: Convert existing plans, PRDs, or notes (file or current conversation) into one or more SpekLess specs with graduated status. Use when you already have written material and want proper spec coverage without starting from scratch.
 ---
 
-# /spek:ingest — Convert existing documents into SpekLess specs
+# spek:ingest — Convert existing documents into SpekLess specs
 
-You are transforming existing content — a file, a PRD, conversation notes — into properly-formed SpekLess specs. This is the "I already have a plan" entry point, complementing `/spek:new` (blank slate) and `/spek:adopt` (code-first).
+You are transforming existing content — a file, a PRD, conversation notes — into properly-formed SpekLess specs. This is the "I already have a plan" entry point, complementing `spek:new` (blank slate) and `spek:adopt` (code-first).
 
 ## Inputs
 
-- Optional file path: `/spek:ingest path/to/plan.md` — reads the given file.
+- Optional file path: `spek:ingest path/to/plan.md` — reads the given file.
 - No argument: scans the current conversation for plan/PRD content, shows a one-paragraph summary of what was found, confirms via AskUserQuestion before ingesting. If nothing usable found, asks the user for a file path or pasted text.
 
 ## Reads
@@ -68,7 +68,7 @@ For each approved spec:
 2. **Collision policy:** if the slug already exists under `<specs_root>/`, append `-2` (then `-3`, …) until unique.
 3. **Create** `<specs_root>/<id>_<slug>/spec.md`.
 4. **`part_of:`** — read `project.md`'s frontmatter `name:` field if it exists; otherwise leave blank. Use the string value, not a file path.
-5. **`starting_sha:`** — always leave blank (captured on first `/spek:execute` run).
+5. **`starting_sha:`** — always leave blank (captured on first `spek:execute` run).
 
 **Structural reference: `_templates/spec.md.tmpl` is authoritative.**
 - Frontmatter field names, order, and format must match the template exactly.
@@ -91,12 +91,12 @@ For each approved spec:
 ```
 _Imported from [filename or "current conversation"] on [date]._
 ```
-For `discussing`: add `_Run \`/spek:plan\` to add implementation details before executing._`
-For `created`: add `_Run \`/spek:discuss\` then \`/spek:plan\` to define the approach._`
+For `discussing`: add `_Run \`spek:plan\` to add implementation details before executing._`
+For `created`: add `_Run \`spek:discuss\` then \`spek:plan\` to define the approach._`
 
 For `discussing` specs, after the import note:
 ```
-**Proposed tasks** (from import — run `/spek:plan` to formalize):
+**Proposed tasks** (from import — run `spek:plan` to formalize):
 - Task title 1
 - Task title 2
 ```
@@ -107,7 +107,7 @@ If `project.md` exists, add under `## Context`: `> Part of [**<name-value>**](..
 
 **project.md (multi-feature only):**
 - If it doesn't exist AND the ingested content has project-level content (vision, goals, scope, success metrics): offer via AskUserQuestion to create it from `_templates/project.md.tmpl` filled from the source content.
-- If it already exists: skip (user can run `/spek:kickoff` to evolve it).
+- If it already exists: skip (user can run `spek:kickoff` to evolve it).
 
 **principles.md (single or multi-feature, gated on content):**
 1. Scan ingested content for principles-worthy prose: language/framework choices, testing approach, architecture rules, module boundaries, security constraints.
@@ -122,7 +122,7 @@ If `project.md` exists, add under `## Context`: `> Part of [**<name-value>**](..
 - **`<specs_root>/NNN_<slug>/spec.md`** — one per approved feature, populated per granularity table above.
 - **`.specs/project.md`** — only if offered and user confirmed (multi-feature path, file absent).
 - **`.specs/principles.md`** — only if offered and user confirmed.
-- Does NOT create `execution.md` — that's `/spek:execute`'s job.
+- Does NOT create `execution.md` — that's `spek:execute`'s job.
 - Does NOT touch source files, `config.yaml`, or any existing spec.
 
 ## Output to user
@@ -133,9 +133,9 @@ Created N spec(s):
   .specs/018_user-profile/spec.md      — discussing  (3 tasks)
 
 Next steps:
-  - planning specs: run /spek:execute to implement
-  - discussing specs: run /spek:plan to add implementation details
-  - created specs: run /spek:discuss then /spek:plan to define the approach
+  - planning specs: run {{CMD_PREFIX}}spek:execute to implement
+  - discussing specs: run {{CMD_PREFIX}}spek:plan to add implementation details
+  - created specs: run {{CMD_PREFIX}}spek:discuss then {{CMD_PREFIX}}spek:plan to define the approach
 ```
 
 ## Hard rules

@@ -4,7 +4,7 @@
 
 SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
-SpekLess ships today as **Claude Code skills** (the `.claude/commands/` convention). The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The slash-command mechanics and built-in sub-agent delegation (Explore, Plan) are Claude Code-specific in v1.0.0.
+SpekLess ships as rendered skills for **Claude Code**, **Codex CLI**, and **OpenCode**. The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The source `skills/` directory is canonical; the installer renders that source into each agent's package format.
 
 ---
 
@@ -44,7 +44,7 @@ SpekLess is the minimal system that keeps the good parts and cuts the rest:
 
 ## Install
 
-SpekLess is a set of Claude Code skills and an installer. Clone or download this repo, then run the installer inside any project where you want SpekLess:
+SpekLess is a cross-agent skill set plus an installer. Clone or download this repo, then run the installer inside any project where you want SpekLess:
 
 ```bash
 git clone https://github.com/balazsbohonyi/spek-less.git /path/to/spek-less
@@ -60,21 +60,28 @@ node /path/to/spek-less/install.js --defaults
 
 The installer asks:
 
-1. Slash command namespace (default: `spek` — invoked as `/spek:plan`, `/spek:execute`, etc.)
-2. Install scope: per-project, global, or both
-3. Specs root directory (default: `.specs/`)
-4. Whether `/spek:execute` should suggest commits (default: no)
-5. Subagent delegation threshold (default: 3 reads)
-6. Free-text project language/framework hints
-7. Whether to create a starter `principles.md` (default: yes — `/spek:kickoff` will help fill it in)
-8. Commit message style for `/spek:commit` — `plain` (default), `conventional`, or a custom free-text rule
+1. Command namespace (default: `spek`)
+2. Target AI agent: Claude Code, Codex CLI, or OpenCode
+3. Install scope: per-project, global, or both
+4. Specs root directory (default: `.specs/`)
+5. Whether the execute command should suggest commits (default: no)
+6. Subagent delegation threshold (default: 3 reads)
+7. Whether to create a starter `principles.md` (default: yes)
+8. Commit message style for the commit command — `plain` (default), `conventional`, or a custom free-text rule
 
 The installer also:
 - Detects if the directory is not a git repo and offers to run `git init`
-- Copies templates to `.specs/_templates/` so skills can reference them at runtime
-- Writes a `## SpekLess` section to `CLAUDE.md` (created if missing) so every session has project context
+- Renders templates to `.specs/_templates/` so skills can reference them at runtime
+- Renders installed skills per agent:
+- Claude Code and OpenCode: flat `<skill>.md` command files
+- Codex: `.codex/skills/<namespace>-<skill>/SKILL.md` packages
 
-The installer is **idempotent and safe on existing projects**: re-running it preserves your features, config, and principles and only patches what's missing.
+The installer is **idempotent and safe on existing projects**: re-running it preserves your features and principles, rewrites config and rendered artifacts from current source, and removes stale deleted skills/templates from installed copies.
+
+Command form by agent:
+- Claude Code: `/spek:new`, `/spek:kickoff`, `/spek:plan`
+- OpenCode: `/spek:new`, `/spek:kickoff`, `/spek:plan`
+- Codex CLI: `$spek-new`, `$spek-kickoff`, `$spek-plan`
 
 ---
 
@@ -282,6 +289,8 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             ├── kickoff.md
             ├── new.md
             ├── adopt.md
+            ├── ingest.md
+            ├── quick.md
             ├── discuss.md
             ├── plan.md
             ├── execute.md
@@ -290,6 +299,8 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             ├── status.md
             └── resume.md
 ```
+
+Claude/OpenCode install flat command files inside their namespace directories. Codex installs one packaged skill per directory under `.codex/skills/<namespace>-<skill>/SKILL.md`.
 
 ---
 

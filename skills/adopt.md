@@ -3,7 +3,7 @@ name: spek:adopt
 description: Retroactively create a spec for code that already exists — reverse-engineers Context and Plan from the actual files. Use when you built something without SpekLess and want documentation + a verification baseline after the fact. May spawn an Explore sub-agent.
 ---
 
-# /spek:adopt — Reverse-engineer a spec from existing code
+# spek:adopt — Reverse-engineer a spec from existing code
 
 You are creating a feature spec for code that was written WITHOUT SpekLess and needs to be retroactively documented. The spec should read as if the author had used SpekLess from the start: Context explains why the code exists, Plan describes the work as if it were planned up-front (with all tasks pre-checked since the work is done).
 
@@ -12,14 +12,14 @@ This is a capability neither GSD nor SpecKit offers. It's the main reason SpekLe
 ## Inputs
 
 - **Required argument:** a short description of what to adopt. Examples:
-  - `/spek:adopt "the auth flow in src/auth/"`
-  - `/spek:adopt "everything changed in the last 3 commits"`
-  - `/spek:adopt "the billing module — files listed below" file1.ts file2.ts`
+  - `spek:adopt "the auth flow in src/auth/"`
+  - `spek:adopt "everything changed in the last 3 commits"`
+  - `spek:adopt "the billing module — files listed below" file1.ts file2.ts`
 - If no argument given, ask the user to describe the scope before proceeding.
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `project_hints`, `subagent_threshold`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists).
 3. **`.specs/project.md`** (if exists).
 4. **`.specs/`** directory listing — to determine next sequential number.
@@ -39,20 +39,20 @@ This is a capability neither GSD nor SpecKit offers. It's the main reason SpekLe
 
 ## Actions
 
-1. **Derive feature number and slug** the same way `/spek:new` does.
+1. **Derive feature number and slug** the same way `spek:new` does.
 2. **Create the feature folder** `<specs_root>/NNN_<slug>/`.
 3. **Create `spec.md`** from the template, but populate it from what you learned:
    - **Frontmatter:**
      - `id`, `title`, `created`: as normal
      - `status: done` (the work is already done — this is retroactive)
-     - `starting_sha:` set to the current git HEAD (short SHA). The diff baseline is "now," which means `/spek:verify` on an adopted feature becomes a documentation check rather than a diff check.
+     - `starting_sha:` set to the current git HEAD (short SHA). The diff baseline is "now," which means `spek:verify` on an adopted feature becomes a documentation check rather than a diff check.
      - `part_of: <name-value>` if `project.md` exists — read its frontmatter `name` field (a plain string like `SpekLess`); use the string value, NOT a file path.
    - **`## Context`:** infer from the code's purpose, not from commit messages (commits may be noise). Write the "why" as you understand it from what the code does. If unsure, flag it: "The purpose here is inferred; confirm with the author."
    - **`## Discussion`:** write a brief section listing visible design decisions: what abstractions were chosen, what alternatives would have been plausible, what the code seems to explicitly NOT do. This is what a careful reader would say about the code, not what the original author thought.
    - **`## Plan`:** **all tasks pre-checked** (`N. [x]`). Break the work into retrospective tasks — "what would this plan have looked like if written up front?" Each task should map cleanly to a piece of the actual code. Include the Files and Approach fields per the template.
-   - **`## Verification`:** leave empty. The user will run `/spek:verify` next.
+   - **`## Verification`:** leave empty. The user will run `spek:verify` next.
 4. **Do not create `execution.md`.** Adopted features have no execution history — the work predates SpekLess. Leave it absent.
-5. **If `project.md` exists**, add the same `> Part of [**{{project_name}}**](../project.md).` link under `## Context` that `/spek:new` does.
+5. **If `project.md` exists**, add the same `> Part of [**{{project_name}}**](../project.md).` link under `## Context` that `spek:new` does.
 
 ## Writes
 
@@ -69,7 +69,7 @@ Adopted <N files / git range / description> as .specs/NNN_<slug>/
 - starting_sha: <sha> (HEAD at adopt time)
 - Flags: <anything you were unsure about, if any>
 
-Next step: run /spek:verify to check that the Plan's task breakdown matches
+Next step: run {{CMD_PREFIX}}spek:verify to check that the Plan's task breakdown matches
 the actual code. Verify will read each task's Details and confirm the code
 exists as described — it flags discrepancies as documentation issues.
 ```

@@ -1,9 +1,9 @@
 ---
 name: spek:status
-description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both /spek:list and /spek:status from the deferred convenience list.
+description: Show the status of all features at a glance — or detail for one feature. Read-only. Use when resuming work, checking progress, or deciding what to work on next. Subsumes both spek:list and spek:status from the deferred convenience list.
 ---
 
-# /spek:status — See where things stand
+# spek:status — See where things stand
 
 You are showing the user a summary of their SpekLess features. This is the "where am I?" skill — useful when starting a fresh session, resuming after a context reset, or deciding what to work on next.
 
@@ -11,7 +11,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:status 003`). If given, show detail for that feature only.
+- Optional feature argument (e.g. `spek:status 003`). If given, show detail for that feature only.
 - If omitted, show all features.
 
 ## Reads
@@ -60,12 +60,12 @@ When no siblings exist (omit column):
 Order siblings by their `.N` suffix in **ascending** order (016.1 before 016.2). Parent rows with `status: decomposed` show `—` in the Tasks column (the work is in the siblings).
 
 5. Below the table, suggest a next step based on the current feature's status:
-   - `discussing` → "Next: `/spek:plan` when the direction is clear."
-   - `planning` → "Next: `/spek:execute` to start implementation."
-   - `executing` → "Next: `/spek:execute` to continue, or `/spek:verify` if all tasks are done."
-   - `verifying` → "Next: `/spek:commit` if verified clean, or `/spek:execute` to fix issues."
-   - `decomposed` → "Feature decomposed. Run `/spek:resume <id>` to see sibling progress and get routed to the next step."
-   - `done` → "Feature is complete. Start a new one with `/spek:new`."
+   - `discussing` → "Next: `{{CMD_PREFIX}}spek:plan` when the direction is clear."
+   - `planning` → "Next: `{{CMD_PREFIX}}spek:execute` to start implementation."
+   - `executing` → "Next: `{{CMD_PREFIX}}spek:execute` to continue, or `{{CMD_PREFIX}}spek:verify` if all tasks are done."
+   - `verifying` → "Next: `{{CMD_PREFIX}}spek:commit` if verified clean, or `{{CMD_PREFIX}}spek:execute` to fix issues."
+   - `decomposed` → "Feature decomposed. Run `{{CMD_PREFIX}}spek:resume <id>` to see sibling progress and get routed to the next step."
+   - `done` → "Feature is complete. Start a new one with `{{CMD_PREFIX}}spek:new`."
 
 ### Single-feature detail (with argument)
 
@@ -85,7 +85,7 @@ Tasks:
 Last log entry:
   ## 2026-04-05 09:22 — Task 2 complete
 
-Next: /spek:execute to continue from task 3.
+Next: {{CMD_PREFIX}}spek:execute to continue from task 3.
 ```
 
 ## Writes

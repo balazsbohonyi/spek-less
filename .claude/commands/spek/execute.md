@@ -3,18 +3,18 @@ name: spek:execute
 description: Execute the Plan — implements code changes task-by-task, appends timestamped entries to execution.md, and ticks checkboxes in the Plan's Tasks list as it goes. Resumable — picks up from whatever's unchecked. Safe to re-run.
 ---
 
-# /spek:execute — Do the work
+# spek:execute — Do the work
 
 You are implementing a feature spec's Plan. You edit source code, run tests, and record what you did as you go. You are the only skill that writes code.
 
 ## Inputs
 
-- Optional feature argument (e.g. `/spek:execute 003`). Resolve via current-feature discovery if omitted.
-- Optional free-text modifier (e.g. `/spek:execute address the issues verify flagged` or `/spek:execute skip task 3`). Interpret these as guidance, not as replacements for the Plan.
+- Optional feature argument (e.g. `spek:execute 003`). Resolve via current-feature discovery if omitted.
+- Optional free-text modifier (e.g. `spek:execute address the issues verify flagged` or `spek:execute skip task 3`). Interpret these as guidance, not as replacements for the Plan.
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `suggest_commits`, `project_hints`.
+1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `suggest_commits`.
 2. **`.specs/principles.md`** (if exists) — full file. Every change must be consistent.
 3. **`<feature>/spec.md`** — read ONLY `## Plan`. Use Grep for section headers then Read with offsets. Do not read Context/Discussion — they're the background, not the work. Read `## Verification` only when re-running after a verify pass flagged issues — on first execution, skip it.
 4. **`<feature>/execution.md`** (if exists) — read the tail (last ~50 lines is enough). You need to know where the previous run stopped. Do not re-read older entries unless you need to understand a course correction.
@@ -24,7 +24,7 @@ You are implementing a feature spec's Plan. You edit source code, run tests, and
 
 On the **first** run for this feature (detected by: no `execution.md` file AND no `starting_sha` in frontmatter):
 
-1. Capture the current git HEAD: `git rev-parse HEAD`. Write the short SHA to frontmatter `starting_sha:`. This is the audit anchor — `/spek:verify` later reads `git diff <starting_sha>..HEAD`.
+1. Capture the current git HEAD: `git rev-parse HEAD`. Write the short SHA to frontmatter `starting_sha:`. This is the audit anchor — `spek:verify` later reads `git diff <starting_sha>..HEAD`.
 2. Create `execution.md` from the template.
 3. Append a `Started` entry to the log.
 
@@ -49,22 +49,22 @@ Between tasks, check if the user has interrupted or given a course correction. I
 If during execution the user says "stop, change direction" or you discover the current task can't be completed as planned:
 
 1. Append a `#### <timestamp> — Course correction` entry describing what changed and why.
-2. Do NOT edit the Plan section yourself — that's `/spek:plan`'s job.
-3. Stop and tell the user: "Plan needs revision. Run `/spek:plan <instructions>` to update the approach, then re-run `/spek:execute` to continue. I've recorded the correction in the log."
+2. Do NOT edit the Plan section yourself — that's `spek:plan`'s job.
+3. Stop and tell the user: "Plan needs revision. Run `spek:plan <instructions>` to update the approach, then re-run `spek:execute` to continue. I've recorded the correction in the log."
 
 If the user's course correction is small (e.g., "use `const` instead of `let` in task 2"), you may adjust within the current task without re-planning. Use judgment — substantive change = re-plan; cosmetic change = continue.
 
 ## Addressing verify-flagged issues
 
-If invoked after `/spek:verify` flagged issues (the Verification section contains unresolved items):
+If invoked after `spek:verify` flagged issues (the Verification section contains unresolved items):
 
 1. Read the Verification section.
 2. For each flagged item, implement the fix.
 3. Append log entries describing each fix.
 4. Tick any task checkboxes that were reset by the previous verify pass.
-5. Tell the user to re-run `/spek:verify` when done.
+5. Tell the user to re-run `spek:verify` when done.
 
-Do NOT rewrite the Verification section — that's `/spek:verify`'s job. Your job is to do the work; verify's job is to check it.
+Do NOT rewrite the Verification section — that's `spek:verify`'s job. Your job is to do the work; verify's job is to check it.
 
 ## Context exhaustion and resuming across sessions
 
@@ -79,10 +79,10 @@ Long features can run out of conversation context before all tasks are complete.
    ```
    #### <timestamp> — Pausing for context reset
    Completed tasks 1–3. Task 4 not started. Source is clean;
-   all changes reflected in this log and on disk. Resume with /spek:execute.
+   all changes reflected in this log and on disk. Resume with spek:execute.
    ```
 3. **Tell the user** what you did and that the session should be reset:
-   > "I've completed tasks 1–3 and logged a pause point. Context is getting tight. Start a fresh session (or `/clear`) and run `/spek:execute` again — I'll read the log and pick up from task 4."
+   > "I've completed tasks 1–3 and logged a pause point. Context is getting tight. Start a fresh session (or `/clear`) and run `spek:execute` again — I'll read the log and pick up from task 4."
 4. **Stop.** Do not start another task. Do not try to compress the conversation yourself.
 
 **On the resume run** (in a fresh session):

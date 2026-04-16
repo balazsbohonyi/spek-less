@@ -55,5 +55,5 @@ Tests: renders all three options, onChange fires setTheme with the selected valu
 `bun test theme` — 8 pass, 0 fail.
 
 #### 2026-04-05 10:07 — Task 4 complete
-Marked task 4 checkbox in Plan. All tasks done. Ready for /spek:verify.
+Marked task 4 checkbox in Plan. All tasks done. Ready for spek:verify.
 
