@@ -80,9 +80,11 @@ Features are numbered sequentially and prefixed with a zero-padded integer. Numb
 
 | AI Agent | Project-local | Global |
 |---|---|---|
-| Claude Code | `.claude/commands/{ns}/` | `~/.claude/commands/{ns}/` |
-| Codex | `.codex/skills/` | `~/.codex/skills/` |
-| OpenCode | `.opencode/commands/{ns}/` | `~/.config/opencode/commands/{ns}/` |
+| Claude Code | `.claude/commands/{ns}/<skill>.md` | `~/.claude/commands/{ns}/<skill>.md` |
+| Codex | `.codex/skills/{ns}-<skill>/SKILL.md` | `~/.codex/skills/{ns}-<skill>/SKILL.md` |
+| OpenCode | `.opencode/commands/{ns}/<skill>.md` | `~/.config/opencode/commands/{ns}/<skill>.md` |
+
+The installer renders canonical source references `spek:<skill>` to the selected namespace during install. Claude Code and OpenCode keep the `namespace:skill` form. Codex renders the same canonical source reference as `namespace-skill` and packages each skill in its own directory.
 
 ### `spec.md` sections and ownership
 

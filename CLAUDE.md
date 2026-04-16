@@ -1,5 +1,3 @@
-# CLAUDE.md
-
 This file provides guidance to Claude Code when working on the **SpekLess** codebase itself (not when using SpekLess inside another project).
 
 If you're here to *use* SpekLess to build something else, read `README.md` instead. This file is for developing/maintaining the framework.

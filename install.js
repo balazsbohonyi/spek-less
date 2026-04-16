@@ -4,14 +4,15 @@
  * SpekLess installer
  *
  * Interactive installer for SpekLess — a lightweight spec-first development
- * framework for Claude Code. Run this script inside any project (new or existing).
+ * framework for Claude Code, Codex CLI, and OpenCode. Run this script inside
+ * any project (new or existing).
  *
  * What it does:
  *   1. Asks a handful of configuration questions
  *   2. Writes .specs/config.yaml (per-project) and optionally ~/.claude/spek-config.yaml (global)
- *   3. Copies skills into .claude/commands/<namespace>/ or ~/.claude/commands/<namespace>/ or both
+ *   3. Renders skills into agent-specific install targets
  *   4. Optionally creates .specs/principles.md from the template
- *   5. Copies templates to .specs/_templates/ for runtime access by skills
+ *   5. Renders templates to .specs/_templates/ for runtime access by skills
  *
  * Idempotent: re-running preserves existing features and principles.
  * config.yaml is always overwritten (collectConfig reads existing values as defaults).
@@ -142,6 +143,42 @@ function cmd(str) {
   return TERM.useColor ? C.green + str + C.reset : str;
 }
 
+function renderSkillRef(namespace, agent, skillName) {
+  return agent === 'codex'
+    ? `${namespace}-${skillName}`
+    : `${namespace}:${skillName}`;
+}
+
+function renderCommand(namespace, agent, prefix, skillName) {
+  return `${prefix}${renderSkillRef(namespace, agent, skillName)}`;
+}
+
+function renderSpekRefs(content, namespace, agent) {
+  return content.replace(/\bspek:([a-z0-9-]+)\b/g, (_, skillName) => (
+    renderSkillRef(namespace, agent, skillName)
+  ));
+}
+
+function renderTemplateContent(content, namespace, agent) {
+  return renderSpekRefs(content, namespace, agent);
+}
+
+function renderSkillContent(content, namespace, agent, prefix) {
+  const withPrefix = content.replace(/\{\{CMD_PREFIX\}\}/g, prefix);
+  return renderSpekRefs(withPrefix, namespace, agent);
+}
+
+function isLegacySpekSkillFile(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    return /(^|\n)name:\s*"?spek:[a-z0-9-]+/m.test(content)
+      || /(^|\n)#\s+spek:[a-z0-9-]+/m.test(content);
+  } catch (_) {
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // readline helpers (Node 14 LTS compatible — no readline/promises needed)
 // ---------------------------------------------------------------------------
@@ -267,35 +304,47 @@ async function collectConfig(defaultsMode) {
   card(2, 5, 'Configuration', 'config');
 
   // Namespace — with validation loop
-  let namespace = await ask('Slash command namespace (affects /NAMESPACE:plan, etc.)', defaultNamespace);
+  let namespace = await ask('Command namespace (affects spek:plan / spek-plan style names)', defaultNamespace);
   while (!namespace || /[\s/]/.test(namespace)) {
     console.log(`${C.red}Error:${C.reset} Namespace must be non-empty and contain no spaces or slashes.`);
-    namespace = await ask('Slash command namespace (affects /NAMESPACE:plan, etc.)', defaultNamespace);
+    namespace = await ask('Command namespace (affects spek:plan / spek-plan style names)', defaultNamespace);
   }
+  console.log('');
+
+  // Agent question - determines cmdPrefix and skills install directory
+  const agentChoices = ['claude_code', 'codex', 'opencode'];
+  const agentLabels  = ['Claude Code', 'Codex CLI', 'OpenCode'];
+  const defaultAgentIdx = 0;
+  console.log('Which AI coding agent are you using?');
+  agentLabels.forEach((label, i) => console.log(`  ${C.bold}${i + 1}${C.reset}. ${label}`));
+  const agentIdx = await askChoice('Choice', agentChoices, defaultAgentIdx);
+  const aiAgent   = agentChoices[agentIdx];
+  const aiAgentLabel = agentLabels[agentIdx];
+  const cmdPrefix = aiAgent === 'codex' ? '$' : '/';
   console.log('');
 
   const specsRoot = await ask('Specs root directory (relative to project root)', defaultSpecsRoot);
 
   console.log('');
-  console.log(`Git integration: should ${cmd(`${namespace}:execute`)} suggest commits at natural boundaries?`);
+  console.log(`Git integration: should ${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'execute'))} suggest commits at natural boundaries?`);
   console.log(`${C.dim}Default is NO — respects your commit rhythm. You can still commit manually anytime.${C.reset}`);
   const suggestCommitsAnswer = await askYN('Suggest commits?', defaultSuggestCommits === 'true' ? 'y' : 'n');
   console.log('');
   const suggestCommits = suggestCommitsAnswer;
 
   const subagentThreshold = await ask(
-    `Subagent delegation threshold (# of reads before ${namespace}:plan delegates to Explore)`,
+    `Subagent delegation threshold (# of reads before ${renderSkillRef(namespace, aiAgent, 'plan')} delegates to Explore)`,
     defaultSubagentThresh
   );
 
   console.log('');
   const createPrinciples = await askYN(
-    `Create starter principles.md? (${namespace}:kickoff will help fill it in later)`,
+    `Create starter principles.md? (${renderCommand(namespace, aiAgent, cmdPrefix, 'kickoff')} will help fill it in later)`,
     'y'
   );
 
   console.log('');
-  console.log(`Commit message style for ${cmd(`${namespace}:commit`)}:`);
+  console.log(`Commit message style for ${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'commit'))}:`);
   console.log(`  ${C.bold}plain${C.reset}         — spec-anchored: ${cmd("'001: Add dark mode toggle — tasks 1-3'")}`);
   console.log(`  ${C.bold}conventional${C.reset}  — conventional commits: ${cmd("'feat(001): add dark mode toggle'")}`);
   console.log(`  ${C.bold}custom${C.reset}        — enter a free-text rule on the next line`);
@@ -308,26 +357,15 @@ async function collectConfig(defaultsMode) {
     commitStyle = customRule || 'plain';
   }
 
-  // Agent question — determines cmd_prefix and skills install directory
-  const agentChoices = ['claude_code', 'codex', 'opencode'];
-  const agentLabels  = ['Claude Code', 'Codex CLI', 'OpenCode'];
-  const defaultAgentIdx = 0;
-  console.log('Which AI coding agent are you using?');
-  agentLabels.forEach((label, i) => console.log(`  ${C.bold}${i + 1}${C.reset}. ${label}`));
-  const agentIdx = await askChoice('Choice', agentChoices, defaultAgentIdx);
-  const aiAgent   = agentChoices[agentIdx];
-  const aiAgentLabel = agentLabels[agentIdx];
-  const cmdPrefix = aiAgent === 'codex' ? '$' : '/';
-  console.log('');
-
+  // Agent question — determines skills install directory
   // Compute agent-dependent directory labels for install scope question
   const perProjectDir = aiAgent === 'codex'
-    ? '.codex/skills/'
+    ? `.codex/skills/${renderSkillRef(namespace, aiAgent, 'new')}/SKILL.md`
     : aiAgent === 'opencode'
       ? `.opencode/commands/${namespace}/`
       : `.claude/commands/${namespace}/`;
   const globalDir = aiAgent === 'codex'
-    ? '~/.codex/skills/'
+    ? `~/.codex/skills/${renderSkillRef(namespace, aiAgent, 'new')}/SKILL.md`
     : aiAgent === 'opencode'
       ? `~/.config/opencode/commands/${namespace}/`
       : `~/.claude/commands/${namespace}/`;
@@ -342,7 +380,7 @@ async function collectConfig(defaultsMode) {
   card(3, 5, 'Summary', 'summary');
 
   const scopeLabel = { '1': 'per-project', '2': 'global', '3': 'both' }[installScope] || installScope;
-  console.log(`  ${C.bold}Namespace:${C.reset}          ${namespace}  ${C.dim}(${cmd(`${cmdPrefix}${namespace}:kickoff`)}, ${cmd(`${cmdPrefix}${namespace}:new`)}, ${cmd(`${cmdPrefix}${namespace}:plan`)}, ...)${C.reset}`);
+  console.log(`  ${C.bold}Namespace:${C.reset}          ${namespace}  ${C.dim}(${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'kickoff'))}, ${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'new'))}, ${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'plan'))}, ...)${C.reset}`);
   console.log(`  ${C.bold}Specs root:${C.reset}         ${specsRoot}`);
   console.log(`  ${C.bold}AI agent:${C.reset}           ${aiAgentLabel}`);
   console.log(`  ${C.bold}Install scope:${C.reset}      ${scopeLabel}`);
@@ -418,9 +456,11 @@ async function runInstall(config, scriptDir) {
     }
   }
   for (const f of tmplFiles) {
-    copyFileSafe(path.join(templatesSrc, f), path.join(templatesDest, f));
+    const content = fs.readFileSync(path.join(templatesSrc, f), 'utf8');
+    const rendered = renderTemplateContent(content, namespace, aiAgent);
+    writeFileSafe(path.join(templatesDest, f), rendered);
   }
-  console.log(`${iconOk}Copied templates to ${specsRoot}/_templates/`);
+  console.log(`${iconOk}Copied rendered templates to ${specsRoot}/_templates/`);
 
   // (c) Install skills — directory and prefix depend on the chosen AI agent
   const home = safeHomedir();
@@ -440,7 +480,41 @@ async function runInstall(config, scriptDir) {
 
   function installSkillsTo(dest, prefix) {
     mkdirSafe(dest);
-    const skillFiles = fs.readdirSync(skillsSrc).filter(f => f.endsWith('.md'));
+    const skillFiles = fs.readdirSync(skillsSrc).filter(f => f.endsWith('.md')).sort();
+    const skillNames = skillFiles.map(f => path.basename(f, '.md'));
+
+    if (aiAgent === 'codex') {
+      const expectedDirNames = new Set(skillNames.map(skillName => renderSkillRef(namespace, aiAgent, skillName)));
+
+      if (fs.existsSync(dest)) {
+        for (const entry of fs.readdirSync(dest)) {
+          const entryPath = path.join(dest, entry);
+          const stat = fs.lstatSync(entryPath);
+
+          if (stat.isFile() && entry.endsWith('.md') && isLegacySpekSkillFile(entryPath)) {
+            fs.unlinkSync(entryPath);
+            continue;
+          }
+
+          if (!stat.isDirectory()) continue;
+          const skillPath = path.join(entryPath, 'SKILL.md');
+          if (fs.existsSync(skillPath) && entry.startsWith(`${namespace}-`) && !expectedDirNames.has(entry)) {
+            removePathSafe(entryPath);
+          }
+        }
+      }
+
+      for (const f of skillFiles) {
+        const skillName = path.basename(f, '.md');
+        const content = fs.readFileSync(path.join(skillsSrc, f), 'utf8');
+        const rendered = renderSkillContent(content, namespace, aiAgent, prefix);
+        const skillDir = path.join(dest, renderSkillRef(namespace, aiAgent, skillName));
+        mkdirSafe(skillDir);
+        writeFileSafe(path.join(skillDir, 'SKILL.md'), rendered);
+      }
+      return;
+    }
+
     // Purge stale skill files no longer present in source
     if (fs.existsSync(dest)) {
       const srcSet = new Set(skillFiles);
@@ -448,10 +522,11 @@ async function runInstall(config, scriptDir) {
         if (!srcSet.has(f)) fs.unlinkSync(path.join(dest, f));
       }
     }
+
     for (const f of skillFiles) {
       const content = fs.readFileSync(path.join(skillsSrc, f), 'utf8');
-      const rendered = content.replace(/\{\{CMD_PREFIX\}\}/g, prefix);
-      fs.writeFileSync(path.join(dest, f), rendered, 'utf8');
+      const rendered = renderSkillContent(content, namespace, aiAgent, prefix);
+      writeFileSafe(path.join(dest, f), rendered);
     }
   }
 
@@ -471,12 +546,13 @@ async function runInstall(config, scriptDir) {
   const configTemplate = fs.readFileSync(configTemplatePath, 'utf8');
 
   function renderConfig(tmpl) {
-    return tmpl
+    const rendered = tmpl
       .replace(/\{\{NAMESPACE\}\}/g,          namespace)
       .replace(/\{\{SPECS_ROOT\}\}/g,          specsRoot)
       .replace(/\{\{SUGGEST_COMMITS\}\}/g,     suggestCommits)
       .replace(/\{\{SUBAGENT_THRESHOLD\}\}/g,  subagentThreshold)
       .replace(/\{\{COMMIT_STYLE\}\}/g,        commitStyle);
+    return renderTemplateContent(rendered, namespace, aiAgent);
   }
 
   const perProjectConfigPath = path.join(specsRootAbs, 'config.yaml');
@@ -496,9 +572,14 @@ async function runInstall(config, scriptDir) {
       console.log(`${iconInfo}Preserving existing ${specsRoot}/principles.md`);
     } else {
       const principlesTmpl = path.join(templatesSrc, 'principles.md.tmpl');
-      copyFileSafe(principlesTmpl, principlesPath);
+      const renderedPrinciples = renderTemplateContent(
+        fs.readFileSync(principlesTmpl, 'utf8'),
+        namespace,
+        aiAgent
+      );
+      writeFileSafe(principlesPath, renderedPrinciples);
       console.log(`${iconOk}Writing ${specsRoot}/principles.md`);
-      console.log(`  ${iconInfo}(run ${cmd(`${cmdPrefix}${namespace}:kickoff`)} to have SpekLess help fill it in)`);
+      console.log(`  ${iconInfo}(run ${cmd(renderCommand(namespace, aiAgent, cmdPrefix, 'kickoff'))} to have SpekLess help fill it in)`);
     }
   }
 
@@ -567,11 +648,37 @@ function copyFileSafe(src, dest) {
   }
 }
 
+function stripUtf8Bom(content) {
+  return typeof content === 'string' && content.charCodeAt(0) === 0xFEFF
+    ? content.slice(1)
+    : content;
+}
+
 function writeFileSafe(filePath, content) {
   try {
-    fs.writeFileSync(filePath, content, 'utf8');
+    const normalized = stripUtf8Bom(content);
+    // Write explicit UTF-8 bytes so generated Codex SKILL.md files never pick up a BOM.
+    fs.writeFileSync(filePath, Buffer.from(normalized, 'utf8'));
   } catch (err) {
     console.error(`${C.red}Error:${C.reset} Could not write ${filePath}: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+function removePathSafe(targetPath) {
+  try {
+    if (!fs.existsSync(targetPath)) return;
+    const stat = fs.lstatSync(targetPath);
+    if (stat.isDirectory()) {
+      for (const entry of fs.readdirSync(targetPath)) {
+        removePathSafe(path.join(targetPath, entry));
+      }
+      fs.rmdirSync(targetPath);
+      return;
+    }
+    fs.unlinkSync(targetPath);
+  } catch (err) {
+    console.error(`${C.red}Error:${C.reset} Could not remove ${targetPath}: ${err.message}`);
     process.exit(1);
   }
 }

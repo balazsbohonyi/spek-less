@@ -2,8 +2,8 @@
 # Written by install.js. Skills read this on every invocation.
 # See ~/.claude/spek-config.yaml for global defaults (per-project wins when both exist).
 
-# Slash command namespace. Skills are invoked as /<namespace>:<skill>.
-# Example: namespace=spek → spek:plan, spek:execute, etc.
+# Command namespace. Installed skill names are rendered from this namespace.
+# Example: namespace=spek → `spek:plan` / `spek:execute` in Claude/OpenCode, `spek-plan` / `spek-execute` in Codex.
 namespace: {{NAMESPACE}}
 
 # Root directory for spec documents, relative to project root.
@@ -28,4 +28,3 @@ subagent_threshold: {{SUBAGENT_THRESHOLD}}
 # Principles in principles.md override this setting when they declare a more
 # specific commit rule (e.g. ticket-number prefixes).
 commit_style: {{COMMIT_STYLE}}
-
