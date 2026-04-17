@@ -8,7 +8,9 @@ created: 2026-04-12
 tags: []
 ---
 
-# Write "None." in Assumptions section when /spek:discuss finds no assumptions
+# Write "None." in Assumptions section
+
+Write "None." in Assumptions section when /spek:discuss finds no assumptions
 
 ## Context
 
