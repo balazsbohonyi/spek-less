@@ -1,7 +1,7 @@
 ---
 id: 024
 title: pre-execution design review
-status: verifying
+status: done
 part_of: SpekLess
 starting_sha: c708dd3
 created: 2026-04-17
@@ -95,13 +95,23 @@ None. No external bets identified - this task has no dependencies on third-party
 
 ## Verification
 
-<!--
-Written by spek:verify. Fully rewritten on re-run.
-Verify reads Plan, execution.md, and `git diff <starting_sha>..HEAD`, then reports:
-  - what works
-  - what's missing or broken
-  - whether each task in the Plan was actually completed as described
-  - any principles violations
-If issues are flagged, verify ends its turn with an AskUserQuestion offering:
-  (a) run spek:execute to fix, (b) run spek:plan to revise approach, (c) stop.
--->
+**Task-by-task check:**
+- Task 1 - Add `## Review` to the core spec structure and architecture rules: ✓ - `_templates/spec.md.tmpl:71-79` adds the dedicated `## Review` section, and `docs/architecture.md` defines its ownership and placement.
+- Task 2 - Create the `spek:review` skill and rendered installed copies: ✓ - `skills/review.md:1-98` implements the review skill, and the rendered copies exist under `.claude/commands/spek/review.md`, `.opencode/commands/spek/review.md`, and `.codex/skills/spek-review/SKILL.md`.
+- Task 3 - Teach `spek:plan` and `spek:discuss` to consume review feedback correctly: ✓ - `skills/plan.md:20,67,117,125` and `skills/discuss.md:19,31,93` now read `## Review` when appropriate without taking ownership of it.
+- Task 4 - Update user-facing and contributor docs for the new review workflow: ✓ - `README.md`, `CLAUDE.md`, `docs/comparison.md`, and `docs/maintenance.md` were updated to document the review checkpoint and how it differs from execute/verify.
+- Task 5 - Refresh worked examples to match the new spec shape and workflow: ✓ - `examples/001_toy-feature/spec.md` and `examples/002_adopted-feature/spec.md` were updated to reflect the review-era spec shape and workflow.
+- Task 6 - Smoke-test rendering, sync, and generated artifacts for the added skill: ✓ - `install.js:765-769` shows the installer next-step rendering updated for the review-inclusive workflow, and the synced agent-specific review copies plus rendered template output confirm the smoke-test coverage described in `execution.md`.
+
+**Principles check:**
+- Single-agent topology: ✓ - `skills/review.md:91-98` keeps review as an explicit main-conversation checkpoint rather than a hidden pipeline step.
+- Section ownership is strict: ✓ - `skills/review.md:79,93-98`, `skills/plan.md:67,122-125`, and `skills/discuss.md:31,93-96` keep `## Review` write-owned only by `spek:review`.
+- The document is the state: ✓ - the new checkpoint is recorded inside `spec.md`; no extra state files or lifecycle fields were introduced.
+- Append-only execution log: ✓ - `execution.md` was appended to rather than rewritten.
+- Sync Rule: ✓ - the canonical review skill and the review-aware `plan`/`discuss` updates were mirrored into the installed Claude Code, OpenCode, and Codex copies.
+
+**Goal check:** The implementation achieves the stated goal for this feature. SpekLess now has an explicit, optional, advisory pre-execution review step: a dedicated `spek:review` skill, a durable `## Review` section in the spec shape, and downstream `plan`/`discuss` instructions that can consume review findings without violating section ownership. Per user clarification, later unrelated edits from specs `015` and `025` were excluded from this verification pass.
+
+**Issues found:** None.
+
+**Status:** READY_TO_SHIP
