@@ -108,7 +108,8 @@ After confirming with the user that the new skill is warranted (see [When to ask
 6. Update `README.md`, `CLAUDE.md`, and `docs/architecture.md` to reference the new skill.
 7. Update `install.js` only if the new skill changes rendering behavior or install packaging. Ordinary new skills should be picked up automatically.
 8. Update `docs/comparison.md` if the new capability changes the feature matrix.
-9. Smoke test at least one Claude/OpenCode install and one Codex install before calling the change complete.
+9. Update the worked examples and checked-in rendered installs so the canonical spec shape and packaged skill set stay in sync.
+10. Smoke test at least one Claude/OpenCode install and one Codex install before calling the change complete.
 
 ### Modifying an existing skill
 
@@ -127,6 +128,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 3. If the template mentions SpekLess commands, verify the installer still renders those references correctly for Claude/OpenCode and Codex.
 4. Run the installer against a scratch directory to verify the generated config and copied templates look right.
 5. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` - several skills use `Grep "^## "` to find section boundaries. Workflow-facing section changes often affect multiple skills together, so check all readers before calling the template change complete.
+6. If the new section introduces an owner skill (for example `## Review` or `## Retrospective`), update `docs/architecture.md`, the README workflow tables, the worked examples, and any contributor inventories that enumerate the canonical spec shape or skill set.
 
 ### Changing the architecture
 

@@ -18,6 +18,7 @@ A detailed comparison against the closest existing spec-driven development frame
 | Task breakdown with checkboxes | ✓ | ✓ | ✓ | ✗ |
 | Idempotent skill re-runs | ✓ | ✗ (checkpoints matter) | partial | N/A |
 | Pre-execution design review checkpoint | ✓ (`/spek:review`) | partial (internal `gsd-plan-checker`) | ✗ | ✗ |
+| Post-completion retrospective step | ✓ (`/spek:retro`) | partial (milestone audits, not per-feature) | ✗ | partial (manual ADR follow-up) |
 | **Verification** | | | | |
 | Goal-backward verify step | ✓ | ✓ | ✗ | ✗ |
 | Fresh-lens verification (isolated agent) | ✓ (general-purpose subagent) | ✓ (nyquist-auditor + verifier) | ✗ | ✗ |
@@ -152,6 +153,14 @@ GSD's verifier can be configured to trigger automatic fixes. SpekLess explicitly
 3. Stop and let the user decide
 
 This preserves the cognitive separation between "does this work?" and "make it work" — which is the entire point of having a distinct verify step in the first place.
+
+### `/spek:retro` — explicit post-completion reflection
+
+Most frameworks stop at "the code shipped" and leave lessons learned either implicit or buried in chat history. GSD has milestone-level audits, and ADRs can capture important decisions, but neither gives each finished feature a dedicated, repeatable retrospective step that feeds back into project principles.
+
+SpekLess adds `/spek:retro` as an optional final pass after clean verification. The skill writes a durable `## Retrospective` section into the feature spec and, when it notices truly project-wide lessons, asks once whether to append confirmed candidate principles to `principles.md`.
+
+This keeps reflection in the same single-agent workflow as the rest of the feature, preserves section ownership, and turns "we should remember this next time" into an explicit opt-in artifact instead of a lost conversation fragment.
 
 ### `/spek:commit` — user-triggered, LLM-drafted commits
 

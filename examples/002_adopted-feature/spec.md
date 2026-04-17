@@ -12,7 +12,7 @@ tags: [auth, security, session-management]
 
 ## Context
 
-*This spec was created retroactively via `spek:adopt`. The Context below is inferred from the existing code — it was not written before implementation.*
+*This spec was created retroactively via `spek:adopt`. The Context below is inferred from the existing code - it was not written before implementation.*
 
 The application needs user authentication to protect private routes and personalize the experience. The auth module in `src/auth/` handles login, logout, session persistence via HTTP-only cookies, and route guards. It supports email/password credentials only (no OAuth, no magic links).
 
@@ -24,21 +24,21 @@ The application needs user authentication to protect private routes and personal
 
 *Design decisions visible in the code, as understood by `spek:adopt`:*
 
-**Session strategy — HTTP-only cookies vs localStorage tokens.** The code uses HTTP-only cookies with `SameSite=Strict`. This is the more secure option: tokens never touch JavaScript, eliminating XSS-based token theft. The trade-off is that the server must handle cookie management, and CORS configuration must include `credentials: 'include'`. The code accepts this trade-off explicitly — `src/auth/client.ts` sets `credentials: 'include'` on every fetch call.
+**Session strategy - HTTP-only cookies vs localStorage tokens.** The code uses HTTP-only cookies with `SameSite=Strict`. This is the more secure option: tokens never touch JavaScript, eliminating XSS-based token theft. The trade-off is that the server must handle cookie management, and CORS configuration must include `credentials: 'include'`. The code accepts this trade-off explicitly - `src/auth/client.ts` sets `credentials: 'include'` on every fetch call.
 
-**Route guarding — HOC vs middleware vs route config.** The code uses a `RequireAuth` wrapper component (`src/auth/RequireAuth.tsx`) rather than middleware or route-level config. This is the React-idiomatic approach and keeps guard logic colocated with the component tree. The alternative would have been server-side middleware redirects, which the code does NOT do — all route protection is client-side.
+**Route guarding - HOC vs middleware vs route config.** The code uses a `RequireAuth` wrapper component (`src/auth/RequireAuth.tsx`) rather than middleware or route-level config. This is the React-idiomatic approach and keeps guard logic colocated with the component tree. The alternative would have been server-side middleware redirects, which the code does NOT do - all route protection is client-side.
 
 **What the code explicitly does NOT do:** there is no token refresh mechanism. Sessions expire when the cookie expires (24h, set in `src/auth/config.ts`). No refresh token, no silent renewal. This is a simplicity choice that works for the current user base but would need revisiting for longer sessions.
 
 ## Assumptions
 
 <!--
-Written by spek:discuss. Things taken as given before building — external service
+Written by spek:discuss. Things taken as given before building - external service
 behavior, data contracts, scale limits, third-party availability.
 Checkboxes ticked [x] by spek:verify when confirmed in the implementation.
 Unverifiable assumptions are flagged explicitly rather than left silently unchecked.
 
-This feature was adopted via spek:adopt — no spek:discuss pass was run,
+This feature was adopted via spek:adopt - no spek:discuss pass was run,
 so assumptions were not captured. Add them manually if needed.
 -->
 
@@ -82,7 +82,7 @@ so assumptions were not captured. Add them manually if needed.
 
 **Files:** `src/auth/client.test.ts`, `src/auth/RequireAuth.test.tsx`, `src/auth/useAuth.test.ts`
 
-**Approach:** Unit tests for the client (mocked fetch: login success/failure, logout clears state, /me returns user or 401). Component test for RequireAuth (renders children when authenticated, redirects when not, shows spinner while loading). Hook tests for useAuth (login/logout state transitions, persistence check on mount). *Note: the existing tests use `vi.mock` for fetch — this predates the `principles.md` preference for integration tests with a real server, and would need migration to comply.*
+**Approach:** Unit tests for the client (mocked fetch: login success/failure, logout clears state, /me returns user or 401). Component test for RequireAuth (renders children when authenticated, redirects when not, shows spinner while loading). Hook tests for useAuth (login/logout state transitions, persistence check on mount). *Note: the existing tests use `vi.mock` for fetch - this predates the `principles.md` preference for integration tests with a real server, and would need migration to comply.*
 
 ## Review
 
@@ -97,10 +97,25 @@ so assumptions were not captured. Add them manually if needed.
 **Notes:**
 - If this module is substantially revised in the future, run `spek:review` after updating `## Plan` so the next execution cycle has a proper design-review artifact.
 
-**Recommended next move:** `spek:verify` — for adopted work, verification is the first meaningful check because the implementation already exists.
+**Recommended next move:** `spek:verify` - for adopted work, verification is the first meaningful check because the implementation already exists.
 
 ## Verification
 
 <!-- Run spek:verify to populate this section. For an adopted feature, verify
-     checks that each task's Details match the actual code — discrepancies are
+     checks that each task's Details match the actual code - discrepancies are
      documentation issues, not bugs. -->
+
+## Retrospective
+
+**Outcome:** The adopted spec makes the existing auth module legible in SpekLess terms: the goal, visible design decisions, and implementation-shaped task breakdown are now captured in one document without pretending the work was originally planned this way.
+
+**What went well:**
+- The code exposed a coherent architecture that mapped cleanly to Context, Discussion, and Plan without needing speculative backstory.
+- Capturing the tradeoff around cookie-based sessions versus localStorage tokens surfaced a security-relevant decision that would otherwise remain implicit.
+
+**What surprised us:**
+- Retroactive documentation quickly exposed where project principles had moved on from older tests: the `vi.mock` note is a concrete migration candidate, not just a style preference.
+- Adopted work needs a lighter retrospective tone because there is no append-only `execution.md` to mine for course corrections.
+
+**Principle candidates:**
+- "When adopted code predates current principles, record the gap explicitly in the spec rather than rewriting history to make the code look compliant." - proposed

@@ -766,7 +766,7 @@ async function main() {
   console.log(`  2. Start a new feature:`);
   console.log(`       Greenfield project?  ${C.dim}→${C.reset}  ${cmd(renderCommand(ns, config.aiAgent, pfx, 'kickoff'))}`);
   console.log(`       Existing codebase?   ${C.dim}→${C.reset}  ${cmd(renderCommand(ns, config.aiAgent, pfx, 'adopt'))}, ${cmd(renderCommand(ns, config.aiAgent, pfx, 'new'))}, ${cmd(renderCommand(ns, config.aiAgent, pfx, 'quick'))} or ${cmd(renderCommand(ns, config.aiAgent, pfx, 'ingest'))}`);
-  console.log(`  3. Work through a feature: ${cmd(renderCommand(ns, config.aiAgent, pfx, 'discuss'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'plan'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'review'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'execute'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'verify'))}`);
+  console.log(`  3. Work through a feature: ${cmd(renderCommand(ns, config.aiAgent, pfx, 'discuss'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'plan'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'review'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'execute'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'verify'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'retro'))}`);
   console.log(`  4. Pick up where you left off: ${cmd(renderCommand(ns, config.aiAgent, pfx, 'resume'))}`);
   console.log('');
 }

@@ -11,7 +11,7 @@ These are the foundational commitments every other decision follows from:
 1. **The document is the state.** No separate state files, no lockfiles, no checkpoint machinery. The presence and content of sections within `spec.md` and `execution.md` is the entire representation of "where is this feature."
 2. **Skills are idempotent and section-scoped.** Each skill owns exactly one section of the spec. Re-running a skill rewrites that section in full from the current inputs. Two narrow exceptions exist: `/spek:execute` may tick checkboxes in the `## Plan` task list, and `/spek:verify` may tick checkboxes in `## Assumptions`. Both are execution-state writes, not content rewrites — see the exceptions section below.
 3. **Sub-agents are context firewalls, not workflow roles.** SpekLess does not have a "planner agent" or a "reviewer agent." It has a main conversation that invokes sub-agents only to absorb large reads and return distilled summaries — preserving the main context.
-4. **Workflow is a menu, not a pipeline.** The four workflow skills (`discuss`, `plan`, `execute`, `verify`) have a natural order but no enforced sequence. Any skill is skippable. Any skill is re-enterable. Mid-execute course correction is just "run `/spek:plan` again, then `/spek:execute` again" — no special intervention mode.
+4. **Workflow is a menu, not a pipeline.** The core workflow skills (`discuss`, `plan`, `review`, `execute`, `verify`, `retro`) have a natural order but no enforced sequence. Any skill is skippable. Any skill is re-enterable. Mid-execute course correction is just "run `/spek:plan` again, then `/spek:execute` again" — no special intervention mode.
 5. **Human-readable documents first.** Spec files are written to be read by humans as design docs, not as machine state. Fragmenting a feature across many files would optimize for tooling at the expense of readability.
 6. **Commits are sacred to the user.** The framework never commits automatically. `starting_sha` is captured passively as an audit anchor for `/spek:verify`. `/spek:commit` exists as a user-triggered convenience: it drafts a spec-anchored message and runs `git commit` *only* after an explicit AskUserQuestion confirmation, never with `--amend`, never with `--no-verify`.
 
@@ -98,11 +98,14 @@ The installer renders canonical source references `spek:<skill>` to the selected
 | `## Plan` → `### Details` | `/spek:plan` | Fully rewritten on every `/spek:plan` run |
 | `## Review` | `/spek:review` | Fully rewritten on every `/spek:review` run; downstream skills may read findings without taking ownership |
 | `## Verification` | `/spek:verify` | Fully rewritten on every `/spek:verify` run |
+| `## Retrospective` | `/spek:retro` | Fully rewritten on every `/spek:retro` run after the feature is done or cleanly verified; other skills may read it as historical context but never rewrite it |
 | _(none)_ | `/spek:commit` | Owns nothing in `spec.md`. Appends one `Committed` entry per commit to `execution.md`; side-effect is a git commit. |
 | _(none)_ | `/spek:status` | Owns nothing. Strictly read-only — reads frontmatter and checkbox lines, writes nothing. |
 | _(none)_ | `/spek:resume` | Owns nothing. Strictly read-only — reads frontmatter, checkbox lines, and execution.md tail. Suggests next command. |
 
 `## Review` sits between `## Plan` and `## Verification` in the canonical spec shape. It is the design-review checkpoint after planning and before execution, so review findings have a stable home even when the user loops back for a replan or more discussion. `/spek:plan` and `/spek:discuss` may read `## Review` to address unresolved findings, but neither skill rewrites that section — ownership stays with `/spek:review`.
+
+`## Retrospective` sits after `## Verification` in the canonical spec shape. It exists for post-completion reflection once a feature has reached `done` or has clean verification results. `/spek:retro` owns that section; other skills may read it for historical context or future planning, but retrospective does not introduce a new lifecycle state and does not change the append-only rules for `execution.md`.
 
 ### Feature status lifecycle
 
@@ -111,6 +114,8 @@ created → discussing → planning → executing → verifying → done
 ```
 
 Skills advance the status automatically as they complete their work. Manual editing is safe — skills never regress status unless the user explicitly re-runs an earlier step. The initial status `created` is set when `/spek:new` (or `/spek:kickoff` scaffolding) creates the spec; `/spek:discuss` advances it to `discussing` on its first run.
+
+`/spek:retro` is intentionally outside this lifecycle. It runs after a feature is already complete, records lessons learned in `## Retrospective`, and may suggest principle updates, but it does not add a new status beyond `done`.
 
 **Quick specs** (created by `/spek:quick`) enter the lifecycle at `executing`, skipping `created`, `discussing`, and `planning`. They have `type: quick` in frontmatter and omit the `## Discussion` and `## Assumptions` sections. This is an intentional fast path for small, self-contained tasks where the full workflow would be overhead.
 
@@ -250,8 +255,10 @@ spek-less/
 │   ├── quick.md                            # one-shot entry point: create spec + execute inline
 │   ├── discuss.md                          # workflow: exploration
 │   ├── plan.md                             # workflow: task breakdown
+│   ├── review.md                           # workflow: pre-execution review
 │   ├── execute.md                          # workflow: implementation
 │   ├── verify.md                           # workflow: verification
+│   ├── retro.md                            # workflow: post-completion retrospective
 │   ├── commit.md                           # convenience: drafted commit message + commit on confirm
 │   ├── status.md                           # convenience: feature status at a glance (read-only)
 │   └── resume.md                           # convenience: resume guidance after break/reset (read-only)
@@ -271,3 +278,4 @@ spek-less/
     ├── architecture.md                     # this document
     └── comparison.md                       # detailed competitor comparison
 ```
+

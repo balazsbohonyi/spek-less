@@ -113,3 +113,18 @@ All four tasks complete. Verified against Plan:
 None.
 
 **Status:** READY_TO_SHIP
+
+## Retrospective
+
+**Outcome:** The feature delivered the requested theme control without widening scope: users can choose light, dark, or system mode, the preference persists, and first-load behavior respects OS settings.
+
+**What went well:**
+- The Plan decomposed the work cleanly into state, UI, app initialization, and tests, so execution could proceed without replanning.
+- Existing CSS custom properties meant the implementation stayed focused on behavior instead of requiring a visual refactor.
+
+**What surprised us:**
+- The warning from `## Review` was real: the matchMedia listener needed to stay scoped to the `'system'` preference so manual selections would not be overwritten.
+- Native form controls covered the accessibility requirements more completely than a custom toggle would have.
+
+**Principle candidates:**
+- "Prefer native controls when they satisfy accessibility and state requirements without extra ARIA work." — proposed

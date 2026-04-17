@@ -2,7 +2,7 @@
 
 **A lightweight spec-first development workflow for AI coding agents.**
 
-SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → review → implement → verify. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
+SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → review → implement → verify → retrospect. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
 SpekLess ships as rendered skills for **Claude Code**, **Codex CLI**, and **OpenCode**. The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The source `skills/` directory is canonical; the installer renders that source into each agent's package format.
 
@@ -18,7 +18,7 @@ Spec-driven development in Claude Code is valuable — but the existing tools ha
 
 SpekLess is the minimal system that keeps the good parts and cuts the rest:
 
-- **One living `spec.md` per feature.** Reads like an RFC. Sections for Context, Discussion, Plan, Review, and Verification. Everything about a feature is in one place.
+- **One living `spec.md` per feature.** Reads like an RFC. Sections for Context, Discussion, Assumptions, Plan, Review, Verification, and Retrospective. Everything about a feature is in one place.
 - **Append-only `execution.md` work journal.** A human-readable narrative of what was actually done, stored alongside the spec. Replaces atomic commit discipline without forcing you to commit on anyone else's rhythm.
 - **Flat feature list.** No milestones-inside-phases-inside-tasks hierarchy. Big work decomposes into sibling docs via a single `part_of:` frontmatter field.
 - **Slash skills, not subagent fan-out.** A single main agent drives everything via slash-commands; sub-agents are used *only* as context firewalls for broad codebase reads, never as pipeline steps. This solves a real problem multi-agent pipelines struggle with: *inter-agent amnesia*. When you spawn a PlanAgent after a DiscussAgent, the planner only knows what got serialized into a file — the *why* behind decisions is gone. SpekLess keeps one conversation alive across all steps, so context accumulates continuously and you can intervene at any point without re-briefing a new agent from scratch.
@@ -110,8 +110,11 @@ Use these skills in sequence per feature.
 | **`/spek:review`** | Pre-execution design review. Reads Context, Discussion, Assumptions, Plan, and principles, then writes `## Review` with `critical`, `warning`, and `note` findings plus an explicit next-move choice. Advisory and user-invoked — not automatic. |
 | **`/spek:execute`** | Implements the tasks one at a time. Writes append-only entries to `execution.md`. Ticks checkboxes in the Plan as it goes. Resumable from whatever's unchecked. |
 | **`/spek:verify`** | Goal-backward verification. Reads Plan, execution log, and `git diff`. Writes `## Verification`. If issues are found, offers (via AskUserQuestion) to run `/spek:execute` to fix, `/spek:plan` to revise, or stop. Strictly read-only for source code. |
+| **`/spek:retro`** | Post-completion retrospective. Reads the spec, execution log, and principles, then writes `## Retrospective` after the work is done or cleanly verified. If it notices project-wide lessons, it offers a single AskUserQuestion to append confirmed candidates to `principles.md`. |
 
 `/spek:review` sits between planning and execution when you want a deliberate design checkpoint. It is optional, but it gives the plan a durable review artifact before code starts.
+
+`/spek:retro` sits after completion. It is also optional, but it gives finished work a durable reflection artifact and turns repeated lessons into explicit project principles when the user confirms them.
 
 ### Convenience
 Use these skills any time.
@@ -122,7 +125,7 @@ Use these skills any time.
 | **`/spek:status`** | Shows a table of all features with their status, task progress (e.g. 3/5 done), and last modified date. Highlights the current feature. Strictly read-only — no writes, no sub-agents. Useful for a broad overview. |
 | **`/spek:resume`** | Focused resume helper — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Use when returning after a break or context reset. Strictly read-only. |
 
-All skills are **idempotent, section-scoped, and principles-aware**. Re-running a skill rewrites its owned section in full (except `/spek:execute`, which is append-only for `execution.md` and owns checkbox state within the Plan's task list, `/spek:commit`, which is append-only for `execution.md` and whose side-effect is a git commit, and `/spek:status`/`/spek:resume`, which are strictly read-only). `/spek:review` owns `## Review`; `/spek:plan` and `/spek:discuss` may read that section when acting on review findings, but they never rewrite it.
+All skills are **idempotent, section-scoped, and principles-aware**. Re-running a skill rewrites its owned section in full (except `/spek:execute`, which is append-only for `execution.md` and owns checkbox state within the Plan's task list, `/spek:commit`, which is append-only for `execution.md` and whose side-effect is a git commit, and `/spek:status`/`/spek:resume`, which are strictly read-only). `/spek:review` owns `## Review`; `/spek:retro` owns `## Retrospective`; downstream skills may read those sections when needed, but they never rewrite them.
 
 ---
 
@@ -213,6 +216,12 @@ Optional, at any point. Drafts a commit message from the spec + execution log ta
 ```
 
 Reads `git diff <starting_sha>..HEAD`, the Plan, and the execution log. For non-trivial features it delegates to a fresh general-purpose sub-agent for a bias-free verification pass. Writes the Verification section. If it flags issues, it asks (via AskUserQuestion) whether to run `/spek:execute` to fix them now, `/spek:plan` to revise, or stop.
+
+```
+/spek:retro
+```
+
+Optional after the work is done. Reads the completed spec plus the execution log, writes `## Retrospective`, and offers a single principles-update prompt only when it found project-wide lessons worth keeping.
 
 ## Walkthrough 3 — Retroactively documenting existing code via `/spek:adopt`
 
@@ -311,6 +320,7 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             ├── plan.md
             ├── execute.md
             ├── verify.md
+            ├── retro.md
             ├── commit.md
             ├── status.md
             └── resume.md
@@ -347,8 +357,8 @@ Token efficiency isn't a side effect — it's the design:
 
 Two worked examples are included:
 
-- **`examples/001_toy-feature/`** — a greenfield feature (light/dark theme toggle) showing what the documents look like after the full `/spek:new` → `/spek:discuss` → `/spek:plan` → `/spek:review` → `/spek:execute` → `/spek:verify` workflow. One `spec.md` that reads as a complete design doc, one `execution.md` that reads as an engineer's work journal.
-- **`examples/002_adopted-feature/`** — a retroactively documented feature (user authentication module) created via `/spek:adopt`. Shows what an adopted spec looks like: inferred Context flagged as such, retrospective Plan with all tasks pre-checked, no `execution.md` (the work predates SpekLess).
+- **`examples/001_toy-feature/`** — a greenfield feature (light/dark theme toggle) showing what the documents look like after the full `/spek:new` → `/spek:discuss` → `/spek:plan` → `/spek:review` → `/spek:execute` → `/spek:verify` → `/spek:retro` workflow. One `spec.md` that reads as a complete design doc, one `execution.md` that reads as an engineer's work journal.
+- **`examples/002_adopted-feature/`** — a retroactively documented feature (user authentication module) created via `/spek:adopt`. Shows what an adopted spec looks like: inferred Context flagged as such, retrospective Plan with all tasks pre-checked, a completed `## Retrospective`, and no `execution.md` (the work predates SpekLess).
 
 ---
 

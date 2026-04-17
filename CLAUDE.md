@@ -26,8 +26,8 @@ Before making non-trivial changes, read in this order:
 2. **`docs/architecture.md`** — the authoritative design reference. Every design decision and invariant is documented here. If a proposed change contradicts this doc, either the change is wrong or the doc needs updating first (not the other way around).
 3. **`docs/comparison.md`** — explains what SpekLess deliberately keeps, rejects, and invents. Useful when you're tempted to add a feature "because GSD has it."
 4. **`skills/new.md`** — the simplest skill. Read this to understand the skill file conventions before editing any other skill.
-5. **`examples/001_toy-feature/spec.md` + `execution.md`** — what the output of the full greenfield workflow looks like. Any change to templates or skills should still produce output that matches this shape.
-6. **`examples/002_adopted-feature/spec.md`** — what `/spek:adopt` output looks like. Retroactive spec with inferred Context, pre-checked tasks, no execution.md.
+5. **`examples/001_toy-feature/spec.md` + `execution.md`** — what the output of the full greenfield workflow looks like, including the post-completion `## Retrospective` section. Any change to templates or skills should still produce output that matches this shape.
+6. **`examples/002_adopted-feature/spec.md`** — what `/spek:adopt` output looks like. Retroactive spec with inferred Context, pre-checked tasks, a completed `## Retrospective`, and no execution.md.
 
 ---
 
@@ -61,7 +61,8 @@ spek-less/
 │   ├── kickoff.md, ingest.md, new.md,       #   entry points
 │   │   adopt.md, quick.md
 │   ├── discuss.md, plan.md,                #   workflow skills
-│   │   review.md, execute.md, verify.md
+│   │   review.md, execute.md, verify.md,
+│   │   retro.md
 │   ├── commit.md                           #   convenience: drafted commits
 │   ├── status.md                           #   convenience: feature status (read-only)
 │   └── resume.md                           #   convenience: resume after break/reset (read-only)
