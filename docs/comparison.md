@@ -17,6 +17,7 @@ A detailed comparison against the closest existing spec-driven development frame
 | Free intervention at any step | ✓ | ✗ | partial | N/A |
 | Task breakdown with checkboxes | ✓ | ✓ | ✓ | ✗ |
 | Idempotent skill re-runs | ✓ | ✗ (checkpoints matter) | partial | N/A |
+| Pre-execution design review checkpoint | ✓ (`/spek:review`) | partial (internal `gsd-plan-checker`) | ✗ | ✗ |
 | **Verification** | | | | |
 | Goal-backward verify step | ✓ | ✓ | ✗ | ✗ |
 | Fresh-lens verification (isolated agent) | ✓ (general-purpose subagent) | ✓ (nyquist-auditor + verifier) | ✗ | ✗ |
@@ -133,6 +134,14 @@ When the user already has a plan, PRD, or notes, `/spek:ingest` converts them in
 ### Intervention as "just re-run a skill"
 
 Other frameworks treat intervention as a special mode — a dedicated flow for mid-phase changes, rollbacks, or revisions. SpekLess recognizes that **every intervention is just another invocation of an existing skill**, because skills are idempotent and section-scoped. The result: there is no intervention documentation to learn, because there is no intervention mode. You just run `/spek:plan` again. You just edit the file. The framework gets out of your way.
+
+### `/spek:review` — explicit pre-execution design review
+
+`/spek:review` exists to pressure-test the design before execution starts. It is an optional user-invoked checkpoint between `/spek:plan` and `/spek:execute`, not an automatic background step.
+
+The skill writes a durable `## Review` section into the spec, classifies findings as `critical`, `warning`, or `note`, and lets the user choose the next move: revise the plan, revisit scope in discussion, or proceed anyway.
+
+This keeps review visible, advisory, and easy to re-run. The user sees the review happen in the main conversation, can interrupt it, can ignore it, and can refresh it after revising the spec — all without breaking section ownership or the single-agent model.
 
 ### Verify as advisory-only with explicit next-move prompts
 

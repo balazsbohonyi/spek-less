@@ -16,7 +16,7 @@ You are running a focused discussion to populate the `## Context` and `## Discus
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — entire file. Use to frame conversation and flag principle-related concerns.
 3. **`.specs/project.md`** (if exists) — entire file. Use Problem/Vision/Scope sections as background.
-4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section + `## Assumptions` section (if present). Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` — they're irrelevant to this step and add tokens.
+4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section + `## Assumptions` section (if present). If the user is returning here because `spek:review` surfaced scope, ambiguity, dependency, or architectural issues, read `## Review` too and use those findings as agenda items. Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` unless the user explicitly asks — they're usually irrelevant to this step and add tokens.
 
 ## Current feature discovery
 
@@ -27,6 +27,8 @@ Resolution order (first match wins):
 4. If none resolve, list available features and ask the user which one.
 
 ## Behavior
+
+**Review-driven returns.** If the user came back to `spek:discuss` because `spek:review` exposed scope, ambiguity, assumptions, dependencies, or architectural questions, use the relevant review findings as the starting agenda. Resolve the underlying design problem in Context, Discussion, or Assumptions, then rewrite those sections accordingly. Do not rewrite `## Review`; if the user wants the review artifact refreshed after discussion, they should run `spek:review` again later.
 
 **Quick-mode shortcut.** Before diving into questions, read the feature's Context section and title. If the feature appears simple — short title, no conflicting constraints from `project.md` or `principles.md`, no obvious ambiguities — offer via AskUserQuestion: "This looks straightforward — skip discuss and go straight to `spek:plan`?" If the user says no (or if the feature is complex), proceed with the full discussion normally.
 
@@ -88,6 +90,7 @@ End with a short summary:
 - **Never modify source code.** Discussion is read-only for the project source tree.
 - **Idempotent.** Re-running rewrites Discussion in full. Context is rewritten only if something in it changed.
 - **Principles-aware.** If you notice the emerging direction conflicts with a principle in `principles.md`, flag it explicitly during the conversation before writing to Discussion.
+- **Review-aware, not review-owning.** You may read `## Review` when the user returns from design review, but you never rewrite or delete it. Update only Context, Discussion, and Assumptions.
 - **One question at a time.** Do not dump a list of 10 questions. The user will answer the most important one and forget the rest.
 - **`principles.md` writes are strictly conditional.** Only append when: the file already exists, at least one project-wide candidate was noticed, and the user explicitly confirmed via AskUserQuestion. Never create `principles.md`. Never rewrite or restructure existing content — append only.
 - **Section ownership.** Discuss owns `## Context`, `## Discussion`, and `## Assumptions`. Do NOT touch `## Plan`, `## Verification`, or `execution.md`.

@@ -49,6 +49,8 @@ description: <one-paragraph description - canonical source wording>
 
 Do not hardcode `/` or `$` in source skill files. Do not hand-author Codex package directories in source.
 
+**Section ownership must stay explicit.** If a skill owns a `spec.md` section, say so directly in its Writes and Hard rules. Downstream skills may read that section when the workflow calls for it, but they must not rewrite it.
+
 **Length budget:** skill files should be **under ~300 lines** each. These are instructions the agent reads in-context, not documentation. Cut anything that is not load-bearing. If a skill file is getting too long, the skill is probably doing too much - consider splitting.
 
 ---
@@ -102,19 +104,21 @@ After confirming with the user that the new skill is warranted (see [When to ask
 2. Read `skills/new.md` as a structural template.
 3. Create `skills/<name>.md` following the canonical source conventions above.
 4. Do not create agent-specific copies in source. The installer and Sync Rule derive those.
-5. Update `README.md`, `CLAUDE.md`, and `docs/architecture.md` to reference the new skill.
-6. Update `install.js` only if the new skill changes rendering behavior or install packaging. Ordinary new skills should be picked up automatically.
-7. Update `docs/comparison.md` if the new capability changes the feature matrix.
-8. Smoke test at least one Claude/OpenCode install and one Codex install before calling the change complete.
+5. If the repo already contains checked-in installed copies under `.claude/`, `.opencode/`, or `.codex/`, refresh them before you call the change complete so the source and rendered artifacts stay aligned.
+6. Update `README.md`, `CLAUDE.md`, and `docs/architecture.md` to reference the new skill.
+7. Update `install.js` only if the new skill changes rendering behavior or install packaging. Ordinary new skills should be picked up automatically.
+8. Update `docs/comparison.md` if the new capability changes the feature matrix.
+9. Smoke test at least one Claude/OpenCode install and one Codex install before calling the change complete.
 
 ### Modifying an existing skill
 
 1. Read the skill's current file in full. Skills have load-bearing details in the "Hard rules" section that are easy to accidentally break.
 2. Check `docs/architecture.md` for invariants the skill enforces.
-3. Make the edit in `skills/<name>.md` only.
-4. If the edit affects command references, packaging, or install behavior, also review `_templates/`, `.specs/principles.md`, and `install.js`.
-5. **Smoke test manually** (see [Manual smoke test](#manual-smoke-test) below).
-6. If the edit changes externally visible behavior, update the README walkthrough that covers this skill.
+3. Make the edit in `skills/<name>.md` first.
+4. Refresh any checked-in installed copies under `.claude/`, `.opencode/`, and `.codex/` so the committed rendered artifacts stay in sync.
+5. If the edit affects command references, packaging, install behavior, or spec-section ownership, also review `_templates/`, `.specs/principles.md`, `docs/architecture.md`, and `install.js`.
+6. **Smoke test manually** (see [Manual smoke test](#manual-smoke-test) below).
+7. If the edit changes externally visible behavior, update the README walkthrough that covers this skill.
 
 ### Changing a template
 
@@ -122,7 +126,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 2. If you add a placeholder, add the substitution in every consumer.
 3. If the template mentions SpekLess commands, verify the installer still renders those references correctly for Claude/OpenCode and Codex.
 4. Run the installer against a scratch directory to verify the generated config and copied templates look right.
-5. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` - several skills use `Grep "^## "` to find section boundaries.
+5. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` - several skills use `Grep "^## "` to find section boundaries. Workflow-facing section changes often affect multiple skills together, so check all readers before calling the template change complete.
 
 ### Changing the architecture
 

@@ -96,10 +96,13 @@ The installer renders canonical source references `spek:<skill>` to the selected
 | `## Assumptions` | `/spek:discuss` (writes); `/spek:verify` (ticks checkboxes only) | Written by `/spek:discuss` at the close of the assumptions conversation; checkbox state ticked by `/spek:verify` on each run — see exceptions section |
 | `## Plan` → `### Tasks` | `/spek:plan` owns titles/structure; `/spek:execute` owns checkbox state | `/spek:plan` rewrites titles/structure; on rewrite, checkbox state is preserved for unchanged tasks and reset for changed ones |
 | `## Plan` → `### Details` | `/spek:plan` | Fully rewritten on every `/spek:plan` run |
+| `## Review` | `/spek:review` | Fully rewritten on every `/spek:review` run; downstream skills may read findings without taking ownership |
 | `## Verification` | `/spek:verify` | Fully rewritten on every `/spek:verify` run |
 | _(none)_ | `/spek:commit` | Owns nothing in `spec.md`. Appends one `Committed` entry per commit to `execution.md`; side-effect is a git commit. |
 | _(none)_ | `/spek:status` | Owns nothing. Strictly read-only — reads frontmatter and checkbox lines, writes nothing. |
 | _(none)_ | `/spek:resume` | Owns nothing. Strictly read-only — reads frontmatter, checkbox lines, and execution.md tail. Suggests next command. |
+
+`## Review` sits between `## Plan` and `## Verification` in the canonical spec shape. It is the design-review checkpoint after planning and before execution, so review findings have a stable home even when the user loops back for a replan or more discussion. `/spek:plan` and `/spek:discuss` may read `## Review` to address unresolved findings, but neither skill rewrites that section — ownership stays with `/spek:review`.
 
 ### Feature status lifecycle
 

@@ -61,7 +61,7 @@ spek-less/
 │   ├── kickoff.md, ingest.md, new.md,       #   entry points
 │   │   adopt.md, quick.md
 │   ├── discuss.md, plan.md,                #   workflow skills
-│   │   execute.md, verify.md
+│   │   review.md, execute.md, verify.md
 │   ├── commit.md                           #   convenience: drafted commits
 │   ├── status.md                           #   convenience: feature status (read-only)
 │   └── resume.md                           #   convenience: resume after break/reset (read-only)

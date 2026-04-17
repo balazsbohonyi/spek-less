@@ -17,7 +17,7 @@ You are writing the `## Plan` section of a feature spec. This is **convergent th
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists) — full file. Every task in the Plan must be consistent with these.
 3. **`.specs/project.md`** (if exists) — full file. Scope and constraints sections matter most.
-4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` + `## Discussion`. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite").
+4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` + `## Discussion`. Read `## Review` too when it exists and the user is revising the plan in response to review feedback. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite", "address the review findings").
 5. **`<feature>/execution.md`** — **if it exists**, read it (tail 50 lines is usually enough). This is critical when replanning mid-execute: the new plan must acknowledge completed work and not propose redoing it.
 6. **Source code** — read files the plan will touch, enough to make concrete file-level decisions. **Use the `subagent_threshold` rule:** if understanding the area would take more than that many targeted reads/greps, delegate to an **Explore sub-agent** with a focused prompt like "Map the auth module: file layout, main abstractions, entry points, where session state lives." The sub-agent returns a distilled summary; you never read the raw source into your context.
 
@@ -63,6 +63,8 @@ c. Rewrite the parent's `## Plan` to a sibling index:
 d. Set parent frontmatter `status: decomposed`.
 
 **Self-validation (optional but recommended for non-trivial features):** after drafting the plan, you may delegate a review pass to a **Plan sub-agent** with the draft plan, Context, Discussion, and principles as inputs. It critiques — you then revise before writing. Skip for simple features.
+
+**Review-aware replanning.** If `## Review` exists and this plan run is responding to review findings, treat unresolved `critical` and `warning` items as concrete inputs to the rewrite. The new Plan must visibly address them in task titles and Details, or make it clear that the issue belongs back in `spek-discuss` because the problem is scope, ambiguity, or assumptions rather than execution decomposition. `spek-plan` reads review; it never rewrites or deletes it.
 
 ## Mid-execute replanning (IMPORTANT)
 
@@ -112,6 +114,7 @@ Update frontmatter `status:` to `planning` (or keep `executing`/`verifying` if t
 End with:
 - Short summary: "N tasks, key approach decisions were X, Y."
 - Any principle concerns or risks noticed while planning.
+- If review findings were part of this run: which `critical` / `warning` items were addressed in the rewrite.
 - Suggested next step: `$spek-execute` (or `$spek-discuss` if planning surfaced fresh ambiguities).
 
 ## Hard rules
@@ -119,5 +122,6 @@ End with:
 - **Section-scoped writes.** Only `## Plan` is yours. Never touch Context, Discussion, Verification, or execution.md. The one exception: on decomposition, you also create sibling spec files and update the parent's `status:` frontmatter — this is the only time `plan.md` writes outside `## Plan`.
 - **Idempotent.** Re-running fully rewrites Plan. Checkbox state preservation on unchanged tasks is the one subtlety — respect it.
 - **Principles-enforcing.** If the most obvious plan would violate a principle in `principles.md`, either pick a different approach or flag the conflict prominently in the task details so the user can override consciously.
+- **Review-aware, not review-owning.** Read `## Review` when the user is replanning in response to design-review findings, and address unresolved `critical` / `warning` items explicitly. Never rewrite `## Review` yourself.
 - **Explore sub-agent for unfamiliar code.** Follow the `subagent_threshold` rule. Burning main-context tokens on bulk source reads is exactly the failure mode SpekLess exists to avoid.
 - **Never execute.** Planning does not edit code. If you catch yourself about to write a code change, stop — that's `spek-execute`'s job.

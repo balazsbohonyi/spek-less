@@ -73,6 +73,21 @@ Accessibility note: the toggle must be keyboard-navigable and the current state 
 
 **Approach:** Unit tests for state module (get/set round-trip, subscribe notification, `'system'` representation). Component test for the select (renders 3 options, onChange fires setTheme). Manual verification for the matchMedia listener since jsdom's matchMedia is stubbed.
 
+## Review
+
+**Summary:** The plan is ready for execution. The decomposition covers state, UI, app initialization, and regression coverage in a sequence that matches the user-visible goal without over-scoping into theme customization work.
+
+**Critical findings:**
+- None.
+
+**Warnings:**
+- Task 3 should explicitly verify that the `matchMedia` listener is only active while the preference is `'system'`; otherwise manual dark/light selections could be overwritten unexpectedly during the session.
+
+**Notes:**
+- Task 2 could mention that the settings page should initialize the select from current persisted state, not only write changes on interaction.
+
+**Recommended next move:** `spek:execute` — the plan is solid enough to build, and the warning can be handled directly while implementing task 3.
+
 ## Verification
 
 All four tasks complete. Verified against Plan:

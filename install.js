@@ -762,12 +762,12 @@ async function main() {
   console.log('SpekLess is installed. Next steps:');
   console.log('');
   console.log(`  1. ${C.dim}(Optional)${C.reset} Edit ${sr}/principles.md to capture your project's conventions,`);
-  console.log(`     or run ${cmd(`${pfx}${ns}:kickoff`)} — it will offer to help fill it in.`);
+  console.log(`     or run ${cmd(renderCommand(ns, config.aiAgent, pfx, 'kickoff'))} — it will offer to help fill it in.`);
   console.log(`  2. Start a new feature:`);
-  console.log(`       Greenfield project?  ${C.dim}→${C.reset}  ${cmd(`${pfx}${ns}:kickoff`)}`);
-  console.log(`       Existing codebase?   ${C.dim}→${C.reset}  ${cmd(`${pfx}${ns}:adopt`)}, ${cmd(`${pfx}${ns}:new`)}, ${cmd(`${pfx}${ns}:quick`)} or ${cmd(`${pfx}${ns}:ingest`)}`);
-  console.log(`  3. Work through a feature: ${cmd(`${pfx}${ns}:discuss`)} ${C.dim}→${C.reset} ${cmd(`${pfx}${ns}:plan`)} ${C.dim}→${C.reset} ${cmd(`${pfx}${ns}:execute`)} ${C.dim}→${C.reset} ${cmd(`${pfx}${ns}:verify`)}`);
-  console.log(`  4. Pick up where you left off: ${cmd(`${pfx}${ns}:resume`)}`);
+  console.log(`       Greenfield project?  ${C.dim}→${C.reset}  ${cmd(renderCommand(ns, config.aiAgent, pfx, 'kickoff'))}`);
+  console.log(`       Existing codebase?   ${C.dim}→${C.reset}  ${cmd(renderCommand(ns, config.aiAgent, pfx, 'adopt'))}, ${cmd(renderCommand(ns, config.aiAgent, pfx, 'new'))}, ${cmd(renderCommand(ns, config.aiAgent, pfx, 'quick'))} or ${cmd(renderCommand(ns, config.aiAgent, pfx, 'ingest'))}`);
+  console.log(`  3. Work through a feature: ${cmd(renderCommand(ns, config.aiAgent, pfx, 'discuss'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'plan'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'review'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'execute'))} ${C.dim}→${C.reset} ${cmd(renderCommand(ns, config.aiAgent, pfx, 'verify'))}`);
+  console.log(`  4. Pick up where you left off: ${cmd(renderCommand(ns, config.aiAgent, pfx, 'resume'))}`);
   console.log('');
 }
 

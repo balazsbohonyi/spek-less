@@ -84,6 +84,21 @@ so assumptions were not captured. Add them manually if needed.
 
 **Approach:** Unit tests for the client (mocked fetch: login success/failure, logout clears state, /me returns user or 401). Component test for RequireAuth (renders children when authenticated, redirects when not, shows spinner while loading). Hook tests for useAuth (login/logout state transitions, persistence check on mount). *Note: the existing tests use `vi.mock` for fetch — this predates the `principles.md` preference for integration tests with a real server, and would need migration to comply.*
 
+## Review
+
+**Summary:** Not run. This spec was created retroactively via `spek:adopt`, so there was no pre-execution design-review checkpoint before the code existed.
+
+**Critical findings:**
+- None recorded.
+
+**Warnings:**
+- None recorded.
+
+**Notes:**
+- If this module is substantially revised in the future, run `spek:review` after updating `## Plan` so the next execution cycle has a proper design-review artifact.
+
+**Recommended next move:** `spek:verify` — for adopted work, verification is the first meaningful check because the implementation already exists.
+
 ## Verification
 
 <!-- Run spek:verify to populate this section. For an adopted feature, verify
