@@ -1,7 +1,7 @@
 ---
 id: "028"
 title: Bulk Adopt Discovery Mode
-status: verifying
+status: done
 part_of: SpekLess
 starting_sha: 08d7503
 created: 2026-04-19
@@ -141,35 +141,40 @@ Also update the **Hard Rules** section:
 ## Verification
 
 **Task-by-task check:**
-- Task 1 — Rewrite `skills/adopt.md` with two-mode structure: ✓ — 188 lines, two-mode structure with mode detection, Phase 1/Phase 2, two Explore prompts, three output templates, 13 hard rules
-- Task 2 — Update `docs/architecture.md`: ✓ — sub-agent table updated, adopt description updated, FEATURES.md artifact documented, file inventory tree at line 286-289 includes `003_bulk-adopt/`
-- Task 3 — Update `docs/comparison.md`: ✓ — adopt novelty section updated (line 126)
+- Task 1 — Rewrite `skills/adopt.md` with two-mode structure: ✓ — 215 lines, two-mode structure with mode detection, Phase 1/Phase 2, two Explore prompts, three output templates, 13 hard rules
+- Task 2 — Update `docs/architecture.md`: ✓ — sub-agent table row added, adopt description updated, FEATURES.md in .specs/ layout and ownership section added, 003_bulk-adopt in file inventory tree
+- Task 3 — Update `docs/comparison.md`: ✓ — adopt novelty section updated with bulk mode, anti-patterns, merge signals, and consolidation step
 - Task 4 — Update `docs/maintenance.md`: ✓ — correctly evaluated as no change needed (two-mode pattern is adopt-specific)
-- Task 5 — Add bulk-adopt example to `examples/`: ✓ — `examples/003_bulk-adopt/FEATURES.md` with 4 features, one struck-through, correct format
-- Task 6 — Update `README.md`: ✓ — walkthrough 4, directory layout, examples section all updated; `CLAUDE.md` repo structure tree (line 80-83) includes `003_bulk-adopt/`
-- Task 7 — Sync installed copies: ✓ — all three copies (Claude Code, Codex, OpenCode) properly rendered with correct namespace transforms
-- Task 8 — Manual smoke test: ✓ — structural checks passed; functional test deferred to user (interactive invocation required)
+- Task 5 — Add bulk-adopt example to `examples/`: ✓ — `examples/003_bulk-adopt/FEATURES.md` with 4 broad grouped features, one struck-through, Signals/Files/Summary format, multi-file lists
+- Task 6 — Update `README.md`: ✓ — skill table updated, Walkthrough 4 added, FEATURES.md in directory layout, examples section mentions 003_bulk-adopt
+- Task 7 — Sync installed copies (first pass): ✓ — all three copies synced correctly after tasks 1–6
+- Task 8 — Manual smoke test (first pass): ✓ — structural checks passed; functional test deferred to user
+- Task 9 — Rewrite bulk-discovery Explore prompt for coarser boundaries: ✓ — grouping instruction, anti-patterns, merge_with column, target lowered to 15–20
+- Task 10 — Add consolidation step to Phase 1 behavior: ✓ — 4 merge signals, 10–20 target, second-pass at >20, "Consolidate before writing" hard rule added
+- Task 11 — Update example FEATURES.md to show grouped output: ✓ — 4 broader features with merge-source notes in summaries; one struck-through
+- Task 12 — Update architecture.md and comparison.md for grouping changes: ✓ — consolidation pass added to sub-agent table row and FEATURES.md ownership section; comparison.md bulk mode expanded
+- Task 13 — Sync installed copies (second pass): ✓ — all three copies match source after verify-flagged fix; diffs are render-only (CMD_PREFIX → `/`, `spek:` → `spek-` for Codex)
+- Task 14 — Manual smoke test (second pass): ✓ — automated structural checks passed; interactive functional test deferred to user
 
 **Principles check:**
-- Skill file ≤300 lines: ✓ — 188 lines
+- Skill file ≤300 lines: ✓ — 215 lines
 - Section ownership: ✓ — each section in adopt.md has clear ownership
 - Single-agent topology: ✓ — Phase 2 is sequential, no sub-agent fan-out for spec creation
 - Document is state: ✓ — FEATURES.md is the intermediate state artifact
 - Append-only execution log: ✓ — execution.md has entries only appended
-- Sync rule: ✓ — all three agent copies rendered correctly with proper namespace transforms
-- Command references: ✓ — `{{CMD_PREFIX}}` and `spek:` rendering correct across all copies
-- Documentation: ✓ — directory trees in architecture.md and CLAUDE.md both include `003_bulk-adopt/`
+- Sync rule: ✓ — source updated to match richer installed copies; all three copies now differ only in expected render transformations
+- Command references: ✓ — `{{CMD_PREFIX}}` present in source; rendered to `/` in Claude Code copy correctly
+- Documentation cascade: ✓ — architecture.md updated first, then skills, examples, README
 
 **Assumptions check:**
 - Feature boundaries can be reliably inferred from code structure: ✓ confirmed — convention-based heuristic cascade (routes → pages → modules → store slices → top dirs) is implemented in Phase 1 Explore prompt
 - Users will edit FEATURES.md between Phase 1 and Phase 2: ✓ confirmed — Phase 1 stops and tells user to edit; Phase 2 only runs on re-invocation with FEATURES.md present
 - Reading CLAUDE.md/AGENTS.md/README.md/package.json as hints improves boundary detection: ✓ confirmed — Phase 1 step 1 reads hint files
-- The skill file can fit both modes within ~300 lines without sacrificing clarity: ✓ confirmed — 188 lines, well under 300
+- The skill file can fit both modes within ~300 lines without sacrificing clarity: ✓ confirmed — 215 lines, well under 300
 
-**Goal check:** The implementation achieves the stated goal. `spek:adopt` with no argument triggers Phase 1 discovery (Explore sub-agent, hint files, convention heuristics), produces FEATURES.md, stops for human review. Re-invocation triggers Phase 2 synthesis (sequential spec creation from FEATURES.md entries). Single-feature mode with an argument is preserved unchanged. The human-editable checkpoint works via FEATURES.md editing (including strikethrough deletion). Edge cases for zero features, malformed FEATURES.md, existing specs, and >30 features are all handled.
+**Goal check:** The implementation achieves the stated goal. `spek:adopt` with no argument triggers Phase 1 discovery (Explore sub-agent, hint files, convention heuristics, consolidation pass), produces FEATURES.md, stops for human review. Re-invocation triggers Phase 2 synthesis (sequential spec creation from FEATURES.md entries). Single-feature mode with an argument is preserved unchanged. Edge cases for zero features, malformed FEATURES.md, existing specs, and >30 features are all handled. Both previously flagged issues (source/installed divergence and CLAUDE.md stale prose) were resolved in the verify-flagged fix pass.
 
-**Issues found:**
-None.
+**Issues found:** None.
 
 **Status:** READY_TO_SHIP
 

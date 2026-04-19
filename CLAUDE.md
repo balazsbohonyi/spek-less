@@ -11,7 +11,7 @@ SpekLess is a lightweight, Claude Code–native spec-driven development framewor
 - **Slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
 - **Six templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
-- **Two worked examples** in `examples/` — `001_toy-feature` (greenfield) and `002_adopted-feature` (retroactive via `/spek:adopt`)
+- **Three worked examples** in `examples/` — `001_toy-feature` (greenfield), `002_adopted-feature` (retroactive via `/spek:adopt`), and `003_bulk-adopt` (sample `FEATURES.md` for bulk discovery)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
 
 There is **no runtime code** beyond `install.js`. The skills are markdown files read by Claude Code. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by the installer via `String.prototype.replace`.

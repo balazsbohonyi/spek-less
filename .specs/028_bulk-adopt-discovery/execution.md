@@ -88,3 +88,10 @@ Synced updated adopt.md to all three local installed copies: .claude/commands/sp
 Automated checks pass: no unrendered CMD_PREFIX in installed copies, line counts match (215 across all 4 copies), expected sections present. The `{{project_name}}` template reference is intentional (runtime, not installer). Riftle project exists with existing FEATURES.md — full functional test (delete FEATURES.md + re-run adopt) requires interactive invocation; user should test manually to verify grouping produces 10–15 features.
 
 #### 2026-04-20 — Task 14 complete
+
+#### 2026-04-20 — Verify-flagged fix: sync source with richer installed copies
+Addressing two issues from verify pass: (1) `skills/adopt.md` source is behind installed copies at 4 locations — anti-pattern bullets missing concrete examples, Explore prompt not line-wrapped, consolidation step uses "same directory" instead of "same `components/` directory"; (2) `CLAUDE.md` line 14 prose still says "Two worked examples" despite 003_bulk-adopt existing.
+
+Updated `skills/adopt.md` (4 edits): backtick-qualified `components/` in consolidation step; line-wrapped Explore prompt opening; added concrete Indexer example and `components/` qualifier to anti-pattern bullets; line-wrapped Target sentence. Updated `CLAUDE.md` line 14: "Two worked examples" → "Three worked examples" with 003_bulk-adopt described. Installed copies already had the richer content — no re-sync needed.
+
+#### 2026-04-20 — Verify-flagged fix complete

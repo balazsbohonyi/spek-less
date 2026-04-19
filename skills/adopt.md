@@ -69,7 +69,7 @@ Route based on these checks, in order:
 6. Apply convention heuristics (routes → pages → modules → store slices → top-level directories).
 7. **Consolidate related candidates.** Review all discovered candidates and merge those that:
    - Share the same primary source file (e.g., multiple candidates from `indexer.rs` → one "Indexer" feature).
-   - Are all small UI components in the same directory → one "UI component library" feature.
+   - Are all small UI components in the same `components/` directory → one "UI component library" feature.
    - One is clearly a sub-concern of another (e.g., "auto-reindex on filesystem" is part of "indexer pipeline").
    - Share a common domain prefix in their route/module paths.
    - When merging, combine their Files lists (deduplicated) and write a Summary that covers the merged scope.
@@ -124,7 +124,10 @@ Map the code related to <user's description>. Return:
 
 **Bulk discovery prompt** (used in Phase 1):
 ```
-Perform a breadth-first survey of this codebase to identify distinct features. Prefer fewer, broader features over many narrow ones. Merge sub-concerns that share a directory, source file, or domain concept into a single feature. A feature should describe a user-facing capability or a cohesive subsystem, not
+Perform a breadth-first survey of this codebase to identify distinct features.
+Prefer fewer, broader features over many narrow ones. Merge sub-concerns that
+share a directory, source file, or domain concept into a single feature. A
+feature should describe a user-facing capability or a cohesive subsystem, not
 a single utility.
 
 Return:
@@ -138,8 +141,8 @@ Return:
 Convention signals to prioritize: route groups, page components, domain folders, store slices, test-suite boundaries.
 
 Anti-patterns — do NOT create separate features for:
-- Functions within the same module
-- Individual UI components in the same directory unless they represent a distinct user workflow.
+- Functions within the same module (e.g., icon extraction + lnk resolution + auto-reindex are all part of "Indexer").
+- Individual UI components in the same components/ directory unless they represent a distinct user workflow.
 - Utilities/helpers that exist to support a single larger feature.
 - CRUD operations on the same entity (create/read/update/delete → one feature).
 
@@ -150,7 +153,8 @@ For each candidate feature return:
 - confidence (high/medium/low)
 - merge_with: number of another candidate this could merge with, or "standalone"
 
-Target 15–20 well-bounded features. Return at most 30 candidates. If more exist, return the 30 most clearly-bounded and note that more were found.
+Target 15–20 well-bounded features. Return at most 30 candidates. If more exist,
+return the 30 most clearly-bounded and note that more were found.
 ```
 
 ## Writes
