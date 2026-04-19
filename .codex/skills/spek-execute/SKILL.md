@@ -16,7 +16,7 @@ You are implementing a feature spec's Plan. You edit source code, run tests, and
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `suggest_commits`.
 2. **`.specs/principles.md`** (if exists) — full file. Every change must be consistent.
-3. **`<feature>/spec.md`** — read ONLY `## Plan`. Use Grep for section headers then Read with offsets. Do not read Context/Discussion — they're the background, not the work. Read `## Verification` only when re-running after a verify pass flagged issues — on first execution, skip it.
+3. **`<feature>/spec.md`** — read frontmatter (for `type`) plus `## Plan`. Use Grep for section headers then Read with offsets. Do not read Context/Discussion — they're the background, not the work. Read `## Verification` only when re-running after a verify pass flagged issues — on first execution, skip it.
 4. **`<feature>/execution.md`** (if exists) — read the tail (last ~50 lines is enough). You need to know where the previous run stopped. Do not re-read older entries unless you need to understand a course correction.
 5. **Source files** — read what each task needs, nothing more. Trust the Plan's "Files:" hints.
 
@@ -30,7 +30,9 @@ On the **first** run for this feature (detected by: no `execution.md` file AND n
 
 ## Main loop
 
-For each unchecked task in `## Plan` → `### Tasks`, in order:
+**Bug-spec detection:** after reading frontmatter, check `type: bug`. If set, iterate unchecked tasks under `### Investigation` first (in order), then unchecked tasks under `### Fix` (in order). If not set, iterate `### Tasks` as normal. The per-task steps below apply identically in both paths.
+
+For each unchecked task in `## Plan` → `### Tasks` (standard) or `### Investigation` then `### Fix` (bug), in order:
 
 1. Read the matching `### Details` subsection for that task.
 2. Append a log entry `#### <timestamp> — Task N: <short action>` describing what you're about to do (one line).
@@ -103,7 +105,7 @@ If `config.yaml` has `suggest_commits: true`, at the end of each completed task 
 ## Writes
 
 - **`execution.md`** — append-only. Never rewrite, never delete entries.
-- **`<feature>/spec.md`** — ONLY tick checkboxes in `### Tasks`. Nothing else.
+- **`<feature>/spec.md`** — ONLY tick checkboxes in `### Tasks` (standard specs) or `### Investigation` / `### Fix` (bug specs). Nothing else.
 - **Source files** — edit as needed per the Plan.
 - **Frontmatter** — `starting_sha` on first run; `status:` can advance to `executing` on first run and `verifying` when all tasks are checked.
 

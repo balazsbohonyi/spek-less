@@ -162,6 +162,14 @@ SpekLess adds `/spek:retro` as an optional final pass after clean verification. 
 
 This keeps reflection in the same single-agent workflow as the rest of the feature, preserves section ownership, and turns "we should remember this next time" into an explicit opt-in artifact instead of a lost conversation fragment.
 
+### `/spek:debug` — structured bug intake, entry point only
+
+GSD ships a full debug workflow (`/gsd:debug`) with multi-session state persistence, a scientific-method loop, checkpoint protocols, and a dedicated `gsd-debugger` sub-agent. It drives the investigation end-to-end.
+
+SpekLess deliberately stops at the entry point. `/spek:debug` runs a structured four-question intake (symptom, expected vs. observed, reproduction steps, initial hypotheses) and creates a spec with `type: bug`, `confidence: unknown`, and a two-group Plan stub (`### Investigation` / `### Fix`). It then hands off to the standard workflow: `/spek:plan` fills in the concrete investigation and fix tasks; `/spek:execute` works them in order.
+
+The tradeoff is intentional. Driving an investigation inside a skill would require either multi-session state (a STATE.md of its own, breaking the document-is-state principle) or enough context headroom to hold the entire investigation in one conversation. Neither fits SpekLess's design. The intake creates a clean, queryable record; the investigation itself is the user's work, guided by the standard skill chain. SpekLess's `confidence` frontmatter field gives the current confidence level a permanent home in the spec, visible in `/spek:status`, without requiring a dedicated state machine.
+
 ### `/spek:commit` — user-triggered, LLM-drafted commits
 
 GSD auto-generates commit messages but couples them to forced atomic commits — you can't have GSD's message quality without also accepting its commit rhythm. SpecKit and the ADR tradition don't address commit content at all. SpekLess splits the two: the *forcing* is rejected, but the *message quality* is preserved via an explicit skill the user invokes whenever they want.

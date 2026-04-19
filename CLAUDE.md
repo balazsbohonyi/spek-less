@@ -59,7 +59,7 @@ spek-less/
 ├── LICENSE                                 # MIT
 ├── skills/                                 # skill files (copied by installer)
 │   ├── kickoff.md, ingest.md, new.md,       #   entry points
-│   │   adopt.md, quick.md
+│   │   adopt.md, quick.md, debug.md
 │   ├── discuss.md, plan.md,                #   workflow skills
 │   │   review.md, execute.md, verify.md,
 │   │   retro.md

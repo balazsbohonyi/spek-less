@@ -16,7 +16,7 @@ You are verifying that a feature actually achieves its goal. Your mindset is **g
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file. Every principle is a thing to check.
 3. **`.specs/project.md`** (if exists) — only the Scope and Success Metrics sections. Use Grep + offset Read.
-4. **`<feature>/spec.md`** — read `## Context` (for the goal), `## Assumptions` (if present, for what was taken as given), and `## Plan` (for what was promised). Skip `## Discussion` (not needed for verification).
+4. **`<feature>/spec.md`** — read frontmatter (for `type` and `confidence`), `## Context` (for the goal), `## Assumptions` (if present, for what was taken as given), and `## Plan` (for what was promised). Skip `## Discussion` (not needed for verification).
 5. **`<feature>/execution.md`** — full file. This is your primary narrative source.
 6. **`git diff <starting_sha>..HEAD`** — the actual changes. Run this via Bash. This is your primary technical source.
 7. **Source files** — only ones referenced in the diff or flagged as suspect. Never bulk-read.
@@ -47,7 +47,9 @@ For simple features (1-3 tasks), verify inline in the main conversation.
 
 ## What to check
 
-1. **Task completeness.** Every task in the Plan — was it actually done? Match each `### Details` entry against the diff. A ticked checkbox is not proof; the code is proof.
+For `type: bug` specs, include a **confidence advisory** in the report: note the current `confidence` value from frontmatter alongside the task-completion summary and suggest the user update it in frontmatter if the investigation has narrowed the root cause. This is advisory only — `confidence` does not gate READY_TO_SHIP, ISSUES_TO_FIX, or INCOMPLETE verdicts. Pass/fail decisions are based on task completeness, principle compliance, and goal achievement as below.
+
+1. **Task completeness.** Every task in the Plan — was it actually done? Match each `### Details` entry against the diff. A ticked checkbox is not proof; the code is proof. For bug specs, iterate `### Investigation` tasks first, then `### Fix` tasks.
 2. **Principle compliance.** For each principle in `principles.md`, is there a violation in the diff? Name the file and line if so.
 3. **Goal achievement.** Re-read `## Context` in spec.md. Does the implementation achieve the stated goal? Does it respect the stated out-of-scope items?
 4. **Test coverage.** If the Plan included tests, were they written? Do they actually exercise the new code path, or are they token placeholders?
@@ -66,6 +68,8 @@ For simple features (1-3 tasks), verify inline in the main conversation.
 - Task 1 — <title>: ✓ / ⚠ / ✗ — <one-line evidence: file:line or brief reason>
 - Task 2 — <title>: ✓ / ⚠ / ✗ — <one-line evidence>
 ...
+
+*(For `type: bug` specs only)* **Confidence advisory:** current confidence is `<value>`. <If investigation tasks are complete, suggest updating confidence; otherwise note it remains unchanged.> *This is advisory — confidence does not affect the status verdict below.*
 
 **Principles check:**
 - <principle name>: ✓ / ⚠ / ✗ — <evidence>

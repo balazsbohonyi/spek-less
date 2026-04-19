@@ -17,11 +17,21 @@ You are writing the `## Plan` section of a feature spec. This is **convergent th
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists) — full file. Every task in the Plan must be consistent with these.
 3. **`.specs/project.md`** (if exists) — full file. Scope and constraints sections matter most.
-4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` + `## Discussion`. Read `## Review` too when it exists and the user is revising the plan in response to review feedback. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite", "address the review findings").
+4. **`<feature>/spec.md`** — read frontmatter (for `type` field) + `## Context` + `## Discussion`. Read `## Review` too when it exists and the user is revising the plan in response to review feedback. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite", "address the review findings").
 5. **`<feature>/execution.md`** — **if it exists**, read it (tail 50 lines is usually enough). This is critical when replanning mid-execute: the new plan must acknowledge completed work and not propose redoing it.
 6. **Source code** — read files the plan will touch, enough to make concrete file-level decisions. **Use the `subagent_threshold` rule:** if understanding the area would take more than that many targeted reads/greps, delegate to an **Explore sub-agent** with a focused prompt like "Map the auth module: file layout, main abstractions, entry points, where session state lives." The sub-agent returns a distilled summary; you never read the raw source into your context.
 
 ## Behavior
+
+### Bug-spec detection
+
+After reading frontmatter, check `type: bug` (frontmatter is authoritative — do not infer from header names). If `type: bug`, use the **bug-spec path** below. Otherwise use the **standard path**.
+
+**Bug-spec path:** fill `### Investigation` and `### Fix` with numbered tasks and corresponding `### Details` subsections. Tasks under `### Investigation` isolate the root cause; tasks under `### Fix` implement and verify the repair. Number tasks continuously across both groups (Investigation: 1, 2, 3 … Fix: 4, 5 …). Checkbox-preservation semantics for mid-execute replanning apply identically to both groups — preserve `[x]` on unchanged tasks in Investigation and Fix, reset to `[ ]` on changed tasks, add fresh `[ ]` for new tasks. See the Writes section for the output format.
+
+**Standard path (non-bug specs):** produce a `### Tasks` / `### Details` breakdown as described below.
+
+### Standard task breakdown
 
 Produce a task breakdown where each task is:
 
@@ -80,7 +90,7 @@ If `execution.md` exists and contains completed work:
 
 ## Writes
 
-Fully rewrite `## Plan` in this structure:
+**Standard path** — fully rewrite `## Plan` in this structure:
 
 ```markdown
 ## Plan
@@ -100,6 +110,36 @@ Fully rewrite `## Plan` in this structure:
 **Approach:** 2-4 sentences. Decision-level, not line-by-line. Mention the key abstraction choice or data shape. Flag any principles that apply.
 
 #### 2. Short task title
+...
+```
+
+**Bug-spec path** — fully rewrite `## Plan` in this structure:
+
+```markdown
+## Plan
+
+### Investigation
+
+1. [ ] Short investigation task title
+2. [ ] Short investigation task title
+
+### Fix
+
+3. [ ] Short fix task title
+4. [ ] Short fix task title
+
+### Details
+
+#### 1. Short investigation task title
+
+**Files:** `path/to/file.ext`
+
+**Approach:** 2-4 sentences.
+
+#### 2. Short investigation task title
+...
+
+#### 3. Short fix task title
 ...
 ```
 

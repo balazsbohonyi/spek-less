@@ -99,6 +99,7 @@ Pick one of these skills when starting.
 | **`/spek:new`** | Adding a new feature to any project. Creates a skeleton feature folder and nothing else. |
 | **`/spek:adopt`** | Retroactively documenting code that already exists. Reads the actual files (via an Explore sub-agent if broad), reverse-engineers Context and Plan sections, marks all tasks as already done. Unique to SpekLess. |
 | **`/spek:quick`** | Small, self-contained tasks where the full workflow would be overhead. Describe the task in one sentence — the skill creates the spec, executes inline, and leaves a complete audit trail. Skips discuss, plan, and assumptions. |
+| **`/spek:debug`** | Opening a bug investigation. Runs a structured intake (symptom, expected vs. observed, reproduction steps, hypotheses) and creates a spec with `type: bug` and a two-group Plan stub (Investigation / Fix). Entry point only — `spek:plan` fills in the concrete tasks. |
 
 ### Workflow
 Use these skills in sequence per feature.
@@ -316,6 +317,7 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             ├── adopt.md
             ├── ingest.md
             ├── quick.md
+            ├── debug.md
             ├── discuss.md
             ├── plan.md
             ├── execute.md

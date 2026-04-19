@@ -18,7 +18,7 @@ This is NOT `spek:status`. Status gives a broad overview of all features. Resume
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
 3. **All `.specs/NNN_*/spec.md` and `.specs/NNN.M_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
-4. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`) and `### Tasks` checkbox lines only.
+4. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`, `type`, `confidence`) and task checkbox lines only (from `### Tasks` for standard specs; `### Investigation` / `### Fix` for bug specs — the `N. [x]` Grep pattern catches all groups regardless of section name).
 5. **`<feature>/execution.md`** (if exists) — last ~20 lines only.
 
 ## Current feature discovery
@@ -32,8 +32,10 @@ Same order as all workflow skills:
 ## Behavior
 
 1. Resolve the current feature.
-2. Read frontmatter, count checked (`N. [x]`) vs total tasks, and read the execution log tail.
+2. Read frontmatter, count checked (`N. [x]`) vs total tasks (the pattern catches all task groups — `### Tasks`, `### Investigation`, `### Fix`), and read the execution log tail.
 3. Display a concise resume summary:
+
+For a standard spec:
 
 ```
 Resuming 003: Add dark mode toggle
@@ -48,6 +50,26 @@ Last log entry:
   ## 2026-04-05 09:40 — Task 2 complete
 
 Next: {{CMD_PREFIX}}spek:execute to continue from task 3.
+```
+
+For a bug spec (`type: bug`), add `Confidence:` after `Status:` and label the task groups:
+
+```
+Resuming 007: Login fails on Safari
+Status: executing  (1 / 3 tasks done)
+Confidence: medium
+
+Investigation:
+  1. [x] Reproduce with minimal page
+  2. [ ] Bisect to failing commit
+
+Fix:
+  3. [ ] Apply fix and add regression test
+
+Last log entry:
+  ## 2026-04-05 11:14 — Task 1 complete
+
+Next: {{CMD_PREFIX}}spek:execute to continue from task 2.
 ```
 
 4. Suggest the right next command based on `status`:

@@ -119,6 +119,8 @@ Skills advance the status automatically as they complete their work. Manual edit
 
 **Quick specs** (created by `/spek:quick`) enter the lifecycle at `executing`, skipping `created`, `discussing`, and `planning`. They have `type: quick` in frontmatter and omit the `## Discussion` and `## Assumptions` sections. This is an intentional fast path for small, self-contained tasks where the full workflow would be overhead.
 
+**Bug specs** (created by `/spek:debug`) enter the lifecycle at `planning` and carry two additional frontmatter fields: `type: bug` and `confidence: unknown`. Bug specs use a two-group Plan structure instead of `### Tasks`: `### Investigation` (tasks to isolate the root cause) and `### Fix` (tasks to implement and verify the repair). Task numbers are continuous across both groups. `/spek:plan` detects `type: bug` from frontmatter and fills in the Investigation and Fix groups; `/spek:execute` iterates Investigation tasks first, then Fix tasks; `/spek:verify` reads `confidence` and includes an advisory note in the Verification report (advisory only — `confidence` does not gate READY_TO_SHIP verdicts). `/spek:status` shows a `Confidence` column for bug specs in the all-features table.
+
 ### `execution.md` ownership
 
 `/spek:execute` owns this file as its primary writer, and `/spek:commit` appends one-line `Committed` entries to it. It is append-only. Other skills read it: `/spek:plan` for mid-execute replanning, `/spek:verify` as a narrative source, and `/spek:commit` (tail reads) to detect what's been committed and what's new since the last commit.
@@ -151,7 +153,7 @@ When `/spek:verify` runs, it ticks confirmed assumptions in-place and leaves unv
 
 ## Current-feature discovery
 
-Skills that operate on a specific feature (everything except `/spek:new`, `/spek:adopt`, `/spek:kickoff`, and the bootstrap flow — `/spek:commit` included) resolve the "current feature" in this order:
+Skills that operate on a specific feature (everything except `/spek:new`, `/spek:adopt`, `/spek:kickoff`, `/spek:debug`, and the bootstrap flow — `/spek:commit` included) resolve the "current feature" in this order:
 
 1. **Explicit argument** — `/spek:plan 003` → `.specs/003_*/`
 2. **Git branch mapping** — current branch `feat/003-token-storage` → `.specs/003_token-storage/`
@@ -253,6 +255,7 @@ spek-less/
 │   ├── new.md                              # new-feature entry point
 │   ├── adopt.md                            # retroactive-documentation entry point
 │   ├── quick.md                            # one-shot entry point: create spec + execute inline
+│   ├── debug.md                            # bug-investigation entry point
 │   ├── discuss.md                          # workflow: exploration
 │   ├── plan.md                             # workflow: task breakdown
 │   ├── review.md                           # workflow: pre-execution review
