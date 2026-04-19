@@ -183,7 +183,7 @@ Two convenience skills ship in v1.0.0: `/spek:commit` because commit-message sum
 
 SpekLess specs accumulate into a corpus of design decisions: why caching was handled a certain way in feature 012, what auth trade-offs were reasoned through in feature 031, which alternatives were rejected and why. This corpus is structured (section headers, consistent vocabulary) and findable — but no existing spec-driven framework provides a retrieval layer for it.
 
-`/spek:recall` takes a natural-language query, extracts content terms, greps them case-insensitively across all `spec.md` files, and does section-scoped reads of `## Context`, `## Discussion`, and `## Assumptions` only for the matching candidates. Output is a flat cited list — one block per matching spec, labeled with spec ID, title, and current status.
+`/spek:recall` takes a natural-language query, extracts content terms, greps them case-insensitively across all `spec.md` files, and does section-scoped reads of `## Context`, `## Discussion`, and `## Assumptions` only for the matching candidates. Output is summary-first: a brief synthesized answer grounded in the retrieved passages, followed by cited result blocks labeled with spec ID, title, and current status.
 
 Two strategies were explicitly rejected:
 - **Full-corpus read** — reading every Discussion section on every query. Correct but expensive; cost scales linearly with corpus size, inverting SpekLess's "value compounds with every feature" property.

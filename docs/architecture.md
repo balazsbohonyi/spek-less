@@ -102,7 +102,7 @@ The installer renders canonical source references `spek:<skill>` to the selected
 | _(none)_ | `/spek:commit` | Owns nothing in `spec.md`. Appends one `Committed` entry per commit to `execution.md`; side-effect is a git commit. |
 | _(none)_ | `/spek:status` | Owns nothing. Strictly read-only — reads frontmatter and checkbox lines, writes nothing. |
 | _(none)_ | `/spek:resume` | Owns nothing. Strictly read-only — reads frontmatter, checkbox lines, and execution.md tail. Suggests next command. |
-| _(none)_ | `/spek:recall` | Owns nothing. Strictly read-only — grep-first search across spec files; reads Context, Discussion, and Assumptions of matching candidates. Writes nothing. |
+| _(none)_ | `/spek:recall` | Owns nothing. Strictly read-only — grep-first search across spec files; reads Context, Discussion, and Assumptions of matching candidates, then returns a brief synthesized answer followed by cited matches. Writes nothing. |
 
 `## Review` sits between `## Plan` and `## Verification` in the canonical spec shape. It is the design-review checkpoint after planning and before execution, so review findings have a stable home even when the user loops back for a replan or more discussion. `/spek:plan` and `/spek:discuss` may read `## Review` to address unresolved findings, but neither skill rewrites that section — ownership stays with `/spek:review`.
 

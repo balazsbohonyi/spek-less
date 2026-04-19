@@ -51,6 +51,9 @@ None. This skill has no external dependencies, no data contracts, and no third-p
 1. [x] Write `skills/recall.md`
 2. [x] Sync `recall.md` to installed copies
 3. [x] Update skill inventories in docs and CLAUDE.md
+4. [x] Revise `skills/recall.md` to emit a synthesized summary before the cited matches
+5. [x] Sync the revised recall skill to installed copies
+6. [x] Update external docs to describe the summary-first recall output
 
 ### Details
 
@@ -72,6 +75,24 @@ None. This skill has no external dependencies, no data contracts, and no third-p
 
 **Approach:** Add `recall.md` to the `skills/` tree in `CLAUDE.md` under the convenience entries alongside `status.md` and `resume.md`. Grep each of `README.md` and `docs/architecture.md` for `resume` or `status` to locate their skill inventory positions, then insert `recall` as a convenience skill (read-only query). Evaluate `docs/comparison.md` for the design-philosophy reasoning from Discussion (rejected retrieval strategies: full-corpus read, grep+fallback); add a feature matrix row and a novel-features entry capturing why grep-first was chosen and what alternatives were ruled out — this is exactly what `comparison.md` exists to preserve. Confirm `docs/maintenance.md` needs no change via a quick grep before skipping.
 
+#### 4. Revise `skills/recall.md` to emit a synthesized summary before the cited matches
+
+**Files:** `skills/recall.md`
+
+**Approach:** Keep the existing grep-first candidate selection and section-scoped reads exactly as-is; the new behavior is a presentation-layer addition after retrieval, not a semantic-search change. Update the skill so that once matching excerpts are gathered, it writes a 1-2 sentence synthesis that states the dominant answer to the user's query in plain language, then follows with the cited per-spec result blocks. Constrain the synthesis to information supported by the retrieved passages, avoid inventing facts when results conflict or are thin, and make the no-results path remain unchanged.
+
+#### 5. Sync the revised recall skill to installed copies
+
+**Files:** `.claude/commands/spek/recall.md`, `~/.claude/commands/spek/recall.md`, `.codex/skills/spek-recall/SKILL.md`, `~/.codex/skills/spek-recall/SKILL.md`, `.opencode/commands/spek/recall.md`, `~/.config/opencode/commands/spek/recall.md`
+
+**Approach:** Re-apply the Sync Rule after the source skill changes, again checking each install root for existence before writing and avoiding creation of missing roots. Preserve the existing render behavior: canonical `spek:<skill>` references rewritten to the configured namespace, agent-specific command prefix rendering, and UTF-8 without BOM for Codex `SKILL.md` files.
+
+#### 6. Update external docs to describe the summary-first recall output
+
+**Files:** `README.md`, `docs/architecture.md`, `docs/comparison.md`
+
+**Approach:** Update user-facing and contributor docs anywhere `spek:recall` is still described as returning only a flat cited list so they now describe a short synthesized answer followed by cited matches. Re-evaluate `docs/architecture.md`, `docs/maintenance.md`, and `docs/comparison.md` explicitly per the Documentation principle; architecture and comparison should reflect the new "summary-first, citations-second" output contract, while maintenance likely needs no change unless it mentions recall's output shape. Do not ask `spek:execute` to edit this feature spec itself: `spec.md` narrative sections are owned by other workflow steps, so any request to rewrite feature 027's Context or Discussion must be handled outside execution.
+
 ## Review
 
 **Summary:** The design is clean and well-bounded. Grep-first, section-scoped reads is the correct retrieval strategy — cost-stable as the corpus grows, no novel architecture, no external dependencies. The three-task decomposition covers everything the Context promises. One warning stands: Task 3 dismisses `docs/comparison.md` on the wrong grounds, potentially leaving durable design reasoning undocumented. Otherwise the plan is ready.
@@ -91,17 +112,20 @@ None. This skill has no external dependencies, no data contracts, and no third-p
 ## Verification
 
 **Task-by-task check:**
-- Task 1 — Write `skills/recall.md`: ✓ — [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:12) contains the required Inputs/Reads/Behavior/Writes/Output/Hard rules shape, and [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:76) enforces grep-first, no-status-filter, read-only behavior.
-- Task 2 — Sync `recall.md` to installed copies: ✓ — rendered copies exist at [.claude/commands/spek/recall.md](/D:/develop/projects/spek-less/.claude/commands/spek/recall.md:1), [.codex/skills/spek-recall/SKILL.md](/D:/develop/projects/spek-less/.codex/skills/spek-recall/SKILL.md:1), and [.opencode/commands/spek/recall.md](/D:/develop/projects/spek-less/.opencode/commands/spek/recall.md:1), matching the expected agent-specific command names.
-- Task 3 — Update skill inventories in docs and CLAUDE.md: ✓ — `recall` was added to [CLAUDE.md](/D:/develop/projects/spek-less/CLAUDE.md:69), [README.md](/D:/develop/projects/spek-less/README.md:128), [docs/architecture.md](/D:/develop/projects/spek-less/docs/architecture.md:105), and [docs/comparison.md](/D:/develop/projects/spek-less/docs/comparison.md:182), including the design rationale that review flagged as missing.
+- Task 1 - Write `skills/recall.md`: ✓ - [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:12) contains the required Inputs/Reads/Behavior/Writes/Output/Hard rules shape, and [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:77) enforces grep-first, no-status-filter, and read-only behavior.
+- Task 2 - Sync `recall.md` to installed copies: ✓ - [.claude/commands/spek/recall.md](/D:/develop/projects/spek-less/.claude/commands/spek/recall.md:1), [.codex/skills/spek-recall/SKILL.md](/D:/develop/projects/spek-less/.codex/skills/spek-recall/SKILL.md:1), and [.opencode/commands/spek/recall.md](/D:/develop/projects/spek-less/.opencode/commands/spek/recall.md:1) exist with the expected agent-specific command names.
+- Task 3 - Update skill inventories in docs and CLAUDE.md: ✓ - `recall` is listed in [CLAUDE.md](/D:/develop/projects/spek-less/CLAUDE.md:69), [README.md](/D:/develop/projects/spek-less/README.md:128), [docs/architecture.md](/D:/develop/projects/spek-less/docs/architecture.md:105), and [docs/comparison.md](/D:/develop/projects/spek-less/docs/comparison.md:182).
+- Task 4 - Revise `skills/recall.md` to emit a synthesized summary before the cited matches: ✓ - [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:43), [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:72), and [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:81) require a summary-first, evidence-bound output contract.
+- Task 5 - Sync the revised recall skill to installed copies: ✓ - the same summary-first behavior appears in [.claude/commands/spek/recall.md](/D:/develop/projects/spek-less/.claude/commands/spek/recall.md:43), [.codex/skills/spek-recall/SKILL.md](/D:/develop/projects/spek-less/.codex/skills/spek-recall/SKILL.md:43), and [.opencode/commands/spek/recall.md](/D:/develop/projects/spek-less/.opencode/commands/spek/recall.md:43).
+- Task 6 - Update external docs to describe the summary-first recall output: ✓ - [README.md](/D:/develop/projects/spek-less/README.md:128), [docs/architecture.md](/D:/develop/projects/spek-less/docs/architecture.md:105), and [docs/comparison.md](/D:/develop/projects/spek-less/docs/comparison.md:186) all describe `spek:recall` as returning a brief synthesized answer followed by cited matches.
 
 **Principles check:**
-- Skill file conventions and length budget: ✓ — [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:12) follows the standard section order and is 52 lines long, well under the ~300-line cap.
-- Single-agent topology and read-only boundaries: ✓ — [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:10) and [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:79) explicitly prohibit writes and sub-agents.
-- Sync Rule: ✓ — existing project-local installs were updated in all three agent formats: [.claude/commands/spek/recall.md](/D:/develop/projects/spek-less/.claude/commands/spek/recall.md:1), [.codex/skills/spek-recall/SKILL.md](/D:/develop/projects/spek-less/.codex/skills/spek-recall/SKILL.md:1), and [.opencode/commands/spek/recall.md](/D:/develop/projects/spek-less/.opencode/commands/spek/recall.md:1).
-- Documentation cascade: ✓ — architecture, comparison, README, and contributor inventory were all updated: [README.md](/D:/develop/projects/spek-less/README.md:128), [docs/architecture.md](/D:/develop/projects/spek-less/docs/architecture.md:105), [docs/comparison.md](/D:/develop/projects/spek-less/docs/comparison.md:182), [CLAUDE.md](/D:/develop/projects/spek-less/CLAUDE.md:69).
+- Skill file conventions and length budget: ✓ - [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:12) follows the standard section order and stays well under the ~300-line cap.
+- Single-agent topology and read-only boundaries: ✓ - [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:10) and [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:82) keep the skill strictly read-only with no sub-agents.
+- Sync Rule: ✓ - the source skill and all three project-local rendered copies are present and aligned: [skills/recall.md](/D:/develop/projects/spek-less/skills/recall.md:1), [.claude/commands/spek/recall.md](/D:/develop/projects/spek-less/.claude/commands/spek/recall.md:1), [.codex/skills/spek-recall/SKILL.md](/D:/develop/projects/spek-less/.codex/skills/spek-recall/SKILL.md:1), [.opencode/commands/spek/recall.md](/D:/develop/projects/spek-less/.opencode/commands/spek/recall.md:1).
+- Documentation cascade: ✓ - the feature is reflected in contributor inventory and user-facing docs: [CLAUDE.md](/D:/develop/projects/spek-less/CLAUDE.md:69), [README.md](/D:/develop/projects/spek-less/README.md:128), [docs/architecture.md](/D:/develop/projects/spek-less/docs/architecture.md:105), and [docs/comparison.md](/D:/develop/projects/spek-less/docs/comparison.md:186).
 
-**Goal check:** The implementation achieves the Context goal. SpekLess now has a dedicated read-only retrieval skill that treats the spec corpus as a knowledge base, searches only the intended sections, and returns cited results across specs at any status. The documentation updates make the new capability discoverable and preserve the design reasoning behind grep-first retrieval, which aligns with the project's cross-agent and low-overhead success criteria.
+**Goal check:** The implementation achieves the Context goal. SpekLess now has a dedicated read-only retrieval skill that searches `Context`, `Discussion`, and `Assumptions`, labels results with spec status, and presents them as a brief synthesis followed by cited matches. The rendered copies and documentation make the capability discoverable across Claude Code, Codex, and OpenCode, which supports the project success metrics around reusable canonical skills and low-overhead workflow continuity.
 
 **Issues found:**
 None.
@@ -121,5 +145,5 @@ None.
 - Verification had to account for the feature being staged rather than committed, which reinforced that SpekLess's audit anchor is helpful but does not replace checking actual on-disk or indexed state.
 
 **Principle candidates:**
-- `During verification, if \`git diff <starting_sha>..HEAD\` is empty, also check the staged diff before concluding that no implementation changes exist.` — none; useful verifier behavior, but too implementation-specific to elevate into `principles.md`.
-- `When review identifies a documentation target that plan underspecified, execution should treat that as part of completing the feature rather than as optional follow-up.` — already covered by `## Documentation` in [.specs/principles.md](/D:/develop/projects/spek-less/.specs/principles.md:35).
+- `During verification, if \`git diff <starting_sha>..HEAD\` is empty, also check the staged diff before concluding that no implementation changes exist.` â€” none; useful verifier behavior, but too implementation-specific to elevate into `principles.md`.
+- `When review identifies a documentation target that plan underspecified, execution should treat that as part of completing the feature rather than as optional follow-up.` â€” already covered by `## Documentation` in [.specs/principles.md](/D:/develop/projects/spek-less/.specs/principles.md:35).
