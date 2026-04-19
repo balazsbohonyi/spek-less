@@ -125,8 +125,9 @@ Use these skills any time.
 | **`/spek:commit`** | Drafts a spec-anchored git commit message summarizing work done since the last commit (tasks completed, verify fixes, course corrections), asks you to confirm via AskUserQuestion, then commits. Never automatic, never amends, never bypasses hooks. Respects a per-project `commit_style` chosen at install time, with `principles.md` allowed to override. |
 | **`/spek:status`** | Shows a table of all features with their status, task progress (e.g. 3/5 done), and last modified date. Highlights the current feature. Strictly read-only — no writes, no sub-agents. Useful for a broad overview. |
 | **`/spek:resume`** | Focused resume helper — shows the current feature's status, task progress, and last execution log entry, then suggests the right next command. Use when returning after a break or context reset. Strictly read-only. |
+| **`/spek:recall`** | Searches prior spec decisions by natural-language query — grep-first, section-scoped reads of Context, Discussion, and Assumptions across all specs. Returns a cited flat list of matching passages. Strictly read-only. |
 
-All skills are **idempotent, section-scoped, and principles-aware**. Re-running a skill rewrites its owned section in full (except `/spek:execute`, which is append-only for `execution.md` and owns checkbox state within the Plan's task list, `/spek:commit`, which is append-only for `execution.md` and whose side-effect is a git commit, and `/spek:status`/`/spek:resume`, which are strictly read-only). `/spek:review` owns `## Review`; `/spek:retro` owns `## Retrospective`; downstream skills may read those sections when needed, but they never rewrite them.
+All skills are **idempotent, section-scoped, and principles-aware**. Re-running a skill rewrites its owned section in full (except `/spek:execute`, which is append-only for `execution.md` and owns checkbox state within the Plan's task list, `/spek:commit`, which is append-only for `execution.md` and whose side-effect is a git commit, and `/spek:status`/`/spek:resume`/`/spek:recall`, which are strictly read-only). `/spek:review` owns `## Review`; `/spek:retro` owns `## Retrospective`; downstream skills may read those sections when needed, but they never rewrite them.
 
 ---
 
@@ -325,7 +326,8 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             ├── retro.md
             ├── commit.md
             ├── status.md
-            └── resume.md
+            ├── resume.md
+            └── recall.md
 ```
 
 Claude/OpenCode install flat command files inside their namespace directories. Codex installs one packaged skill per directory under `.codex/skills/<namespace>-<skill>/SKILL.md`.

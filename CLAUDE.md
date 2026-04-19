@@ -65,7 +65,8 @@ spek-less/
 │   │   retro.md
 │   ├── commit.md                           #   convenience: drafted commits
 │   ├── status.md                           #   convenience: feature status (read-only)
-│   └── resume.md                           #   convenience: resume after break/reset (read-only)
+│   ├── resume.md                           #   convenience: resume after break/reset (read-only)
+│   └── recall.md                           #   convenience: cross-spec decision retrieval (read-only)
 ├── _templates/                            # scaffolding templates
 │   ├── spec.md.tmpl
 │   ├── execution.md.tmpl

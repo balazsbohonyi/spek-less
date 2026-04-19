@@ -102,6 +102,7 @@ The installer renders canonical source references `spek:<skill>` to the selected
 | _(none)_ | `/spek:commit` | Owns nothing in `spec.md`. Appends one `Committed` entry per commit to `execution.md`; side-effect is a git commit. |
 | _(none)_ | `/spek:status` | Owns nothing. Strictly read-only — reads frontmatter and checkbox lines, writes nothing. |
 | _(none)_ | `/spek:resume` | Owns nothing. Strictly read-only — reads frontmatter, checkbox lines, and execution.md tail. Suggests next command. |
+| _(none)_ | `/spek:recall` | Owns nothing. Strictly read-only — grep-first search across spec files; reads Context, Discussion, and Assumptions of matching candidates. Writes nothing. |
 
 `## Review` sits between `## Plan` and `## Verification` in the canonical spec shape. It is the design-review checkpoint after planning and before execution, so review findings have a stable home even when the user loops back for a replan or more discussion. `/spek:plan` and `/spek:discuss` may read `## Review` to address unresolved findings, but neither skill rewrites that section — ownership stays with `/spek:review`.
 
@@ -264,7 +265,8 @@ spek-less/
 │   ├── retro.md                            # workflow: post-completion retrospective
 │   ├── commit.md                           # convenience: drafted commit message + commit on confirm
 │   ├── status.md                           # convenience: feature status at a glance (read-only)
-│   └── resume.md                           # convenience: resume guidance after break/reset (read-only)
+│   ├── resume.md                           # convenience: resume guidance after break/reset (read-only)
+│   └── recall.md                           # convenience: cross-spec decision retrieval (read-only)
 ├── _templates/
 │   ├── spec.md.tmpl
 │   ├── execution.md.tmpl

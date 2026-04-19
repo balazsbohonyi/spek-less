@@ -36,6 +36,7 @@ A detailed comparison against the closest existing spec-driven development frame
 | Retroactive adoption of existing code | ✓ (`/spek:adopt`) | ✗ | ✗ | ✗ |
 | Clarification detection in discuss | ✓ (prompt pattern) | partial | ✓ (explicit clarify step) | ✗ |
 | Principles building assistance | ✓ (via `/spek:kickoff`) | ✗ | ✗ | ✗ |
+| Cross-spec decision retrieval | ✓ (`/spek:recall`) | ✗ | ✗ | partial (manual search) |
 | **Agent architecture** | | | | |
 | Single-agent + skills topology | ✓ | ✗ (fan-out) | N/A | N/A |
 | Sub-agents used only as context firewalls | ✓ | ✗ (workflow roles) | N/A | N/A |
@@ -177,6 +178,18 @@ GSD auto-generates commit messages but couples them to forced atomic commits —
 The skill reads the Plan's checkbox state, the execution log's tail since the last commit, and the current git diff, then drafts a subject anchored to the feature id (`001: Add dark mode toggle — tasks 1–3`) plus a bullet body listing the completed units of work, plus a footer linking back to the spec. Message style is configurable at install time (`plain` / `conventional` / custom free-text rule), with `principles.md` allowed to override when a project needs something more specific. The commit is only created after an explicit AskUserQuestion confirmation; the skill never amends, never bypasses pre-commit hooks, and never uses `git add -A`.
 
 Two convenience skills ship in v1.0.0: `/spek:commit` because commit-message summarization is the single content-quality benefit SpekLess otherwise gave up by rejecting GSD's atomic commits, and `/spek:status` because "the document is the state" needs a command to read that state at a glance — especially when resuming after a context reset.
+
+### `/spek:recall` — grep-first cross-spec knowledge retrieval
+
+SpekLess specs accumulate into a corpus of design decisions: why caching was handled a certain way in feature 012, what auth trade-offs were reasoned through in feature 031, which alternatives were rejected and why. This corpus is structured (section headers, consistent vocabulary) and findable — but no existing spec-driven framework provides a retrieval layer for it.
+
+`/spek:recall` takes a natural-language query, extracts content terms, greps them case-insensitively across all `spec.md` files, and does section-scoped reads of `## Context`, `## Discussion`, and `## Assumptions` only for the matching candidates. Output is a flat cited list — one block per matching spec, labeled with spec ID, title, and current status.
+
+Two strategies were explicitly rejected:
+- **Full-corpus read** — reading every Discussion section on every query. Correct but expensive; cost scales linearly with corpus size, inverting SpekLess's "value compounds with every feature" property.
+- **Grep-first with full-corpus fallback** — widening to full reads when fewer than N candidates match. Fixes vocabulary drift at the cost of unpredictable token budgets and logic that degrades as the corpus grows.
+
+The accepted limitation is vocabulary drift: a query about "token storage" will not find a spec that used "JWT session management." This is surfaced clearly in the no-results message and treated as expected behavior, not a defect.
 
 ### Section ownership as the core design rule
 
