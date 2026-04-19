@@ -22,7 +22,7 @@ This is NOT a feature spec. Do not write Plan/Execution sections. Do not create 
 
 ## Behavior
 
-Run an extended, clarification-heavy conversation. Reuse the clarification-detection pattern from `spek:discuss`:
+Run an extended, clarification-heavy conversation until a shared understanding is reached. Reuse the clarification-detection pattern from `spek:discuss`:
 
 - Proactively surface missing constraints, undefined users, vague success criteria, conflicting requirements.
 - Ask one question at a time, each with a recommended answer based on what you've already heard.

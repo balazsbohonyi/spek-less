@@ -7,8 +7,6 @@ description: Retroactively create a spec for code that already exists — revers
 
 You are creating a feature spec for code that was written WITHOUT SpekLess and needs to be retroactively documented. The spec should read as if the author had used SpekLess from the start: Context explains why the code exists, Plan describes the work as if it were planned up-front (with all tasks pre-checked since the work is done).
 
-This is a capability neither GSD nor SpecKit offers. It's the main reason SpekLess is useful on day one of installation in a mature repo.
-
 ## Inputs
 
 - **Required argument:** a short description of what to adopt. Examples:
