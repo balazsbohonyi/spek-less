@@ -39,6 +39,7 @@ This choice is the single largest token-cost difference between SpekLess and GSD
 | `/spek:plan` | **Explore** (built-in) | When understanding the feature area would take more than `subagent_threshold` targeted reads/greps (default: 3). |
 | `/spek:plan` | **Plan** (built-in, optional) | After drafting a plan, optionally delegates a critique pass. Replaces GSD's plan-checker. Skip for simple features. |
 | `/spek:adopt` | **Explore** (built-in) | When the user supplies a broad scope ("the auth module") rather than specific files. |
+| `/spek:adopt` (bulk) | **Explore** (built-in) | Bulk discovery Phase 1: one breadth-first survey, plus an optional second narrower Explore for ambiguous results. Cap at 2. After Explore returns, the main agent consolidates related candidates before writing FEATURES.md (target: 10–20 features). |
 | `/spek:verify` | **general-purpose** (built-in) | For non-trivial features (more than ~5 tasks or large diffs). The fresh sub-agent conversation is the mechanism behind "fresh lens." |
 
 SpekLess uses three Claude Code built-in agent types — no custom types are defined. `Explore` is read-only (no Edit/Write tools) and best for codebase mapping. `Plan` is the architectural analysis agent, suitable for critiquing a drafted plan. `general-purpose` has full tool access and handles complex multi-step reasoning tasks like fresh-lens verification. **Portability note:** these `subagent_type` names are Claude Code-specific. Codex CLI and OpenCode have no equivalent named types — porting SpekLess to another tool requires mapping each role to that tool's agent primitive, using the prose description in each skill as the guide.
@@ -54,6 +55,7 @@ SpekLess uses three Claude Code built-in agent types — no custom types are def
 ├── config.yaml          # per-project framework config (written by installer)
 ├── principles.md        # project constitution — HOW we build, read by every skill
 ├── project.md           # product vision / PRD — WHAT & WHY, read by skills as context (optional)
+├── FEATURES.md          # intermediate artifact: bulk-adopt discovery list (created by Phase 1, consumed by Phase 2, optional deletion after synthesis)
 ├── _templates/         # framework templates (copied by installer, overwritten on re-install)
 ├── 001_<slug>/
 │   ├── spec.md          # living design doc
@@ -133,6 +135,10 @@ Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may writ
 ### `project.md` ownership
 
 `/spek:kickoff` owns this file. It is fully rewritten on every `/spek:kickoff` run. `/spek:ingest` may also create it on the multi-feature path when the file doesn't exist and the ingested content contains project-level material (vision, goals, scope, success metrics) — the user must confirm via AskUserQuestion before creation. Once created by either skill, `/spek:ingest` will not overwrite it (the user can run `/spek:kickoff` to evolve it). Other skills read it as context (scope, constraints, vision) but never modify it.
+
+### `FEATURES.md` ownership (intermediate artifact)
+
+`/spek:adopt` (bulk discovery Phase 1) writes this file after a consolidation pass that merges sub-concerns into cohesive features (target: 10–20 features). Phase 2 reads and parses it. It is not a permanent artifact — it is a human-editable checkpoint between the two phases. Users may delete it at any time. After Phase 2 completes, the skill offers to delete it. No other skill reads or writes this file.
 
 ---
 
@@ -254,7 +260,7 @@ spek-less/
 │   ├── kickoff.md                          # greenfield entry point
 │   ├── ingest.md                           # document-to-specs entry point
 │   ├── new.md                              # new-feature entry point
-│   ├── adopt.md                            # retroactive-documentation entry point
+│   ├── adopt.md                            # retroactive-documentation entry point (single-feature + bulk discovery)
 │   ├── quick.md                            # one-shot entry point: create spec + execute inline
 │   ├── debug.md                            # bug-investigation entry point
 │   ├── discuss.md                          # workflow: exploration
@@ -277,8 +283,10 @@ spek-less/
 │   ├── 001_toy-feature/                    # fully worked greenfield feature
 │   │   ├── spec.md
 │   │   └── execution.md
-│   └── 002_adopted-feature/                # retroactively documented feature (via /spek:adopt)
-│       └── spec.md                         # no execution.md — work predates SpekLess
+│   ├── 002_adopted-feature/                # retroactively documented feature (via /spek:adopt)
+│   │   └── spec.md                         # no execution.md — work predates SpekLess
+│   └── 003_bulk-adopt/                     # sample FEATURES.md for bulk discovery
+│       └── FEATURES.md
 └── docs/
     ├── architecture.md                     # this document
     └── comparison.md                       # detailed competitor comparison

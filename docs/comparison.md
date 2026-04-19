@@ -123,9 +123,11 @@ SpecKit has strong support for API-heavy projects via contract tests and schema 
 
 ## What's genuinely novel in SpekLess
 
-### `/spek:adopt` — retroactive documentation of existing code
+### `/spek:adopt` — retroactive documentation of existing code (single + bulk)
 
 As far as I can find, no existing spec-driven framework offers this. GSD, SpecKit, BMAD, and the ADR tradition all assume you start with a spec and produce code. SpekLess recognizes the common case of **installing a framework on a codebase with existing, undocumented work** and provides a skill that reverse-engineers a spec from the actual files.
+
+In bulk mode (no argument), `spek:adopt` performs a two-phase flow: Phase 1 discovers all features via an Explore sub-agent (with anti-pattern guidance and merge signals), then the main agent consolidates related candidates into broader, cohesive features (target: 10–20) before writing an editable `.specs/FEATURES.md` checkpoint for human review; Phase 2 reads the edited file and creates specs for each confirmed feature sequentially. This turns the tedious "run adopt 20 times" problem into two invocations with a human-in-the-loop edit step between them.
 
 `/spek:adopt` is what makes SpekLess useful on day one of installation in a mature repo. You don't have to write fake historical specs by hand.
 

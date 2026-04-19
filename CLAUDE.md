@@ -77,8 +77,10 @@ spek-less/
 │   ├── 001_toy-feature/                    # worked greenfield example
 │   │   ├── spec.md
 │   │   └── execution.md
-│   └── 002_adopted-feature/                # worked /spek:adopt example
-│       └── spec.md                         # no execution.md — work predates SpekLess
+│   ├── 002_adopted-feature/                # worked /spek:adopt example
+│   │   └── spec.md                         # no execution.md — work predates SpekLess
+│   └── 003_bulk-adopt/                     # sample FEATURES.md for bulk discovery
+│       └── FEATURES.md
 └── docs/
     ├── architecture.md                     # authoritative design reference
     ├── maintenance.md                      # agent instructions for editing the framework
