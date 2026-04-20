@@ -136,6 +136,10 @@ Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may writ
 
 `/spek:kickoff` owns this file. It is fully rewritten on every `/spek:kickoff` run. `/spek:ingest` may also create it on the multi-feature path when the file doesn't exist and the ingested content contains project-level material (vision, goals, scope, success metrics) — the user must confirm via AskUserQuestion before creation. Once created by either skill, `/spek:ingest` will not overwrite it (the user can run `/spek:kickoff` to evolve it). Other skills read it as context (scope, constraints, vision) but never modify it.
 
+### `/spek:ingest` multi-feature flow
+
+When the source document contains multiple distinct features, `/spek:ingest` splits it into one spec per feature. The skill runs a 4-bucket exhaustive extraction (goals, decisions, tasks/approach, assumptions), classifies the input as single or multi-feature, assigns graduated status per feature based on granularity (`planning` / `discussing` / `created`), proposes a breakdown table, and confirms before writing. This is the document-to-specs complement to `/spek:adopt`'s code-to-specs bulk flow — both produce multiple specs from a single invocation, but `ingest` starts from written material while `adopt` starts from code.
+
 ### `FEATURES.md` ownership (intermediate artifact)
 
 `/spek:adopt` (bulk discovery Phase 1) writes this file after a consolidation pass that merges sub-concerns into cohesive features (target: 10–20 features). Phase 2 reads and parses it. It is not a permanent artifact — it is a human-editable checkpoint between the two phases. Users may delete it at any time. After Phase 2 completes, the skill offers to delete it. No other skill reads or writes this file.

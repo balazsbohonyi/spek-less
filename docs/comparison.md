@@ -135,6 +135,8 @@ In bulk mode (no argument), `spek:adopt` performs a two-phase flow: Phase 1 disc
 
 When the user already has a plan, PRD, or notes, `/spek:ingest` converts them into properly-formed specs with graduated status, an import note, optional `project.md` creation, and a `principles.md` offer when the content warrants it. No existing framework offers this document-to-specs path.
 
+Multi-feature input (a PRD with several distinct sections, a conversation covering multiple features) is automatically classified and split into one spec per feature. Each spec gets a graduated status based on its granularity: `planning` when tasks and approach details are present, `discussing` when there's a task list without approach, `created` for description-only sections. The skill shows a breakdown table, lets the user adjust (rename, merge, split), and confirms before writing. This turns a single long document into a tracked feature set in one step.
+
 ### Intervention as "just re-run a skill"
 
 Other frameworks treat intervention as a special mode — a dedicated flow for mid-phase changes, rollbacks, or revisions. SpekLess recognizes that **every intervention is just another invocation of an existing skill**, because skills are idempotent and section-scoped. The result: there is no intervention documentation to learn, because there is no intervention mode. You just run `/spek:plan` again. You just edit the file. The framework gets out of your way.

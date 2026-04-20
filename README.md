@@ -95,7 +95,7 @@ Pick one of these skills when starting.
 | Skill | Use when |
 |---|---|
 | **`/spek:kickoff`** | Starting a greenfield project. Runs an extended PRD-style discussion, writes `.specs/project.md`, and offers to scaffold initial feature folders. |
-| **`/spek:ingest`** | Convert existing plans, PRDs, or notes (file or current conversation) into one or more SpekLess specs with graduated status. |
+| **`/spek:ingest`** | Convert existing plans, PRDs, or notes (file or current conversation) into SpekLess specs with graduated status. Single-feature input produces one spec; multi-feature input (e.g. a PRD with several distinct sections) is split into one spec per feature, each with its own status based on granularity (detailed → `planning`, medium → `discussing`, high-level → `created`). |
 | **`/spek:new`** | Adding a new feature to any project. Creates a skeleton feature folder and nothing else. |
 | **`/spek:adopt`** | Retroactively documenting code that already exists. With an argument, adopts a single feature. Without an argument, runs bulk discovery: scans the codebase, produces an editable `.specs/FEATURES.md` checkpoint, then on re-invocation creates specs for all confirmed features. Unique to SpekLess. |
 | **`/spek:quick`** | Small, self-contained tasks where the full workflow would be overhead. Describe the task in one sentence — the skill creates the spec, executes inline, and leaves a complete audit trail. Skips discuss, plan, and assumptions. |
