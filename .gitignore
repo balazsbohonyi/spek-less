@@ -9,3 +9,9 @@ Thumbs.db
 
 # Custom
 .docs/
+
+# graphify
+.graphify/
+graphify-out/
+.graphify_*.json
+.graphify_python

@@ -161,3 +161,12 @@ See [What's deliberately missing](docs/architecture.md#whats-deliberately-missin
 - **Ask first:** adding a new skill, removing an existing skill, changing a core invariant, touching `install.js` question flow, changing frontmatter format across skills, altering the `.specs/` directory layout.
 
 When in doubt, read `docs/architecture.md` and check whether the change would contradict it. If yes, ask. If no, proceed.
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)

@@ -41,7 +41,7 @@ Resolution order (first match wins):
 - **Missing success criteria** — how will we know it's done? What's explicitly out of scope?
 - **Alternatives not yet considered** — before committing to approach A, is there an approach B the user hasn't thought of?
 
-Ask one question at a time. Recommend an answer to each question based on context you've gathered — don't just interrogate. If the user's answer surfaces new ambiguities, ask those next. Stop when the user signals enough or when you genuinely have no more open questions.
+Ask one question at a time. Recommend an answer to each question based on context you've gathered — don't just interrogate. If the user's answer surfaces new ambiguities, ask those next. Stop when the user signals enough or until a shared understanding is reached, and you genuinely have no more open questions.
 
 Use the **AskUserQuestion tool** for choice-between-options questions (e.g., "localStorage vs user profile vs hybrid?"). Use plain conversation for open-ended prompts.
 
