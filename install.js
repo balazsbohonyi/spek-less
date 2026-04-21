@@ -19,8 +19,11 @@
  *
  * Usage:
  *   cd /path/to/your/project
- *   node /path/to/spek-less/install.js
- *   node /path/to/spek-less/install.js --defaults   # non-interactive, accept all defaults
+ *   node /path/to/spek-less/install.js                     # interactive first-run setup
+ *   node /path/to/spek-less/install.js --defaults          # non-interactive, accept all defaults
+ *   node /path/to/spek-less/install.js --claude            # sync skills to Claude Code roots only
+ *   node /path/to/spek-less/install.js --codex             # sync skills to Codex roots only
+ *   node /path/to/spek-less/install.js --opencode          # sync skills to OpenCode roots only
  */
 
 const fs = require('fs');
@@ -270,6 +273,41 @@ function readYamlValue(filePath, key) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Build config non-interactively from existing config.yaml for flag-mode sync runs.
+ * Returns the same shape as collectConfig() so runInstall() is unchanged.
+ * @param {'claude_code'|'codex'|'opencode'} targetAgent
+ * @param {string} cwd
+ */
+function buildFlagConfig(targetAgent, cwd) {
+  const perProjectConfig = path.join(cwd, '.specs', 'config.yaml');
+  const home = safeHomedir();
+  const globalConfig = home ? path.join(home, '.claude', 'spek-config.yaml') : '';
+  const existingConfig = fs.existsSync(perProjectConfig) ? perProjectConfig
+                       : (globalConfig && fs.existsSync(globalConfig)) ? globalConfig
+                       : '';
+
+  const namespace        = readYamlValue(existingConfig, 'namespace')          || 'spek';
+  const specsRoot        = readYamlValue(existingConfig, 'specs_root')         || '.specs';
+  const suggestCommits   = readYamlValue(existingConfig, 'suggest_commits')    || 'false';
+  const subagentThreshold = readYamlValue(existingConfig, 'subagent_threshold') || '3';
+  const commitStyle      = readYamlValue(existingConfig, 'commit_style')       || 'plain';
+  const cmdPrefix        = targetAgent === 'codex' ? '$' : '/';
+
+  return {
+    namespace,
+    specsRoot,
+    installScope: '3',   // both project-local and global (no-ops when root absent)
+    suggestCommits,
+    subagentThreshold,
+    createPrinciples: false,
+    commitStyle,
+    aiAgent: targetAgent,
+    cmdPrefix,
+    flagMode: true,
+  };
+}
+
+/**
  * Run the interactive configuration questions and return a config object.
  * @param {boolean} defaultsMode - Skip all prompts and use defaults
  */
@@ -409,6 +447,7 @@ async function collectConfig(defaultsMode) {
     commitStyle,
     aiAgent,
     cmdPrefix,
+    flagMode: false,
   };
 }
 
@@ -422,19 +461,28 @@ async function collectConfig(defaultsMode) {
  * @param {string} scriptDir - Directory where install.js lives (SpekLess source root)
  */
 async function runInstall(config, scriptDir) {
-  card(4, 5, 'Installing', 'install');
-
   const cwd = process.cwd();
   const {
     namespace, specsRoot, installScope,
     suggestCommits, subagentThreshold,
     createPrinciples, commitStyle, aiAgent, cmdPrefix,
+    flagMode,
   } = config;
+
+  if (!flagMode) card(4, 5, 'Installing', 'install');
 
   const specsRootAbs = path.resolve(cwd, specsRoot);
   const templatesSrc  = path.join(scriptDir, '_templates');
   const templatesDest = path.join(specsRootAbs, '_templates');
   const skillsSrc     = path.join(scriptDir, 'skills');
+
+  // Check whether the top-level agent directory exists at rootDir (for flag-mode no-op guard).
+  function agentRootExists(agent, rootDir) {
+    const topDir = agent === 'codex'    ? '.codex'
+                 : agent === 'opencode' ? '.opencode'
+                 : '.claude';
+    return fs.existsSync(path.join(rootDir, topDir));
+  }
 
   // Icon shortcuts for install log messages.
   // Use emoji here (not ICONS.uni) so card alignment is unaffected — overflow in prose lines is fine.
@@ -531,12 +579,22 @@ async function runInstall(config, scriptDir) {
   }
 
   if (installScope === '1' || installScope === '3') {
-    console.log(`${iconOk}Installing skills to ${perProjectSkillsDir}`);
-    installSkillsTo(perProjectSkillsDir, cmdPrefix);
+    if (flagMode && !agentRootExists(aiAgent, cwd)) {
+      const skipIcon = TERM.useUnicode ? '⊖ ' : '- ';  // ⊘
+      console.log(`${skipIcon}No ${aiAgent} install root at ${cwd} — skipping`);
+    } else {
+      console.log(`${iconOk}Installing skills to ${perProjectSkillsDir}`);
+      installSkillsTo(perProjectSkillsDir, cmdPrefix);
+    }
   }
   if ((installScope === '2' || installScope === '3') && globalSkillsDir) {
-    console.log(`${iconOk}Installing skills to ${cmd(globalSkillsDir)}`);
-    installSkillsTo(globalSkillsDir, cmdPrefix);
+    if (flagMode && !agentRootExists(aiAgent, home || '')) {
+      const skipIcon = TERM.useUnicode ? '⊖ ' : '- ';  // ⊘
+      console.log(`${skipIcon}No ${aiAgent} install root at ${home} — skipping`);
+    } else {
+      console.log(`${iconOk}Installing skills to ${cmd(globalSkillsDir)}`);
+      installSkillsTo(globalSkillsDir, cmdPrefix);
+    }
   } else if ((installScope === '2' || installScope === '3') && !globalSkillsDir) {
     console.log(`${iconWarn}${C.yellow}Warning:${C.reset} Cannot determine home directory — skipping global skills install.`);
   }
@@ -694,6 +752,20 @@ async function main() {
   // Set module-level flag immediately so askYN/ask calls before collectConfig also respect --defaults.
   useDefaults = defaultsMode;
 
+  // Target-agent flags: --claude, --codex, --opencode enable non-interactive sync mode.
+  const knownFlags = new Set(['--defaults', '-y', '--claude', '--codex', '--opencode']);
+  for (const arg of args) {
+    if (arg.startsWith('--') && !knownFlags.has(arg)) {
+      console.error(`Unknown flag: ${arg}`);
+      console.error('Usage: node install.js [--claude | --codex | --opencode] [--defaults]');
+      process.exit(1);
+    }
+  }
+  const targetAgent = args.includes('--claude')   ? 'claude_code'
+                    : args.includes('--codex')    ? 'codex'
+                    : args.includes('--opencode') ? 'opencode'
+                    : null;
+
   // Platform checks (exits with a message if something is wrong)
   detectPlatformIssues();
 
@@ -710,6 +782,17 @@ async function main() {
     );
     process.exit(1);
   }
+
+  // --- Flag mode: non-interactive targeted sync ---
+  if (targetAgent !== null) {
+    const flagLabel = args.find(a => ['--claude', '--codex', '--opencode'].includes(a));
+    console.log(`Syncing skills for ${flagLabel}…`);
+    const config = buildFlagConfig(targetAgent, cwd);
+    await runInstall(config, scriptDir);
+    return;
+  }
+
+  // --- Interactive mode ---
 
   // Step 1: Welcome
   card(1, 5, 'SpekLess Installer', 'welcome');

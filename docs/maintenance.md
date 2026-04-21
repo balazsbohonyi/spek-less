@@ -151,9 +151,12 @@ SpekLess has no automated test suite in v1.0.0. The smoke test is:
 mkdir /tmp/spek-less-smoke && cd /tmp/spek-less-smoke
 git init
 
-# 2. Run the installer once for each agent you changed
-node /path/to/spek-less/install.js
-# Accept defaults or choose the target agent explicitly.
+# 2. Run the installer for each agent you want to sync
+node /path/to/spek-less/install.js --claude
+node /path/to/spek-less/install.js --codex
+node /path/to/spek-less/install.js --opencode
+# Each command is a no-op for install roots that don't exist.
+# To do a full first-time interactive install instead, run without flags.
 
 # 3. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md

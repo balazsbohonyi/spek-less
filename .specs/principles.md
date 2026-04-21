@@ -40,7 +40,15 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 
 ## Sync Rule
 
-Whenever any file in `skills/` or `_templates/` is created, modified, deleted, or renamed, replicate the change to every installed copy that exists. Check for existence before syncing - do not create the directory if it is not already there. Running `node install.js` handles these sync cases automatically on re-run.
+Whenever any file in `skills/` or `_templates/` is created, modified, deleted, or renamed, replicate the change to every installed copy that exists. Check for existence before syncing - do not create the directory if it is not already there. Run the following three-command sequence to sync all agent install roots:
+
+```
+node install.js --claude
+node install.js --codex
+node install.js --opencode
+```
+
+Each command targets that agent's project-local and global install roots. Each command is a no-op for install roots that don't exist on the current machine, so the sequence is safe to run unconditionally regardless of which agents are installed.
 
 | AI Agent | Project-local | Global |
 |---|---|---|

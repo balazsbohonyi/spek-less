@@ -58,6 +58,16 @@ Pass `--defaults` (or `-y`) to skip all prompts and accept default values non-in
 node /path/to/spek-less/install.js --defaults
 ```
 
+After the initial install, use the target flags to sync skills to a specific agent without going through the interactive flow. Run all three to ensure every install root is up to date:
+
+```bash
+node /path/to/spek-less/install.js --claude
+node /path/to/spek-less/install.js --codex
+node /path/to/spek-less/install.js --opencode
+```
+
+Each command reads your existing `config.yaml`, renders updated skills into that agent's project-local and global install roots, and is a no-op for any install roots that don't exist — so the sequence is safe to run unconditionally.
+
 The installer asks:
 
 1. Command namespace (default: `spek`)
