@@ -10,7 +10,7 @@ You are transforming existing content — a file, a PRD, conversation notes — 
 ## Inputs
 
 - Optional file path: `spek:ingest path/to/plan.md` — reads the given file.
-- No argument: scans the current conversation for plan/PRD content, shows a one-paragraph summary of what was found, confirms via AskUserQuestion before ingesting. If nothing usable found, asks the user for a file path or pasted text.
+- No argument: performs a 4-bucket exhaustive extraction of the current conversation, shows a structured multi-section breakdown of what was found, confirms via AskUserQuestion before ingesting. If nothing usable found, asks the user for a file path or pasted text.
 
 ## Reads
 
@@ -23,10 +23,21 @@ You are transforming existing content — a file, a PRD, conversation notes — 
 
 ## Behavior
 
-### Step 1 — Acquire content
+### Step 1 — Acquire content and extract
 
-- **With file arg:** read the file. Present a one-paragraph summary of what was found.
-- **Without arg:** scan the conversation for plan/PRD content (sections, task lists, decisions, goals). Output a one-paragraph summary. Use AskUserQuestion: "Ingest this content? Options: Yes / No, provide a file path instead." If nothing usable found, ask the user for a file path or pasted text.
+Perform a 4-bucket exhaustive extraction pass over the source before any confirmation prompt.
+
+**4-bucket extraction:**
+
+- **Bucket 1 — Goal/context:** every stated goal, constraint, and success criterion.
+- **Bucket 2 — Decisions:** every alternative considered and rationale given for what was chosen.
+- **Bucket 3 — Tasks + approach:** every task with its full implementation detail — not just titles.
+- **Bucket 4 — Assumptions/constraints:** every stated dependency, risk, or hard constraint.
+
+Display the extraction as a structured multi-section breakdown (not a one-liner).
+
+- **With file arg:** read the file. Run the 4-bucket extraction and display the structured result.
+- **Without arg:** cover the full conversation thread — user framing, exploration exchanges, stated constraints, and any synthesized plan. Do not limit to sections explicitly labeled "plan." Run the 4-bucket extraction and display the structured result. Use AskUserQuestion: "Ingest this content? Options: Yes / No, provide a file path instead." If nothing usable found, ask the user for a file path or pasted text.
 
 ### Step 2 — Classify input
 
@@ -62,6 +73,8 @@ Use AskUserQuestion: "Confirm creation? Options: Yes, create all / Change someth
 
 ### Step 5 — Create specs
 
+**Faithfulness mandate:** extract content faithfully — do not summarize meaning, do not paraphrase decisions, do not condense task details. Verbatim or near-verbatim extraction into the relevant spec section is preferred over compressed restatements. The spec should read as though the original author wrote it directly.
+
 For each approved spec:
 
 1. **Slug:** lowercase title, replace spaces/punctuation with hyphens, strip leading/trailing hyphens, max 40 chars.
@@ -81,7 +94,7 @@ For each approved spec:
 
 | Section | `planning` | `discussing` | `created` |
 |---|---|---|---|
-| Context | Filled from source | Filled from source | Filled from source |
+| Context | Exhaustively extracted from source | Exhaustively extracted from source | Exhaustively extracted from source |
 | Discussion | Filled + import note | Import note + proposed tasks list | Import note only |
 | Assumptions | Extracted or "None." | Extracted or "None." | Template placeholder comment |
 | Plan | Tasks + Details filled | Template placeholder comment | Template placeholder comment |

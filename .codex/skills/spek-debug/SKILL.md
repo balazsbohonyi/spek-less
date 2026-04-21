@@ -135,5 +135,5 @@ from the hypotheses above. Then run $spek-execute to work each task.
 - **Inline spec write.** Never read or substitute from `spec.md.tmpl`. The bug spec structure differs (two-group Plan, `type`/`confidence` frontmatter fields).
 - **No overwrite.** If the derived slug collides, append `-2` to the slug.
 - **No sub-agents.** Intake and spec creation happen in the main conversation.
-- **Canonical references.** Use `spek-<skill>` in internal guidance; `$spek-<skill>` in user-facing output and AskUserQuestion text. Never hardcode `/` or `$`.
+- **Canonical references.** Use `spek:<skill>` in internal guidance; `$spek:<skill>` in user-facing output and AskUserQuestion text. Never hardcode `/` or `$`.
 - **Principles-aware.** If `principles.md` exists, the written spec must be consistent with it.

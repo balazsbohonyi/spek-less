@@ -130,7 +130,7 @@ Skills advance the status automatically as they complete their work. Manual edit
 
 ### `principles.md` ownership
 
-Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may write to it via an opt-in "principles building" conversation — it asks targeted questions and fills in the template with real project conventions. `/spek:ingest` may also write to it (on any input, single- or multi-feature) when it detects principles-worthy prose in the ingested content and the user confirms creation or fill-in via AskUserQuestion. Both skills follow the same opt-in, user-confirmed pattern and never fabricate conventions. The installer creates a starter template on request.
+Primarily user-edited. Every skill reads it as context. `/spek:kickoff` may write to it via an opt-in "principles building" conversation — it asks targeted questions and fills in the template with real project conventions. `/spek:ingest` may also write to it (on any input, single- or multi-feature) when it detects principles-worthy prose in the ingested content and the user confirms creation or fill-in via AskUserQuestion. `/spek:adopt` may also write to it — in both single-feature mode (before folder creation) and bulk Phase 1 (after FEATURES.md is written) — when the file is absent or still contains template placeholders (`<e.g.,` strings). It asks three targeted questions (testing philosophy, banned patterns, code style anchor), reads linting config and representative test files inline, and synthesizes the result; it never fabricates conventions. All three skills follow the same opt-in, user-confirmed pattern and skip inference if `principles.md` already has real content. The installer creates a starter template on request.
 
 ### `project.md` ownership
 

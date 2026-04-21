@@ -18,7 +18,7 @@ Two modes, triggered by argument presence:
 ## Reads
 
 1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
-2. **`.specs/principles.md`** (if exists).
+2. **`.specs/principles.md`** (if exists). If it exists and contains no `<e.g.,` strings, it has real user content; principles inference is skipped.
 3. **`.specs/project.md`** (if exists).
 4. **`.specs/`** directory listing — to determine next sequential number and check for existing specs.
 5. **Existing spec frontmatter** across all specs — for cross-referencing during bulk discovery.
@@ -49,12 +49,15 @@ Route based on these checks, in order:
      - Any obvious design decisions visible in the code
      - Anything that looks half-finished or unclear
      ```
+2.5. **Infer project principles** (if not already present):
+   - Guard: read `.specs/principles.md`. If it exists and contains no `<e.g.,` strings, it has real user content — skip entirely.
+   - If inference is needed: (a) AskUserQuestion with three questions — testing philosophy (mocks acceptable? minimum expectation?), banned patterns (what would a bad PR look like?), code style anchor (one rule that would surprise an outsider). (b) Read code signals inline — linting config (`.eslintrc*`, `.clippy.toml`, `rustfmt.toml`, `pyproject.toml [tool.ruff]` section), 2–3 representative test files, `package.json`/`Cargo.toml`/`pyproject.toml`. (c) Synthesize user answers + code evidence: replace `<e.g.,` placeholder lines with actual project conventions; flag any section that couldn't be determined rather than fabricating. (d) Write `.specs/principles.md`.
 3. **Create the feature folder** `<specs_root>/NNN_<slug>/`.
 4. **Create `spec.md`** from the template, populated from what you learned:
    - **Frontmatter:** `id`, `title`, `created` as normal; `status: done`; `starting_sha:` set to current git HEAD (short SHA); `part_of: <name-value>` if `project.md` exists.
-   - **`## Context`:** infer from the code's purpose. If unsure, flag it.
+   - **`## Context`:** cover all four dimensions, each 1–3 substantive sentences drawn from code evidence: (1) Problem & motivation — what this feature solves, why it exists. (2) User/system impact — who uses it, what they can do, how it fits the larger product. (3) Key design decisions — non-obvious choices and why this approach over alternatives. (4) Explicit out-of-scope — what this deliberately does not handle, inferred from feature boundaries and missing code paths. If a dimension can't be determined, state so explicitly rather than omitting it.
    - **`## Discussion`:** visible design decisions, alternatives, explicit non-choices.
-   - **`## Plan`:** all tasks pre-checked (`N. [x]`). Break the work into retrospective tasks. Each task maps to a piece of actual code.
+   - **`## Plan`:** all tasks pre-checked (`N. [x]`). Break the work into retrospective tasks. Each task maps to a piece of actual code. Task title: imperative mood expressing developer intent — no file paths, no function names in the title (good: "Implement UAC-safe elevated launch"; bad: "src/launch.rs: add ShellExecuteW"). Detail block: a short narrative paragraph explaining WHY this approach was chosen and HOW it works, including edge cases; file paths go at the end of the block, after the narrative.
    - **`## Verification`:** leave empty.
 5. **Do not create `execution.md`.** Adopted features have no execution history.
 6. **If `project.md` exists**, add the standard `> Part of [**{{project_name}}**](../project.md).` link under `## Context`.
@@ -76,6 +79,9 @@ Route based on these checks, in order:
    - Target: 10–20 features after consolidation. If count is still above 20, apply a second pass looking for weaker merge signals (shared imports, co-tested modules).
    - If consolidation reduces below 3 features, report this and suggest the codebase may be best served by single-feature adopt.
 8. Write `.specs/FEATURES.md` using the format below. Soft cap at 30 features (should be rare after consolidation) — if more found, include the 30 most clearly-bounded and add a warning in the prologue and output.
+8.5. **Infer project principles** (if not already present):
+   - Guard: read `.specs/principles.md`. If it exists and contains no `<e.g.,` strings, skip entirely.
+   - If inference is needed: (a) AskUserQuestion with three questions — testing philosophy, banned patterns, code style anchor. (b) Read code signals inline — linting config, 2–3 representative test files, package manifest. (c) Synthesize: replace `<e.g.,` placeholder lines with actual conventions; flag undeterminable sections. (d) Write `.specs/principles.md`.
 9. **STOP.** Tell user FEATURES.md was created, they should review/edit it, then re-run `spek:adopt` (no argument).
 
 If zero features are discovered, do not create FEATURES.md. Report the finding and suggest running single-feature adopt with a specific scope.
@@ -102,7 +108,7 @@ If zero features are discovered, do not create FEATURES.md. Report the finding a
 3. Cross-reference each feature's files against existing spec frontmatter. Skip already-specced features.
 4. For each valid feature (sequentially, in main agent):
    - Read the listed files.
-   - Create `<specs_root>/NNN_<slug>/spec.md`: `status: done`, `starting_sha:` at current HEAD, inferred Context/Discussion/Plan with all tasks `[x]`, empty Verification, no execution.md.
+   - Create `<specs_root>/NNN_<slug>/spec.md`: `status: done`, `starting_sha:` at current HEAD, empty Verification, no execution.md. `## Context`: cover all four dimensions (problem & motivation, user/system impact, key design decisions, explicit out-of-scope) — see single-feature step 4 for the full requirement. `## Discussion`: visible design decisions and alternatives. `## Plan`: all tasks `[x]` with developer-intent titles (see Hard rules) and narrative detail blocks.
    - Derive slug + number (next sequential, as `spek:new`).
    - If `project.md` exists, add back-reference.
 5. Every 10 features: AskUserQuestion checkpoint ("Created N of M specs. Continue?").
@@ -159,8 +165,8 @@ return the 30 most clearly-bounded and note that more were found.
 
 ## Writes
 
-- **Single-feature mode:** `<specs_root>/NNN_<slug>/spec.md` — creates the feature folder and spec. No `execution.md`, no source edits.
-- **Bulk Phase 1:** `.specs/FEATURES.md` — the editable feature list. Nothing else.
+- **Single-feature mode:** `<specs_root>/NNN_<slug>/spec.md` — creates the feature folder and spec. No `execution.md`, no source edits. `.specs/principles.md` — written if absent or template (contains `<e.g.,` strings); skipped if already user-authored.
+- **Bulk Phase 1:** `.specs/FEATURES.md` — the editable feature list. `.specs/principles.md` — written if absent or template; skipped if already user-authored.
 - **Bulk Phase 2:** `<specs_root>/NNN_<slug>/spec.md` for each confirmed feature. Optionally deletes `.specs/FEATURES.md` if user confirms.
 
 ## Output to user
@@ -172,6 +178,7 @@ Adopted <N files / git range / description> as .specs/NNN_<slug>/
 - Context: <one-line summary of inferred purpose>
 - Plan: N retrospective tasks (all marked done)
 - starting_sha: <sha> (HEAD at adopt time)
+- Principles: [written | already present — skipped]
 - Flags: <anything you were unsure about, if any>
 
 Next step: run /spek:verify to check that the Plan matches the code.
@@ -180,6 +187,8 @@ Next step: run /spek:verify to check that the Plan matches the code.
 **Bulk Phase 1 (Discovery):**
 ```
 Discovered N features and wrote .specs/FEATURES.md
+
+- Principles: [written | already present — skipped]
 
 Review and edit the file — reorder, reword, add features, or strike through
 (`~~like this~~`) features you don't want. Then re-run /spek:adopt
@@ -200,6 +209,7 @@ Next step: run /spek:verify on individual specs to confirm Plans match code.
 ## Hard rules
 
 - **Never modify source code.** Adoption is read-only.
+- **Principles inference (both modes).** Run after code exploration (single-feature: before folder creation; Phase 1: after FEATURES.md is written, before STOP). Skip if `principles.md` already has real content (no `<e.g.,` strings). Ask 3 questions, read linting config/test files/package manifest inline — no sub-agent. Do not fabricate conventions; flag undeterminable sections explicitly.
 - **Sub-agent for breadth.** Delegate to Explore when scope is broad. Cap at 2 Explore sub-agents per invocation.
 - **Be honest about inference.** If you can't tell WHY code exists, say so. Do not fabricate product rationale.
 - **Principles check.** When writing retrospective Plans, compare code against `principles.md`. Surface gaps, don't rewrite.
@@ -213,3 +223,6 @@ Next step: run /spek:verify on individual specs to confirm Plans match code.
 - **Zero features (Phase 1):** do not create FEATURES.md. Report and suggest single-feature with a specific scope.
 - **Zero valid features (Phase 2):** offer to delete FEATURES.md or re-run discovery.
 - **Malformed FEATURES.md:** best-effort parse, report failures, offer to delete and re-run.
+- **Context completeness.** Every adopted spec `## Context` must address all four dimensions: problem & motivation, user/system impact, key design decisions, explicit out-of-scope.
+- **Task title clarity.** Task titles must express developer intent in imperative mood. No file paths, no function names in titles.
+- **Task detail quality.** Detail blocks explain WHY + HOW in narrative prose. File paths go at the end of the block, after the narrative.
