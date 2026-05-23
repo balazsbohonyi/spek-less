@@ -6,6 +6,10 @@ SpekLess gives every feature a single living design document (`spec.md`) and an 
 
 SpekLess ships as rendered skills for **Claude Code**, **Codex CLI**, **OpenCode**, and **Antigravity**. The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The source `skills/` directory is canonical; the installer renders that source into each agent's package format.
 
+<div class="center">
+<img src="./docs/images/spek-less-workflow.png" alt="SpekLess Flowchart">
+</div>
+
 ---
 
 ## Why SpekLess exists
