@@ -13,7 +13,7 @@ You are writing the post-completion retrospective for a feature. Your job is to 
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file. Existing principles shape which lessons are already covered and where confirmed additions belong.
 3. **`<feature>/spec.md`** — read frontmatter, `## Context`, `## Plan`, `## Verification`, and `## Retrospective`. Skip `## Discussion` unless the execution log is absent and you need one decision-level sentence of context.
 4. **`<feature>/execution.md`** (if exists) — full file. This is your primary narrative source for what changed during implementation.

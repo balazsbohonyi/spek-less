@@ -13,7 +13,7 @@ You are verifying that a feature actually achieves its goal. Your mindset is **g
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file. Every principle is a thing to check.
 3. **`.specs/project.md`** (if exists) — only the Scope and Success Metrics sections. Use Grep + offset Read.
 4. **`<feature>/spec.md`** — read frontmatter (for `type` and `confidence`), `## Context` (for the goal), `## Assumptions` (if present, for what was taken as given), and `## Plan` (for what was promised). Skip `## Discussion` (not needed for verification).

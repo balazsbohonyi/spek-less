@@ -16,7 +16,7 @@ This is a **convenience skill**, not a workflow step. The user invokes it whenev
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `commit_style`. `commit_style` is one of: `plain` (default), `conventional`, or a free-text custom rule the installer captured. Empty / missing = treat as `plain`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`, `commit_style`. `commit_style` is one of: `plain` (default), `conventional`, or a free-text custom rule the installer captured. Empty / missing = treat as `plain`.
 2. **`.specs/principles.md`** (if exists) — full file. Principles **win over config** when they declare something more specific about commit messages (e.g. "prefix with [JIRA-xxx]"). Config is the baseline; principles override.
 3. **`<feature>/spec.md`** — frontmatter (`id`, `title`) plus `## Plan` → `### Tasks` only. Use Grep to find headers, then targeted Read. You need checkbox state and task titles, not `### Details`.
 4. **`<feature>/execution.md`** — tail (~80 lines). This tells you what's been done recently.

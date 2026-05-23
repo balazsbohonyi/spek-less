@@ -14,7 +14,7 @@ You are the fast path for small, self-contained tasks that don't warrant the ful
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml`; per-project wins) — `specs_root`, `suggest_commits`. If neither exists, tell the user SpekLess is not installed and point them at `node install.js`. Stop.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config; per-project wins) — `specs_root`, `suggest_commits`. If neither exists, tell the user SpekLess is not installed and point them at `node install.js`. Stop.
 2. **`.specs/principles.md`** (if exists) — full file. Every change must be consistent.
 3. **Existing spec numbering** — Glob `<specs_root>/[0-9][0-9][0-9]_*/spec.md`. Parse the 3-digit prefix from each path. Next number = max + 1, zero-padded to 3 digits.
 4. **Source files** — read only what each task needs, guided by the task description.

@@ -14,7 +14,7 @@ You are transforming existing content — a file, a PRD, conversation notes — 
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`. If neither exists, stop and point the user at `node install.js`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`. If neither exists, stop and point the user at `node install.js`.
 2. **`.specs/principles.md`** (if exists) — full file.
 3. **`.specs/project.md`** (if exists) — frontmatter `name:` field for `part_of:` assignment.
 4. **Existing spec numbering** — Glob both `<specs_root>/[0-9][0-9][0-9]_*/spec.md` and `<specs_root>/[0-9][0-9][0-9].[0-9]*/spec.md`. Parse the 3-digit integer prefix from each match (e.g. `016.1` → `16`), take `max`, assign IDs consecutively from `max + 1`. Never assign `NNN.M` IDs.

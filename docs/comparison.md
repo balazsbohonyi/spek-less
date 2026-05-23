@@ -42,7 +42,7 @@ A detailed comparison against the closest existing spec-driven development frame
 | Sub-agents used only as context firewalls | ✓ | ✗ (workflow roles) | N/A | N/A |
 | Custom agent types defined | ✗ (built-in only) | ✓ (many) | N/A | N/A |
 | **Packaging** | | | | |
-| Native Claude Code skills | ✓ | partial | ✗ (template-based) | ✗ |
+| Native agent skills / commands | ✓ (Claude Code, Codex, OpenCode, Antigravity) | partial | ✗ (template-based) | ✗ |
 | Interactive installer with config | ✓ | ✓ | ✓ | ✗ |
 | Idempotent installer safe on existing projects | ✓ | ✓ | ✓ | N/A |
 | **Token efficiency** | | | | |
@@ -208,4 +208,4 @@ Every skill owns exactly one section of `spec.md` (plus `/spek:execute` owning `
 - **ADR/RFC** — You want zero-agent, human-only design docs. You're documenting decisions for a team of humans, not using an AI assistant to drive the work.
 - **SpekLess** — You want the discipline of spec-before-code without the token cost, the rigidity, or the machine-generated git commits. You value human-readable documents over tool-friendly structure. You want to intervene freely. You may have existing code you want to document retroactively.
 
-SpekLess's audience is the single developer (or small team) using Claude Code to ship real software — not teams simulating enterprise process, and not projects where the framework is the product.
+SpekLess's audience is the single developer (or small team) using an AI coding agent to ship real software — not teams simulating enterprise process, and not projects where the framework is the product.

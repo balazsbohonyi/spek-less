@@ -14,7 +14,7 @@ You are implementing a feature spec's Plan. You edit source code, run tests, and
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `suggest_commits`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`, `suggest_commits`.
 2. **`.specs/principles.md`** (if exists) — full file. Every change must be consistent.
 3. **`<feature>/spec.md`** — read frontmatter (for `type`) plus `## Plan`. Use Grep for section headers then Read with offsets. Do not read Context/Discussion — they're the background, not the work. Read `## Verification` only when re-running after a verify pass flagged issues — on first execution, skip it.
 4. **`<feature>/execution.md`** (if exists) — read the tail (last ~50 lines is enough). You need to know where the previous run stopped. Do not re-read older entries unless you need to understand a course correction.

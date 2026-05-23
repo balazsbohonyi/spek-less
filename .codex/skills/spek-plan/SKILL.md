@@ -14,7 +14,7 @@ You are writing the `## Plan` section of a feature spec. This is **convergent th
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists) — full file. Every task in the Plan must be consistent with these.
 3. **`.specs/project.md`** (if exists) — full file. Scope and constraints sections matter most.
 4. **`<feature>/spec.md`** — read frontmatter (for `type` field) + `## Context` + `## Discussion`. Read `## Review` too when it exists and the user is revising the plan in response to review feedback. Use Grep for headers then Read with offsets. Do NOT read the existing `## Plan` when the user is starting fresh; DO read it if the user's invocation implies tweaking (e.g. "add a task for X", "swap Postgres for SQLite", "address the review findings").

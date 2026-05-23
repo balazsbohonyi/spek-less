@@ -21,7 +21,7 @@ These are the foundational commitments every other decision follows from:
 
 SpekLess uses a **single-agent + targeted sub-agents** topology:
 
-- **Main conversation** — you talking to Claude Code, invoking slash skills. This is where all writes happen: editing `spec.md`, appending to `execution.md`, modifying source code.
+- **Main conversation** — you talking to your coding agent, invoking SpekLess skills. This is where all writes happen: editing `spec.md`, appending to `execution.md`, modifying source code.
 - **Sub-agents** — spawned only when a skill needs to absorb a large read (broad codebase exploration, fresh-lens verification) without polluting the main context. The sub-agent does its work in an isolated conversation and returns a distilled summary.
 
 We do NOT use:
@@ -42,7 +42,7 @@ This choice is the single largest token-cost difference between SpekLess and GSD
 | `/spek:adopt` (bulk) | **Explore** (built-in) | Bulk discovery Phase 1: one breadth-first survey, plus an optional second narrower Explore for ambiguous results. Cap at 2. After Explore returns, the main agent consolidates related candidates before writing FEATURES.md (target: 10–20 features). |
 | `/spek:verify` | **general-purpose** (built-in) | For non-trivial features (more than ~5 tasks or large diffs). The fresh sub-agent conversation is the mechanism behind "fresh lens." |
 
-SpekLess uses three Claude Code built-in agent types — no custom types are defined. `Explore` is read-only (no Edit/Write tools) and best for codebase mapping. `Plan` is the architectural analysis agent, suitable for critiquing a drafted plan. `general-purpose` has full tool access and handles complex multi-step reasoning tasks like fresh-lens verification. **Portability note:** these `subagent_type` names are Claude Code-specific. Codex CLI and OpenCode have no equivalent named types — porting SpekLess to another tool requires mapping each role to that tool's agent primitive, using the prose description in each skill as the guide.
+SpekLess uses three Claude Code built-in agent types — no custom types are defined. `Explore` is read-only (no Edit/Write tools) and best for codebase mapping. `Plan` is the architectural analysis agent, suitable for critiquing a drafted plan. `general-purpose` has full tool access and handles complex multi-step reasoning tasks like fresh-lens verification. **Portability note:** these `subagent_type` names are Claude Code-specific. Codex CLI, OpenCode, and Antigravity have no equivalent named types — porting SpekLess to another tool requires mapping each role to that tool's agent primitive, using the prose description in each skill as the guide.
 
 ---
 
@@ -85,8 +85,9 @@ Features are numbered sequentially and prefixed with a zero-padded integer. Numb
 | Claude Code | `.claude/commands/{ns}/<skill>.md` | `~/.claude/commands/{ns}/<skill>.md` |
 | Codex | `.codex/skills/{ns}-<skill>/SKILL.md` | `~/.codex/skills/{ns}-<skill>/SKILL.md` |
 | OpenCode | `.opencode/commands/{ns}/<skill>.md` | `~/.config/opencode/commands/{ns}/<skill>.md` |
+| Antigravity | `.agents/skills/{ns}-<skill>/SKILL.md` | `~/.agents/skills/{ns}-<skill>/SKILL.md` |
 
-The installer renders canonical source references `spek:<skill>` to the selected namespace during install. Claude Code and OpenCode keep the `namespace:skill` form. Codex renders the same canonical source reference as `namespace-skill` and packages each skill in its own directory.
+The installer renders canonical source references `spek:<skill>` to the selected namespace during install. Claude Code and OpenCode keep the `namespace:skill` form. Codex and Antigravity render the same canonical source reference as `namespace-skill` and package each skill in its own directory. Antigravity uses slash-prefixed visible commands with that hyphenated skill name, for example `/spek-new`.
 
 ### `spec.md` sections and ownership
 

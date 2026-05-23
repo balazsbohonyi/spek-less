@@ -40,49 +40,51 @@ Feature-specific decisions belong in the feature's own spec.md Discussion sectio
 
 ## Sync Rule
 
-Whenever any file in `skills/` or `_templates/` is created, modified, deleted, or renamed, replicate the change to every installed copy that exists. Check for existence before syncing - do not create the directory if it is not already there. Run the following three-command sequence to sync all agent install roots:
+Whenever any file in `skills/` or `_templates/` is created, modified, deleted, or renamed, replicate the change to every supported agent install root. Run the following four-command sequence to install or sync all agent skill roots:
 
 ```
 node install.js --claude
 node install.js --codex
 node install.js --opencode
+node install.js --antigravity
 ```
 
-Each command targets that agent's project-local and global install roots. Each command is a no-op for install roots that don't exist on the current machine, so the sequence is safe to run unconditionally regardless of which agents are installed.
+Each command targets that agent's project-local and global skill install roots. If a selected skill root is missing, the explicit target flag creates it; if it already exists, the command refreshes it. Target-agent install/sync flags preserve shared project files such as `.specs/config.yaml` and `.specs/_templates/`; run the installer without a target flag for first-time setup or to refresh those project files interactively.
 
 | AI Agent | Project-local | Global |
 |---|---|---|
 | Claude Code | `.claude/commands/{ns}/<skill>.md` | `~/.claude/commands/{ns}/<skill>.md` |
 | Codex | `.codex/skills/{ns}-<skill>/SKILL.md` | `~/.codex/skills/{ns}-<skill>/SKILL.md` |
 | OpenCode | `.opencode/commands/{ns}/<skill>.md` | `~/.config/opencode/commands/{ns}/<skill>.md` |
+| Antigravity | `.agents/skills/{ns}-<skill>/SKILL.md` | `~/.agents/skills/{ns}-<skill>/SKILL.md` |
 
-This sync is mandatory, not optional. A change to `skills/new.md` that is not reflected in the installed copy means the running skills and the source diverge.
+This sync is mandatory, not optional. A change to `skills/new.md` that is not reflected in installed copies means the running skills and the source diverge.
 
-**Sync is not a raw copy.** Syncing `skills/` or `_templates/` means applying the same render rules as `install.js`, not copying bytes verbatim.
+**Sync is not a raw copy.** Syncing `skills/` means applying the same render rules as `install.js`, not copying bytes verbatim. Template refreshes happen through a non-flag installer run so shared project templates are rendered once for that project.
 
 Sync semantics by change type:
-- **New skill:** create a new installed copy at the rendered target path for every existing install root. For Claude Code and OpenCode this is a new `{ns}:<skill>` flat command file; for Codex this is a new `{ns}-<skill>/SKILL.md` package directory.
-- **Deleted skill:** remove the installed copy from every existing install root. For Claude Code and OpenCode delete the rendered flat command file; for Codex delete the entire `{ns}-<skill>/` package directory, not just `SKILL.md`.
-- **Renamed skill:** treat it as delete old name + create new name. Do not leave the old rendered path behind. For Claude Code and OpenCode that means removing the old `<old-skill>.md` rendered command file and creating the new one; for Codex that means removing the old `{ns}-<old-skill>/` package directory and creating `{ns}-<new-skill>/SKILL.md`.
+- **New skill:** create a new installed copy at the rendered target path for every existing install root. For Claude Code and OpenCode this is a new `{ns}:<skill>` flat command file; for Codex and Antigravity this is a new `{ns}-<skill>/SKILL.md` package directory.
+- **Deleted skill:** remove the installed copy from every existing install root. For Claude Code and OpenCode delete the rendered flat command file; for Codex and Antigravity delete the entire `{ns}-<skill>/` package directory, not just `SKILL.md`.
+- **Renamed skill:** treat it as delete old name + create new name. Do not leave the old rendered path behind. For Claude Code and OpenCode that means removing the old `<old-skill>.md` rendered command file and creating the new one; for Codex and Antigravity that means removing the old `{ns}-<old-skill>/` package directory and creating `{ns}-<new-skill>/SKILL.md`.
 
 Render rules:
 - Replace `{{CMD_PREFIX}}` in skill files with the correct agent prefix.
 - Replace canonical source references `spek:<skill>` with the configured namespace for the target install.
 - For Claude Code and OpenCode, render `spek:<skill>` as `{ns}:<skill>`.
-- For Codex, render `spek:<skill>` as `{ns}-<skill>` and package each skill in its own `{ns}-<skill>/SKILL.md` directory.
-- Render `_templates/` too. Template files are shared framework assets, but command references inside them still need namespace and agent rendering so generated docs do not point at the wrong command names.
+- For Codex and Antigravity, render `spek:<skill>` as `{ns}-<skill>` and package each skill in its own `{ns}-<skill>/SKILL.md` directory.
+- Render `_templates/` during interactive install. Target-agent install/sync flags do not rewrite shared project templates because a project can have multiple agent install roots but only one `.specs/_templates/` directory.
 
 ## Command References
 
 - `skills/` is the canonical source. Contributors author one source file per skill at `skills/<name>.md`; agent-specific packaged copies are derived at install and sync time.
 - Skill source files use canonical `spek:<skill>` references in internal guidance, frontmatter, headings, and behavior text. Treat `spek` as a source token, not as a promise that installed copies will keep that literal spelling.
 - Skill source files use `{{CMD_PREFIX}}spek:<skill>` in user-facing references such as Output to user and AskUserQuestion text. Never hardcode `/` or `$` in source skills.
-- `_templates/` also use canonical bare `spek:<skill>` references when they mention commands. The installer renders those to the correct namespace form for the selected agent.
+- `_templates/` also use canonical bare `spek:<skill>` references when they mention commands. The installer renders those to the correct namespace form for the selected agent during interactive project setup.
 - When authoring a new skill, do not hand-create a Codex `SKILL.md` package in source. Create `skills/<name>.md` only and rely on installer rendering to generate:
 - Claude Code installs `{ns}:<skill>` flat command files.
 - OpenCode installs `{ns}:<skill>` flat command files.
-- Codex installs `{ns}-<skill>` packaged skills.
-- If you ever repair or sync Codex packages manually, write `SKILL.md` as UTF-8 without BOM. A BOM before `---` causes Codex to reject the YAML frontmatter as missing.
+- Codex and Antigravity install `{ns}-<skill>` packaged skills.
+- If you ever repair or sync Codex or Antigravity packages manually, write `SKILL.md` as UTF-8 without BOM. A BOM before `---` causes Codex to reject the YAML frontmatter as missing.
 - Do not read `cmd_prefix` from `config.yaml` at runtime. Prefix and name rendering are install-time concerns.
 
 ## Security

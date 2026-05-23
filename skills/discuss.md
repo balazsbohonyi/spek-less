@@ -13,7 +13,7 @@ You are running a focused discussion to populate the `## Context` and `## Discus
 
 ## Reads (section-scoped — do NOT read the whole spec.md)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — entire file. Use to frame conversation and flag principle-related concerns.
 3. **`.specs/project.md`** (if exists) — entire file. Use Problem/Vision/Scope sections as background.
 4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` section + `## Discussion` section + `## Assumptions` section (if present). If the user is returning here because `spek:review` surfaced scope, ambiguity, dependency, or architectural issues, read `## Review` too and use those findings as agenda items. Use Grep to find section headers, then Read with `offset`/`limit`. Do not read `## Plan` or `## Verification` unless the user explicitly asks — they're usually irrelevant to this step and add tokens.

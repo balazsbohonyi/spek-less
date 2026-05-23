@@ -15,7 +15,7 @@ This is NOT `spek-status`. Status gives a broad overview of all features. Resume
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
 3. **All `.specs/NNN_*/spec.md` and `.specs/NNN.M_*/spec.md`** — frontmatter only (via Grep for `^---` boundaries), to resolve the current feature.
 4. **`<feature>/spec.md`** — frontmatter (`id`, `title`, `status`, `type`, `confidence`) and task checkbox lines only (from `### Tasks` for standard specs; `### Investigation` / `### Fix` for bug specs — the `N. [x]` Grep pattern catches all groups regardless of section name).

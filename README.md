@@ -4,16 +4,20 @@
 
 SpekLess gives every feature a single living design document (`spec.md`) and an append-only work journal (`execution.md`). A set of workflow skills — invoked as slash commands — drives the full lifecycle: clarify → plan → review → implement → verify → retrospect. The document *is* the state: no lockfiles, no state machines, no checkpoint files. Intervention is always just re-running a skill.
 
-SpekLess ships as rendered skills for **Claude Code**, **Codex CLI**, and **OpenCode**. The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The source `skills/` directory is canonical; the installer renders that source into each agent's package format.
+SpekLess ships as rendered skills for **Claude Code**, **Codex CLI**, **OpenCode**, and **Antigravity**. The document model — the spec, execution log, and principles file — is plain markdown and works with any agent or editor. The source `skills/` directory is canonical; the installer renders that source into each agent's package format.
+
+<div class="center">
+<img src="./docs/images/spek-less-workflow.png" alt="SpekLess Flowchart">
+</div>
 
 ---
 
 ## Why SpekLess exists
 
-Spec-driven development in Claude Code is valuable — but the existing tools have friction:
+Spec-driven development with AI coding agents is valuable — but the existing tools have friction:
 
 - **GSD** produces excellent structure but burns tokens through fan-out subagents (researcher, planner, plan-checker, executor, verifier, integration-checker, nyquist-auditor, …) each starting cold, re-reading files, and writing their own artifact. It also forces atomic commits that pollute your git history and locks you into a rigid state machine.
-- **GitHub SpecKit** fragments a feature across three files (`spec.md`, `plan.md`, `tasks.md`) and uses a template-driven flow that doesn't integrate with Claude Code skills.
+- **GitHub SpecKit** fragments a feature across three files (`spec.md`, `plan.md`, `tasks.md`) and uses a template-driven flow that doesn't integrate with agent-native skills.
 - **Plain ADR/RFC docs** are human-readable but give you no help from the agent — every discussion, plan, and verification is ad-hoc.
 
 SpekLess is the minimal system that keeps the good parts and cuts the rest:
@@ -58,33 +62,34 @@ Pass `--defaults` (or `-y`) to skip all prompts and accept default values non-in
 node /path/to/spek-less/install.js --defaults
 ```
 
-After the initial install, use the target flags to sync skills to a specific agent without going through the interactive flow. Run all three to ensure every install root is up to date:
+Use target flags to install or sync skills for a specific agent without going through the interactive flow. Run all four to ensure every supported agent root is up to date:
 
 ```bash
 node /path/to/spek-less/install.js --claude
 node /path/to/spek-less/install.js --codex
 node /path/to/spek-less/install.js --opencode
+node /path/to/spek-less/install.js --antigravity
 ```
 
-Each command reads your existing `config.yaml`, renders updated skills into that agent's project-local and global install roots, and is a no-op for any install roots that don't exist — so the sequence is safe to run unconditionally.
+Each command reads your existing `.specs/config.yaml` when present, falls back to that agent's global config, then renders skills into that agent's project-local and global install roots. If the selected root is missing, the explicit target flag creates it; if it already exists, the command refreshes it. Target flags preserve shared project assets such as `.specs/config.yaml` and `.specs/_templates/`; run the installer without a target flag for first-time setup or to refresh those shared project files interactively.
 
 The installer asks:
 
-1. Command namespace (default: `spek`)
-2. Target AI agent: Claude Code, Codex CLI, or OpenCode
-3. Install scope: per-project, global, or both
-4. Specs root directory (default: `.specs/`)
-5. Whether the execute command should suggest commits (default: no)
-6. Subagent delegation threshold (default: 3 reads)
-7. Whether to create a starter `principles.md` (default: yes)
-8. Commit message style for the commit command — `plain` (default), `conventional`, or a custom free-text rule
+1. Target AI agent: Claude Code, Codex CLI, OpenCode, or Antigravity
+2. Command namespace (default: `spek`)
+3. Specs root directory (default: `.specs/`)
+4. Whether the execute command should suggest commits (default: no)
+5. Subagent delegation threshold (default: 3 reads)
+6. Whether to create a starter `principles.md` (default: yes)
+7. Commit message style for the commit command — `plain` (default), `conventional`, or a custom free-text rule
+8. Install scope: per-project, global, or both
 
 The installer also:
 - Detects if the directory is not a git repo and offers to run `git init`
 - Renders templates to `.specs/_templates/` so skills can reference them at runtime
 - Renders installed skills per agent:
 - Claude Code and OpenCode: flat `<skill>.md` command files
-- Codex: `.codex/skills/<namespace>-<skill>/SKILL.md` packages
+- Codex and Antigravity: packaged `<namespace>-<skill>/SKILL.md` directories
 
 The installer is **idempotent and safe on existing projects**: re-running it preserves your features and principles, rewrites config and rendered artifacts from current source, and removes stale deleted skills/templates from installed copies.
 
@@ -92,6 +97,7 @@ Command form by agent:
 - Claude Code: `/spek:new`, `/spek:kickoff`, `/spek:plan`
 - OpenCode: `/spek:new`, `/spek:kickoff`, `/spek:plan`
 - Codex CLI: `$spek-new`, `$spek-kickoff`, `$spek-plan`
+- Antigravity: `/spek-new`, `/spek-kickoff`, `/spek-plan`
 
 ---
 
@@ -376,7 +382,13 @@ No resume command, no special flag, no state file to reconcile. The document-is-
             └── recall.md
 ```
 
-Claude/OpenCode install flat command files inside their namespace directories. Codex installs one packaged skill per directory under `.codex/skills/<namespace>-<skill>/SKILL.md`.
+Claude/OpenCode install flat command files inside their namespace directories. Codex installs one packaged skill per directory under `.codex/skills/<namespace>-<skill>/SKILL.md`; Antigravity uses the same package shape under `.agents/skills/<namespace>-<skill>/SKILL.md`.
+
+Supported project-local install roots:
+- Claude Code: `.claude/commands/<namespace>/`
+- Codex CLI: `.codex/skills/<namespace>-<skill>/SKILL.md`
+- OpenCode: `.opencode/commands/<namespace>/`
+- Antigravity: `.agents/skills/<namespace>-<skill>/SKILL.md`
 
 ---
 
