@@ -16,7 +16,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if exists) — full file.
 3. **All `.specs/NNN_*/spec.md` and `.specs/NNN.M_*/spec.md`** — read ONLY frontmatter and task checkbox lines (from `### Tasks` for standard specs; `### Investigation` / `### Fix` for bug specs — the Grep pattern catches all groups). Use **two bulk Greps** across all spec files: one matching `^\d+\. \[.\]` (total checkboxes, line-anchored) and one matching `^\d+\. \[x\]` (done checkboxes, line-anchored). The `^` anchor prevents false positives from numbered-checkbox patterns appearing mid-line in prose or code spans. Both Greps return `filename:line` pairs — group results by file path to compute per-feature counts. Extract `id`, `title`, `status`, `type`, `confidence`, and `part_of` from frontmatter. When `type` is absent, treat it as `standard`. When `confidence` is absent, treat it as not applicable. Never read Context, Discussion, Details, or Verification.
 4. **`<feature>/execution.md`** — if showing detail for one feature, read the last ~10 lines to show the most recent log entry.

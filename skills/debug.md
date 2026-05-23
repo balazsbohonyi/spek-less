@@ -16,7 +16,7 @@ You do **not** drive the investigation loop. Your job ends when the spec is on d
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`. If neither config file exists, tell the user SpekLess hasn't been installed yet and point them at `node install.js`. Stop.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`. If neither config file exists, tell the user SpekLess hasn't been installed yet and point them at `node install.js`. Stop.
 2. **`.specs/principles.md`** (if exists) — full file, for context when writing the Context stub.
 3. **`.specs/project.md`** (if exists) — optional. If present, read the `name` field from frontmatter to populate `part_of:` and the Context back-reference.
 4. **Existing spec numbering** — Glob `<specs_root>/[0-9][0-9][0-9]_*/spec.md` to find the highest 3-digit prefix. Next ID = max + 1, zero-padded. Gaps are fine; never backfill.

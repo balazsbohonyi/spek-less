@@ -38,7 +38,7 @@ The framework is so small it disappears: a handful of markdown skill files, a ze
 - The total token overhead of using SpekLess (reading specs, writing logs) is lower than the cost of recovering from a single significant context-drift incident.
 - Installation takes under 2 minutes on a fresh git repo with zero prior setup.
 - The framework requires no configuration beyond accepting installer defaults for a first project.
-- The same canonical `skills/` source can be rendered and used in Claude Code, Codex CLI, and OpenCode without maintaining three divergent frameworks.
+- The same canonical `skills/` source can be rendered and used in Claude Code, Codex CLI, OpenCode, and Antigravity without maintaining divergent frameworks.
 
 ## Scope - v1.0.0
 
@@ -52,7 +52,7 @@ The framework is so small it disappears: a handful of markdown skill files, a ze
 - **5 templates** scaffolding `spec.md`, `execution.md`, `project.md`, `config.yaml`, and `principles.md`
 - **2 worked examples** showing the full greenfield workflow and the retroactive adopt workflow
 - **Contributor and design documentation** in `docs/architecture.md`, `docs/comparison.md`, and `docs/maintenance.md`
-- **Cross-agent rendering support** for Claude Code, Codex CLI, and OpenCode from one canonical skill source
+- **Cross-agent rendering support** for Claude Code, Codex CLI, OpenCode, and Antigravity from one canonical skill source
 - **Windows / Git Bash compatibility** across the installer and generated project artifacts
 
 ### Out of Scope

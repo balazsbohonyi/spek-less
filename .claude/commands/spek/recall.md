@@ -15,7 +15,7 @@ This skill is **strictly read-only**. It writes nothing, modifies nothing, spawn
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) - `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) - `specs_root`.
 2. **`.specs/principles.md`** (if exists) - full file.
 3. **`<specs_root>/*/spec.md`** - grep-first: extract key content terms from the query and grep them case-insensitively across all spec files. Only files with at least one match become candidates. For each candidate, read frontmatter (`id`, `title`, `status`) and section-scoped `## Context`, `## Discussion`, and `## Assumptions` only (use Grep `^## ` to locate boundaries, then Read with offsets).
 

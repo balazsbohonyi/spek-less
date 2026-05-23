@@ -13,7 +13,7 @@ You are reviewing a planned feature before execution starts. Your mindset is a s
 
 ## Reads (section-scoped)
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`.
 2. **`.specs/principles.md`** (if it exists) — full file. Every principle is a checkable constraint.
 3. **`.specs/project.md`** (if it exists) — full file. Problem, Scope, and constraints are the most important background.
 4. **`<feature>/spec.md`** — read ONLY frontmatter + `## Context` + `## Discussion` + `## Assumptions` + `## Plan`. Use Grep to find section headers, then Read with offsets. Do not read `## Verification`; skip the existing `## Review` unless the user explicitly asks to compare against it.

@@ -17,7 +17,7 @@ Two modes, triggered by argument presence:
 
 ## Reads
 
-1. **`.specs/config.yaml`** (falls back to `~/.claude/spek-config.yaml` if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
+1. **`.specs/config.yaml`** (falls back to the current agent's global SpekLess config if not present; per-project wins when both exist) — `specs_root`, `subagent_threshold`.
 2. **`.specs/principles.md`** (if exists). If it exists and contains no `<e.g.,` strings, it has real user content; principles inference is skipped.
 3. **`.specs/project.md`** (if exists).
 4. **`.specs/`** directory listing — to determine next sequential number and check for existing specs.

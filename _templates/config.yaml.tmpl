@@ -1,9 +1,11 @@
 # SpekLess per-project configuration
 # Written by install.js. Skills read this on every invocation.
-# See ~/.claude/spek-config.yaml for global defaults (per-project wins when both exist).
+# If no project config exists, install.js may use the selected agent's global
+# SpekLess config as defaults. Per-project config wins when both exist.
 
 # Command namespace. Installed skill names are rendered from this namespace.
-# Example: namespace=spek → `spek:plan` / `spek:execute` in Claude/OpenCode, `spek-plan` / `spek-execute` in Codex.
+# Example: namespace=spek renders colon-style skill names for Claude/OpenCode
+# and hyphen-style skill names for Codex/Antigravity.
 namespace: {{NAMESPACE}}
 
 # Root directory for spec documents, relative to project root.

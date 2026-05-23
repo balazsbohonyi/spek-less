@@ -6,15 +6,15 @@ If you're here to *use* SpekLess to build something else, read `README.md` inste
 
 ## Repository purpose
 
-SpekLess is a lightweight, Claude Code–native spec-driven development framework. It ships as:
+SpekLess is a lightweight, cross-agent spec-driven development framework. It ships as:
 
-- **Slash skills** in `skills/` — copied into a target project's `.claude/commands/<namespace>/` by the installer
+- **Skills** in `skills/` — rendered into each target agent's project-local/global install roots by the installer
 - **Six templates** in `_templates/` — used by skills and the installer to scaffold feature docs and config
 - **One installer** (`install.js`) — Node.js script (CommonJS, zero deps) that asks configuration questions and sets up a project
 - **Three worked examples** in `examples/` — `001_toy-feature` (greenfield), `002_adopted-feature` (retroactive via `/spek:adopt`), and `003_bulk-adopt` (sample `FEATURES.md` for bulk discovery)
 - **Design docs** in `docs/` — authoritative architecture reference + comparison against GSD/SpecKit/ADR
 
-There is **no runtime code** beyond `install.js`. The skills are markdown files read by Claude Code. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by the installer via `String.prototype.replace`.
+There is **no runtime code** beyond `install.js`. The skills are markdown files read by the selected coding agent. The templates are plain text with `{{PLACEHOLDER}}` substitution markers filled in by the installer via `String.prototype.replace`.
 
 ---
 

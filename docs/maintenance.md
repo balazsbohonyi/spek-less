@@ -39,7 +39,7 @@ description: <one-paragraph description - canonical source wording>
 
 **Canonical source format:** `skills/` is the single source of truth. Source skills are authored once in canonical SpekLess form, then rendered per agent during install and sync.
 
-**Frontmatter format:** keep `name: spek:<skill>` in source files. The installer rewrites canonical `spek:<skill>` references to the configured namespace in installed copies, and Codex additionally converts them to `{ns}-<skill>` inside packaged `SKILL.md` files.
+**Frontmatter format:** keep `name: spek:<skill>` in source files. The installer rewrites canonical `spek:<skill>` references to the configured namespace in installed copies. Codex and Antigravity additionally convert them to `{ns}-<skill>` inside packaged `SKILL.md` files.
 
 **Description field:** this is what skill loaders read when deciding whether a skill is relevant. Be specific about *when to use this skill vs alternatives*. Example: the `spek:new` description says "For greenfield projects use spek:kickoff first. For retroactively documenting existing code use spek:adopt." That disambiguation is critical.
 
@@ -47,7 +47,7 @@ description: <one-paragraph description - canonical source wording>
 - Internal guidance, headings, frontmatter, and behavior text use bare `spek:<skill>`.
 - User-facing output and AskUserQuestion text use `{{CMD_PREFIX}}spek:<skill>`.
 
-Do not hardcode `/` or `$` in source skill files. Do not hand-author Codex package directories in source.
+Do not hardcode `/` or `$` in source skill files. Do not hand-author Codex or Antigravity package directories in source.
 
 **Section ownership must stay explicit.** If a skill owns a `spec.md` section, say so directly in its Writes and Hard rules. Downstream skills may read that section when the workflow calls for it, but they must not rewrite it.
 
@@ -67,7 +67,7 @@ Current placeholders:
 
 Canonical command references in templates use bare `spek:<skill>`. The installer renders them to:
 - `{ns}:<skill>` for Claude Code and OpenCode
-- `{ns}-<skill>` for Codex
+- `{ns}-<skill>` for Codex and Antigravity
 
 When adding a new placeholder, update both the template and the code that substitutes it. The installer uses `String.prototype.replace(new RegExp('{{KEY}}', 'g'), value)` - no `sed`, no delimiter issues.
 
@@ -79,15 +79,16 @@ Templates contain HTML comments (`<!-- ... -->`) as inline guidance for humans e
 
 - **Zero runtime dependencies.** `install.js` is a single CommonJS file that uses only Node.js built-ins (`fs`, `path`, `os`, `readline`, `child_process`). No `npm`, no `node_modules`, no `package.json`.
 - **Node.js 14 LTS minimum.** Uses the callback-based `readline.createInterface` API, not `readline/promises`.
-- **Idempotent on existing projects.** Re-running preserves existing `.specs/principles.md` and all feature folders. `config.yaml` is always overwritten on re-run because `collectConfig()` reads existing values as defaults before prompting. The `.specs/_templates/` directory is also overwritten with the latest rendered framework templates on re-install.
+- **Idempotent on existing projects.** Re-running without a target flag preserves existing `.specs/principles.md` and all feature folders. `config.yaml` is overwritten because `collectConfig()` reads existing values as defaults before prompting. The `.specs/_templates/` directory is also overwritten with the latest rendered framework templates on re-install. Target-agent install/sync flags refresh skills only and preserve shared `.specs` project files.
 - **Per-project config is sovereign.** If both per-project and global configs exist, per-project wins. The installer writes per-project by default.
 - **Rendered installs, not raw copies.** Installing skills means:
 - applying `{{CMD_PREFIX}}`
 - rewriting canonical `spek:<skill>` references to the configured namespace
 - packaging Codex skills as `.codex/skills/{ns}-<skill>/SKILL.md`
-- rendering command references inside `_templates/`
-- **Codex skill encoding matters.** Codex `SKILL.md` files must be written as UTF-8 **without BOM** so the opening `---` frontmatter delimiter is at byte 0. Avoid Windows PowerShell `Set-Content -Encoding utf8` for Codex skill writes; it can add a BOM. Prefer `install.js` or an explicit no-BOM writer.
-- **Stale install cleanup is required.** Reinstall must remove deleted skills and templates from installed copies. For Codex it must also clean up legacy flat `.md` files left by older broken installs.
+- packaging Antigravity skills as `.agents/skills/{ns}-<skill>/SKILL.md`
+- rendering command references inside `_templates/` during interactive project setup
+- **Packaged skill encoding matters.** Codex and Antigravity `SKILL.md` files must be written as UTF-8 **without BOM** so the opening `---` frontmatter delimiter is at byte 0. Avoid Windows PowerShell `Set-Content -Encoding utf8` for packaged skill writes; it can add a BOM. Prefer `install.js` or an explicit no-BOM writer.
+- **Stale install cleanup is required.** Reinstall must remove deleted skills and templates from installed copies. For Codex and Antigravity it must also clean up legacy flat `.md` files left by older broken installs.
 - **`--defaults` / `-y` flag.** Passing either flag skips all prompts, skips the summary confirmation, and runs non-interactively. Useful for scripted setups and quick trials.
 - **All prompts have sensible defaults.** A user pressing Enter at every prompt should get a working install with reasonable choices.
 - **Platform guards.** On startup, the installer detects WSL + Windows-native Node.js (where `process.execPath` starts with `/mnt/`) and exits with a clear error message pointing the user to `nvm`. Gracefully skip global install if `os.homedir()` returns null.
@@ -104,19 +105,19 @@ After confirming with the user that the new skill is warranted (see [When to ask
 2. Read `skills/new.md` as a structural template.
 3. Create `skills/<name>.md` following the canonical source conventions above.
 4. Do not create agent-specific copies in source. The installer and Sync Rule derive those.
-5. If the repo already contains checked-in installed copies under `.claude/`, `.opencode/`, or `.codex/`, refresh them before you call the change complete so the source and rendered artifacts stay aligned.
+5. If the repo already contains checked-in installed copies under `.claude/`, `.opencode/`, `.codex/`, or `.agents/`, refresh them before you call the change complete so the source and rendered artifacts stay aligned.
 6. Update `README.md`, `CLAUDE.md`, and `docs/architecture.md` to reference the new skill.
 7. Update `install.js` only if the new skill changes rendering behavior or install packaging. Ordinary new skills should be picked up automatically.
 8. Update `docs/comparison.md` if the new capability changes the feature matrix.
 9. Update the worked examples and checked-in rendered installs so the canonical spec shape and packaged skill set stay in sync.
-10. Smoke test at least one Claude/OpenCode install and one Codex install before calling the change complete.
+10. Smoke test at least one colon-style install (Claude/OpenCode) and one packaged hyphen-style install (Codex/Antigravity) before calling the change complete.
 
 ### Modifying an existing skill
 
 1. Read the skill's current file in full. Skills have load-bearing details in the "Hard rules" section that are easy to accidentally break.
 2. Check `docs/architecture.md` for invariants the skill enforces.
 3. Make the edit in `skills/<name>.md` first.
-4. Refresh any checked-in installed copies under `.claude/`, `.opencode/`, and `.codex/` so the committed rendered artifacts stay in sync.
+4. Refresh any checked-in installed copies under `.claude/`, `.opencode/`, `.codex/`, and `.agents/` so the committed rendered artifacts stay in sync. Target-agent install/sync flags refresh skills only and preserve shared `.specs` project assets.
 5. If the edit affects command references, packaging, install behavior, or spec-section ownership, also review `_templates/`, `.specs/principles.md`, `docs/architecture.md`, and `install.js`.
 6. **Smoke test manually** (see [Manual smoke test](#manual-smoke-test) below).
 7. If the edit changes externally visible behavior, update the README walkthrough that covers this skill.
@@ -125,7 +126,7 @@ After confirming with the user that the new skill is warranted (see [When to ask
 
 1. Search for the template filename across `skills/` and `install.js` to find all consumers.
 2. If you add a placeholder, add the substitution in every consumer.
-3. If the template mentions SpekLess commands, verify the installer still renders those references correctly for Claude/OpenCode and Codex.
+3. If the template mentions SpekLess commands, verify the installer still renders those references correctly for Claude/OpenCode and Codex/Antigravity.
 4. Run the installer against a scratch directory to verify the generated config and copied templates look right.
 5. If you change the `spec.md.tmpl` section structure, update **every skill** that reads sections from `spec.md` - several skills use `Grep "^## "` to find section boundaries. Workflow-facing section changes often affect multiple skills together, so check all readers before calling the template change complete.
 6. If the new section introduces an owner skill (for example `## Review` or `## Retrospective`), update `docs/architecture.md`, the README workflow tables, the worked examples, and any contributor inventories that enumerate the canonical spec shape or skill set.
@@ -151,27 +152,35 @@ SpekLess has no automated test suite in v1.0.0. The smoke test is:
 mkdir /tmp/spek-less-smoke && cd /tmp/spek-less-smoke
 git init
 
-# 2. Run the installer for each agent you want to sync
+# 2. Run the installer once without target flags for shared project setup.
+# Target flags are skills-only install/sync commands for individual agents.
+node /path/to/spek-less/install.js
+
+# 3. Optional: install/sync all target-agent skill roots.
 node /path/to/spek-less/install.js --claude
 node /path/to/spek-less/install.js --codex
 node /path/to/spek-less/install.js --opencode
-# Each command is a no-op for install roots that don't exist.
-# To do a full first-time interactive install instead, run without flags.
+node /path/to/spek-less/install.js --antigravity
+# Each target command preserves .specs/config.yaml and .specs/_templates/
+# while creating missing skill roots or refreshing existing ones.
 
-# 3. Verify the install
+# 4. Verify the install
 ls -la .specs/                    # should contain config.yaml and principles.md
 ls -la .specs/_templates/         # should contain rendered templates, no stale deleted files
 ls -la .claude/commands/spek/     # Claude Code path when Claude Code was selected
 ls -la .opencode/commands/spek/   # OpenCode path when OpenCode was selected
 ls -la .codex/skills/spek-new/    # Codex path when Codex was selected
+ls -la .agents/skills/spek-new/   # Antigravity path when Antigravity was selected
 cat .specs/config.yaml            # should have populated values, no {{PLACEHOLDERS}}
 
-# 4. Start the selected agent in the scratch project and run a workflow
+# 5. Start the selected agent in the scratch project and run a workflow
 # Claude/OpenCode:
 #   /spek:new "add a greeting endpoint"
 # Codex:
 #   $spek-new "add a greeting endpoint"
+# Antigravity:
+#   /spek-new "add a greeting endpoint"
 # Then continue with discuss/plan/execute/verify in the target agent's command form.
 ```
 
-**Before committing a non-trivial change, run at least steps 1-3 of the smoke test.** Skipping this has already caused render and packaging bugs.
+**Before committing a non-trivial change, run at least steps 1-4 of the smoke test.** Skipping this has already caused render and packaging bugs.
