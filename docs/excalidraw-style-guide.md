@@ -22,7 +22,7 @@ The layout is divided into three distinct columns, each with a corresponding acc
 | **Column 3** | Docs & Conv. | `#06b6d4` (Cyan Blue) | `#06b6d4` | `#e3fafc` | Dashed, Opacity 50% |
 
 ### Relationship / Loopback Accents
-- **Commit Actions**: `#f59e0b` (Amber Orange) is used for `/spek-commit` connections and badges.
+- **Commit Actions**: `#06b6d4` (Cyan Blue is used for `/spek:commit` connections and badges.
 - **Re-plan Loops**: `#f59e0b` (Amber Orange) represents feedback loops to the planning stage.
 - **Fix Loops**: `#ef4444` (Coral Red) indicates error/issue resolution loops.
 
